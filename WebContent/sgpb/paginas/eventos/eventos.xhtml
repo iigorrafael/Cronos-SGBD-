@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:body>
+
+	<!-- TITULO -->
+	<div class="row">
+		<div class="col-md-12">
+			<h1 class="page-header">Eventos</h1>
+		</div>
+	</div>
+	<!-- FIM TITULO -->
+
+	<!-- BOTÃO CADASTRAR -->
+	<div class="row container-fluid">
+		<div class="col-md-12">
+			<ol class="breadcrumb">
+				<h:form id="frmCadastrar">
+					<p:commandButton actionListener="#{eventoMB.criarNovoEvento()}"
+						value="Cadastrar" update=":frmModalSalvar" id="btnCadastrar"
+						onclick="PF('dlgEventos').show(); PF('dlgEventos').content.scrollTop('0')"
+						title="Cadastrar" />
+				</h:form>
+			</ol>
+		</div>
+	</div>
+	<!-- FIM DO BOTÃO CADASTRAR -->
+
+	<!-- TABELA-->
+	<div class="col-md-12">
+		<h:form id="frmTabela">
+			<p:dataTable id="tabela" value="#{eventoMB.eventos}" var="obj"
+				resizableColumns="true" rows="10" paginator="true"
+				paginatorPosition="bottom" reflow="true"
+				emptyMessage="Nenhum evento cadastrado"
+				rowsPerPageTemplate="5,10,15,30,50,100">
+				<p:column headerText="Ver" style="width:50px">
+					<p:commandButton update=":frmDetalhesEvento"
+						alt="Visualizar informações" title="Ver"
+						styleClass="btn btn-block" onclick="PF('dlgDetalhes').show();"
+						icon=" ui-icon-search">
+						<f:setPropertyActionListener value="#{obj}"
+							target="#{eventoMB.evento}" />
+					</p:commandButton>
+				</p:column>
+				<p:column headerText="Evento" sortBy="#{obj.nome}"
+					filterBy="#{obj.nome}" filterMatchMode="contains">
+					<h:outputText value="#{obj.nome}" />
+				</p:column>
+				<p:column headerText="Local" sortBy="#{obj.local}"
+					filterBy="#{obj.local}" filterMatchMode="contains">
+					<h:outputText value="#{obj.local}" />
+				</p:column>
+				<p:column headerText="Data" sortBy="#{obj.dataEvento}"
+					filterBy="#{obj.dataEvento}" filterMatchMode="contains">
+					<h:outputText value="#{obj.dataEvento}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Alterar" style="width:68px">
+					<p:commandButton update=":frmModalSalvar" alt="Alterar"
+						title="Alterar" styleClass="btn btn-block"
+						onclick="PF('dlgEventos').show();" icon="ui-icon-pencil">
+						<f:setPropertyActionListener value="#{obj}"
+							target="#{eventoMB.evento}" />
+					</p:commandButton>
+				</p:column>
+				<p:column headerText="Excluir" style="width:68px">
+					<p:commandButton actionListener="#{eventoMB}"
+						icon="ui-icon-trash" title="Excluir" styleClass="btn btn-block"
+						update="frmTabela :dlgInformacao" alt="Excluir">
+						<p:confirm header="Confirmação" message="Deseja excluir?" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+
+	</div>
+	<!--FIM DA TABELA-->
+
+	<!-- DIALOG DETALHES -->
+	<p:dialog header="Evento" widgetVar="dlgDetalhes" modal="true"
+		closeOnEscape="true" resizable="false" closable="true"
+		draggable="false">
+		<p:outputPanel id="eventoDetalhe">
+			<h:form id="frmDetalhesEvento">
+				<h:panelGrid columns="2">
+					<label>Evento: </label>
+					<h:outputText value="#{eventoMB.evento.nome}" />
+
+					<label>Data: </label>
+					<h:outputText value="#{eventoMB.evento.dataEvento}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+
+					<label>Detalhes: </label>
+					<h:outputText value="#{eventoMB.evento.detalhes}" />
+					<label>Local: </label>
+					<h:outputText value="#{eventoMB.evento.local}" />
+
+				</h:panelGrid>
+			</h:form>
+		</p:outputPanel>
+	</p:dialog>
+	<!-- FIM DO DIALOG DETALHES -->
+
+	<!-- MODAL SALVAR -->
+	<p:dialog header="Evento" widgetVar="dlgEventos" modal="true"
+		responsive="true" width="60%" id="dlgEventos" closable="true"
+		closeOnEscape="true" resizable="false" draggable="false">
+		<h:form id="frmModalSalvar">
+
+			<div class="ui-fluid">
+				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
+					styleClass="ui-panelgrid-blank" columns="1">
+					<label>Evento *</label>
+					<p:inputText title="Evento" style="width:100%" id="evento"
+						alt="Evento" value="#{eventoMB.evento.nome}" required="true"
+						requiredMessage="O campo evento não deve ser nulo" />
+				</p:panelGrid>
+			</div>
+			<div class="ui-fluid">
+				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
+					styleClass="ui-panelgrid-blank" columns="1">
+					<label>Local *</label>
+					<p:inputText title="Local" style="width:100%" id="local"
+						alt="Local" value="#{eventoMB.evento.local}" required="true"
+						requiredMessage="O campo local não deve ser nulo" />
+				</p:panelGrid>
+			</div>
+			<div class="ui-fluid">
+				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
+					styleClass="ui-panelgrid-blank" columns="1">
+					<label>Detalhes *</label>
+					<p:inputText title="Detalhes" style="width:100%" id="detalhes"
+						alt="Detalhes" value="#{eventoMB.evento.detalhes}" required="true"
+						requiredMessage="O campo detalhes não deve ser nulo" />
+				</p:panelGrid>
+			</div>
+			<div class="ui-fluid">
+				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
+					styleClass="ui-panelgrid-blank" columns="1">
+					<label>Data *</label>
+					<p:calendar title="Data" style="width:100%" id="dataEvento"
+						alt="Data" mask="true" value="#{eventoMB.evento.dataEvento}"
+						required="true" requiredMessage="O campo data não deve ser nulo"
+						pattern="dd/MM/yyyy" />
+				</p:panelGrid>
+			</div>
+			<div class="ui-fluid">
+				<div class="col-md-12">
+
+					<small>Campos obrigatórios *</small>
+
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
+					actionListener="#{eventoMB.salvar()}"
+					update=":dlgInformacao :frmTabela" alt="Sim" />
+			</div>
+		</h:form>
+
+	</p:dialog>
+	<!-- FIM DO MODAL SALVAR -->
+</h:body>
+</html>
+
