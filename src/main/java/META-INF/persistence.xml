@@ -23,7 +23,7 @@
 		<class>sgpb.modelo.Atividades</class>
 		<class>sgpb.modelo.InscritoAutenticado</class>
 		<class>sgpb.modelo.PermissaoSGPB</class>
-		
+
 
 
 		<properties>

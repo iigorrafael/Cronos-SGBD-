@@ -57,7 +57,7 @@ public class AtividadesEventoMB {
 	
 	public List<Evento> completarEventos(String str) {
 		preencherListaEvento();
-		System.out.println(eventos.get(0));
+		System.out.println(eventos.get(0).getNome());
 		List<Evento> eventosSelecionados = new ArrayList<>();
 		for (Evento eve : eventos) {
 			if (eve.getNome().toLowerCase().startsWith(str)) {

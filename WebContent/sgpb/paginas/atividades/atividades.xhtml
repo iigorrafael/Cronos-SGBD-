@@ -133,7 +133,7 @@
 	<!-- FIM DO DIALOG DETALHES -->
 
 	<!-- MODAL SALVAR -->
-	<p:dialog header="Evento" widgetVar="dlgAtividades" modal="true"
+	<p:dialog header="Atividade" widgetVar="dlgAtividades" modal="true"
 		responsive="true" width="60%" id="dlgAtividades" closable="true"
 		closeOnEscape="true" resizable="false" draggable="false">
 		<h:form id="frmModalSalvar">
@@ -143,7 +143,7 @@
 					<p:autoComplete id="evento" dropdown="true"
 						value="#{atividadesEventoMB.atividade.evento}" scrollHeight="170"
 						completeMethod="#{atividadesEventoMB.completarEventos}"
-						forceSelection="true" converter="converterAtividadeEvento" var="eve"
+						forceSelection="true" converter="converterEvento" var="eve"
 						itemLabel="#{eve.nome}" itemValue="#{eve}" required="true"
 						requiredMessage="O campo evento não deve ser nulo" />
 				</div>
