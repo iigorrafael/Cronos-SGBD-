@@ -13,24 +13,24 @@ import javax.validation.constraints.NotNull;
 
 
 @Entity
-@Table(name = "tab_organizadores")
-public class Organizadores implements Serializable{
+@Table(name = "tab_receber_lista")
+public class ReceberLista implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_organizadores")
+    @Column(name = "id_receber_lista")
     private Long id;
     
-    @NotNull(message = "O campo grupo não pode ser nulo")
     @Column(name = "receber_lista_email", nullable = false, columnDefinition = "BOOLEAN")
 	private boolean receberListaEmail;
     
-    @ManyToOne
-    private Evento evento;
+    @NotNull(message = "O campo grupo não pode ser nulo")
+    @Column(name = "email", nullable = false, columnDefinition = "BOOLEAN")
+	private String email;
     
     @ManyToOne
-    private Evento servidor;
+    private Atividades atividades;
 
 	public Long getId() {
 		return id;
@@ -48,23 +48,12 @@ public class Organizadores implements Serializable{
 		this.receberListaEmail = receberListaEmail;
 	}
 
-	public Evento getEvento() {
-		return evento;
+	public Atividades getAtividades() {
+		return atividades;
 	}
 
-	public void setEvento(Evento evento) {
-		this.evento = evento;
+	public void setAtividades(Atividades atividades) {
+		this.atividades = atividades;
 	}
-
-	public Evento getServidor() {
-		return servidor;
-	}
-
-	public void setServidor(Evento servidor) {
-		this.servidor = servidor;
-	}
-	
-	
-	
 
 }

@@ -3,28 +3,6 @@
 	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="cronosPU">
-		<class>ac.modelo.Pessoa</class>
-		<class>base.modelo.Aluno</class>
-		<class>base.modelo.Curso</class>
-		<class>ac.modelo.ProfessorCurso</class>
-		<class>base.modelo.Turma</class>
-		<class>ac.modelo.AlunoTurma</class>
-		<class>ac.modelo.Movimentacao</class>
-		<class>ac.modelo.Grupo</class>
-		<class>ac.modelo.GrupoTurma</class>
-		<class>ac.modelo.Atividade</class>
-		<class>ac.modelo.AtividadeTurma</class>
-		<class>ac.modelo.Certificado</class>
-		<class>base.modelo.Tipo</class>
-		<class>base.modelo.Servidor</class>
-		<class>ac.modelo.Permissao</class>
-		<class>sgpb.modelo.Evento</class>
-		<class>sgpb.modelo.Organizadores</class>
-		<class>sgpb.modelo.Atividades</class>
-		<class>sgpb.modelo.InscritoAutenticado</class>
-		<class>sgpb.modelo.PermissaoSGPB</class>
-
-
 
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/cronos" />

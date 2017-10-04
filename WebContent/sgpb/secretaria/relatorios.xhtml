@@ -3,12 +3,13 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:body>
-	<ui:composition template="../../resources/template/template-sgpb.xhtml">
+	<ui:composition
+		template="../../resources/template/template-sgpb.xhtml">
 		<ui:define name="mensagem">
 			<ui:include src="../../componentes/mensagem.xhtml" />
 		</ui:define>
 		<ui:define name="conteudo">
-			<ui:include src="../paginas/manual/administrador.xhtml" />
+			<ui:include src="../paginas/relatorios/relatorios.xhtml" />
 		</ui:define>
 		<ui:define name="modal-confirmacao">
 			<ui:include src="../../componentes/dialog-confirmacao.xhtml" />

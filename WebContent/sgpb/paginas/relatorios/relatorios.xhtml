@@ -10,12 +10,12 @@
 	<!-- TITULO -->
 	<div class="row">
 		<div class="col-md-12">
-			<h1 class="page-header">Eventos</h1>
+			<h1 class="page-header">Relatórios</h1>
 		</div>
 	</div>
-	<!-- FIM TITULO -->
-
-	<!-- BOTÃO CADASTRAR -->
+ 	<!-- FIM TITULO -->
+<!--
+	BOTÃO CADASTRAR
 	<div class="row container-fluid">
 		<div class="col-md-12">
 			<ol class="breadcrumb">
@@ -28,9 +28,9 @@
 			</ol>
 		</div>
 	</div>
-	<!-- FIM DO BOTÃO CADASTRAR -->
+	FIM DO BOTÃO CADASTRAR
 
-	<!-- TABELA-->
+	TABELA
 	<div class="col-md-12">
 		<h:form id="frmTabela">
 			<p:dataTable id="tabela" value="#{eventoMB.eventos}" var="obj"
@@ -70,10 +70,9 @@
 				<p:column headerText="Atividade" style="width:100px">
 					<p:commandButton update=":frmModalSalvarAtividade" alt="Atividade"
 						title="Atividade" styleClass="btn btn-block"
-						action="#{atividadesEventoMB.EventoAtividade(obj)}"
 						onclick="PF('dlgAtividades').show();" icon="ui-icon-plus">
 						<f:setPropertyActionListener value="#{obj}"
-							target="#{atividadesEventoMB.evento}" />
+							target="#{eventoMB.evento}" />
 					</p:commandButton>
 				</p:column>
 				<p:column headerText="Alterar" style="width:68px">
@@ -95,9 +94,9 @@
 		</h:form>
 
 	</div>
-	<!--FIM DA TABELA-->
+	FIM DA TABELA
 
-	<!-- DIALOG DETALHES -->
+	DIALOG DETALHES
 	<p:dialog header="Evento" widgetVar="dlgDetalhes" modal="true"
 		closeOnEscape="true" resizable="false" closable="true"
 		draggable="false">
@@ -121,9 +120,9 @@
 			</h:form>
 		</p:outputPanel>
 	</p:dialog>
-	<!-- FIM DO DIALOG DETALHES -->
+	FIM DO DIALOG DETALHES
 
-	<!-- MODAL SALVAR EVENTO-->
+	MODAL SALVAR EVENTO
 	<p:dialog header="Evento" widgetVar="dlgEventos" modal="true"
 		responsive="true" width="60%" id="dlgEventos" closable="true"
 		closeOnEscape="true" resizable="false" draggable="false">
@@ -191,9 +190,9 @@
 		</h:form>
 
 	</p:dialog>
-	<!-- FIM DO MODAL SALVAR EVENTO-->
+	FIM DO MODAL SALVAR EVENTO
 
-	<!-- MODAL SALVAR ATIVIDADE-->
+	MODAL SALVAR ATIVIDADE
 	<p:dialog header="Atividade" widgetVar="dlgAtividades" modal="true"
 		responsive="true" width="60%" id="dlgAtividades" closable="true"
 		closeOnEscape="true" resizable="false" draggable="false">
@@ -203,8 +202,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Evento *</label>
 					<p:inputText title="Evento" style="width:100%" id="evento"
-						alt="Evento" readonly="true" 
-						value="#{atividadesEventoMB.atividade.evento.nome}"
+						alt="Evento" readonly="true" value="#{atividadesEventoMB.atividade.evento}"
 						required="true" requiredMessage="O campo evento não deve ser nulo" />
 				</p:panelGrid>
 			</div>
@@ -308,7 +306,7 @@
 			</div>
 		</h:form>
 	</p:dialog>
-	<!-- FIM DO MODAL SALVAR ATIVIDADE-->
+	FIM DO MODAL SALVAR ATIVIDADE -->
 </h:body>
 </html>
 

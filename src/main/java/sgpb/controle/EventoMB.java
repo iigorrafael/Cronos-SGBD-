@@ -1,31 +1,40 @@
 package sgpb.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-import ac.modelo.Movimentacao;
 import ac.modelo.Permissao;
-import dao.DAOGenerico;
+import dao.GenericDAO;
 import sgpb.modelo.Evento;
+import sgpb.service.EventoService;
 import util.ExibirMensagem;
 import util.FecharDialog;
 import util.Mensagem;
 
 @ViewScoped
-@ManagedBean(name="eventoMB")
-public class EventoMB {
+@Named("eventoMB")
+public class EventoMB implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 
 	private Evento evento;
 	private List<Evento> eventos;
-	private DAOGenerico dao;
 	private Permissao permissao;
-	private Movimentacao movs;
+	
+	@Inject
+	private GenericDAO<Evento> daoEvento; // faz as buscas
+	
+	@Inject
+	private EventoService eventoService; // inserir no banco
 
-	public EventoMB() {
-		dao = new DAOGenerico();
+	@PostConstruct
+	public void inicializar() {
 		eventos = new ArrayList<>();
 		criarNovoEvento();
 		preencherListaEvento();
@@ -34,14 +43,14 @@ public class EventoMB {
 	public void salvar() {
 		try {
 			if (evento.getId() == null) {
-				dao.inserir(evento);
+				eventoService.inserirAlterar(evento);
 				criarNovoEvento();
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherListaEvento();
-			} else {
-				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
-				dao.alterar(evento);
+			} else {				
+				eventoService.inserirAlterar(evento);
 				criarNovoEvento();
+				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherListaEvento();
 			}
 		} catch (Exception e) {
@@ -50,28 +59,8 @@ public class EventoMB {
 		FecharDialog.fecharDialogEvento();
 	}
 	
-//	public void inativar(Evento evento) {
-//		try {
-//						
-//			List<AlunoTurma> listAlunoTurmas = new ArrayList<>();
-//			listAlunoTurmas = dao.listar(AlunoTurma.class, " aluno.id ="+movimentacao.getAlunoTurma().getAluno().getId());
-//			List<Movimentacao> m = new ArrayList<>();
-//			
-//			
-//			for(AlunoTurma a : listAlunoTurmas){
-//				inavitarMovimentacao(a);
-//			}
-//			
-//		
-//		
-//		} catch (Exception e) {
-//			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
-//		}
-//		criarNovoObjetoAluno();
-//	}
-	
 	public void preencherListaEvento() {
-		eventos = dao.listar(Evento.class);
+		eventos = daoEvento.listaComStatus(Evento.class);
 	}
 
 	public void criarNovoEvento() {
@@ -94,14 +83,6 @@ public class EventoMB {
 		this.eventos = eventos;
 	}
 
-	public DAOGenerico getDao() {
-		return dao;
-	}
-
-	public void setDao(DAOGenerico dao) {
-		this.dao = dao;
-	}
-
 	public Permissao getPermissao() {
 		return permissao;
 	}
@@ -110,24 +91,22 @@ public class EventoMB {
 		this.permissao = permissao;
 	}
 
-	public Movimentacao getMovs() {
-		return movs;
+	public GenericDAO<Evento> getDaoEvento() {
+		return daoEvento;
 	}
 
-	public void setMovs(Movimentacao movs) {
-		this.movs = movs;
+	public void setDaoEvento(GenericDAO<Evento> daoEvento) {
+		this.daoEvento = daoEvento;
 	}
 
-	/*
-	 * public void inativar(Atividade atividade) { permiteInativar = new
-	 * PermiteInativar(); try { if
-	 * (permiteInativar.verificarAtividadeComAtividadeTurma(atividade.getId()))
-	 * { atividade.setStatus(false); dao.alterar(atividade);
-	 * preencherListaAtividade();
-	 * ExibirMensagem.exibirMensagem(Mensagem.SUCESSO); } else {
-	 * ExibirMensagem.exibirMensagem(Mensagem.ATIVIDADE_COM_ATIVIDADE_TURMA); }
-	 * 
-	 * } catch (Exception e) { ExibirMensagem.exibirMensagem(Mensagem.ERRO); } }
-	 */
+	public EventoService getEventoService() {
+		return eventoService;
+	}
+
+	public void setEventoService(EventoService eventoService) {
+		this.eventoService = eventoService;
+	}
+	
+	
 
 }

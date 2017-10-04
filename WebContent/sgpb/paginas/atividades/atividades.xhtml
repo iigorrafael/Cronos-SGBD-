@@ -138,7 +138,7 @@
 		closeOnEscape="true" resizable="false" draggable="false">
 		<h:form id="frmModalSalvar">
 			<div class="ui-fluid">
-				<div class="col-md-11">
+				<div class="col-md-12">
 					<label>Evento *</label>
 					<p:autoComplete id="evento" dropdown="true"
 						value="#{atividadesEventoMB.atividade.evento}" scrollHeight="170"
@@ -201,7 +201,7 @@
 			<div class="ui-fluid">
 				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
 					styleClass="ui-panelgrid-blank" columns="1">
-					<label>Autenticar no Final? *</label>
+					<label>Autenticar no Final?</label>
 					<p:selectBooleanCheckbox
 						value="#{atividadesEventoMB.atividade.autenticarFim}" />
 				</p:panelGrid>
@@ -209,7 +209,7 @@
 			<div class="ui-fluid">
 				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
 					styleClass="ui-panelgrid-blank" columns="1">
-					<label>Tempo de Tolerancia Antes Inicio </label>
+					<label>Tempo de Tolerância Antes Inicio *</label>
 					<p:inputText title="Tolerancia Antes do Inicio " style="width:100%"
 						id="toleranciaAntesInicio" alt="Descrião"
 						value="#{atividadesEventoMB.atividade.toleranciaAntesInicio}" />
@@ -218,7 +218,7 @@
 			<div class="ui-fluid">
 				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
 					styleClass="ui-panelgrid-blank" columns="1">
-					<label>Tempo de Tolerancia Após Inicio </label>
+					<label>Tempo de Tolerância Após Inicio *</label>
 					<p:inputText title="Tolerancia Após Inicio" style="width:100%"
 						id="toleranciaAposInicio" alt="Tolerancia Após Inicio"
 						value="#{atividadesEventoMB.atividade.toleranciaAposInicio}" />
@@ -227,7 +227,7 @@
 			<div class="ui-fluid">
 				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
 					styleClass="ui-panelgrid-blank" columns="1">
-					<label>Tempo de Tolerancia no Final </label>
+					<label>Tempo de Tolerância no Final </label>
 					<p:inputText title="Tolerancia no Final" style="width:100%"
 						id="toleranciaFim" alt="Tolerancia no Final"
 						value="#{atividadesEventoMB.atividade.toleranciaFim}" />
