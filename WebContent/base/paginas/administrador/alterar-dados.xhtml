@@ -20,20 +20,20 @@
 
 				<label>Nome</label>
 				<p:inputText title="Nome" id="nome" alt="nome"
-					value="#{alterarDadosAdministradorMB.administrador.nome}" />
+					value="#{alterarDadosSecretariaMB.secretaria.nome}" />
 			</div>
 		</div>
 		<div class="ui-fluid">
 			<div class="col-md-8">
 				<label>E-mail</label>
 				<p:inputText title="E-mail" id="email" alt="usuário"
-					value="#{alterarDadosAdministradorMB.administrador.usuario}" />
+					value="#{alterarDadosSecretariaMB.secretaria.usuario}" />
 			</div>
 			<div class="col-md-4">
 				<label>Siape </label>
 				<p:inputText title="Identificador" styleClass="col-md-12"
 					id="identificador" alt="identificador"
-					value="#{alterarDadosAdministradorMB.administrador.siape}" />
+					value="#{alterarDadosSecretariaMB.secretaria.siape}" />
 			</div>
 		</div>
 		<div class="ui-fluid">
@@ -44,23 +44,23 @@
 					feedback="true" promptLabel="Senha" weakLabel="Fraca"
 					validatorMessage="Senhas diferentes" goodLabel="Boa"
 					strongLabel="Forte" alt="senha" match="senha2"
-					value="#{alterarDadosAdministradorMB.senha}" />
+					value="#{alterarDadosSecretariaMB.senha}" />
 			</div>
 			<div class="col-md-6">
 				<label>Repita a senha</label>
 				<p:password title="Senha" styleClass="col-md-12" id="senha2"
-					alt="repita a senha" value="#{alterarDadosAdministradorMB.senha2}" />
+					alt="repita a senha" value="#{alterarDadosSecretariaMB.senha2}" />
 			</div>
 		</div>
 		<div class="modal-footer">
 			<p:commandButton value="Salvar" styleClass="ui-priority-primary"
 				alt="Sim"
-				actionListener="#{alterarDadosAdministradorMB.alterarAdministrador()}"
+				actionListener="#{alterarDadosSecretariaMB.alterarSecretaria()}"
 				update=":frmModalSalvar :dlgInformacao" />
 
 			<p:commandButton value="Cancelar" alt="Cancelar"
 				update=":frmModalSalvar"
-				actionListener="#{alterarDadosAdministradorMB.preencherAdministrador()}" />
+				actionListener="#{alterarDadosSecretariaMB.preencherSecretaria()}" />
 		</div>
 	</h:form>
 

@@ -1,37 +1,65 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+
+import org.hibernate.Session;
 
 import util.ChamarRelatorio;
 import util.ExibirMensagem;
 import util.Mensagem;
 import util.RecuperarRelacoesProfessor;
+import ac.modelo.AtividadeTurma;
 import ac.modelo.Certificado;
 import ac.modelo.GrupoTurma;
 import ac.modelo.Movimentacao;
-import base.modelo.Turma;
-import dao.DAOGenerico;
+import base.modelo.Turma; 
+import dao.GenericDAO;
 
 @ViewScoped
-@ManagedBean
-public class RelatorioProfessorMB {
-	private DAOGenerico dao;
+@Named("relatorioProfessorMB")
+public class RelatorioProfessorMB implements Serializable {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+
+	
 	private Movimentacao aluno;
 	private Turma turma;
 	private List<Movimentacao> alunosAtivosProfessor;
-	private RecuperarRelacoesProfessor relacoesProfessor;
+
 	private List<Turma> turmas;
 	private List<GrupoTurma> grupoTurmas;
 	private GrupoTurma grupoTurma;
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado;
+	
+	@Inject
+	private GenericDAO<AtividadeTurma> daoAtividadesTurma;
+	
+	@Inject
+	private RecuperarRelacoesProfessor relacoesProfessor;
+	
+	@Inject
+	private EntityManager manager;
 
-	public RelatorioProfessorMB() {
-		dao = new DAOGenerico();
-		relacoesProfessor = new RecuperarRelacoesProfessor();
+	@PostConstruct
+	public void inicializar() {
+	
 		turma = new Turma();
 		grupoTurma = new GrupoTurma();
 		turmas = new ArrayList<>();
@@ -40,23 +68,59 @@ public class RelatorioProfessorMB {
 	}
 
 	public void imprimirCertificadoGrupo() {
-		System.out.println("erro metodo imprimirCertificadoGrupo classe RelatórioProfessorMB");
 		try {
-			List<Certificado> certificados = dao.listar(Certificado.class,
+			List<Certificado> certificados = daoCertificado.listar(Certificado.class,
 					" situacao = 3 and aluno = " + getAluno().getAlunoTurma().getAluno().getId());
+			
+			
 			if (!certificados.isEmpty()) {
 				Certificado cs = certificados.get(0);
-
-				ChamarRelatorio ch = new ChamarRelatorio();
+				
 				HashMap parametro = new HashMap<>();
 				parametro.put("ALUNO", getAluno().getAlunoTurma().getAluno().getId());
-
-				ch.imprimeRelatorio("grupo.jasper", parametro,
-						"Relatório por grupo do aluno " + aluno.getAlunoTurma().getAluno().getNome());
+				ChamarRelatorio ch = new ChamarRelatorio("grupo.jasper", parametro, "certificado_" +"Relatório por grupo do aluno " + aluno.getAlunoTurma().getAluno().getNome());
+				Session sessions = manager.unwrap(Session.class);
+				sessions.doWork(ch);
+				
+				
+				
+				
+				
 			} else {
 				ExibirMensagem.exibirMensagem(Mensagem.NADA_ENCONTRADO);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
+			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
+		}
+	}
+	
+	
+	
+	public void imprimirCertificadoHorasGrupo() { 
+		try {
+			List<Certificado> certificados = daoCertificado.listar(Certificado.class,
+					" situacao = 3 ");
+			
+			
+			if (!certificados.isEmpty()) {
+				Certificado cs = certificados.get(0);
+				
+				HashMap parametro = new HashMap<>();
+				parametro.put("TURMA", turma.getId());
+				ChamarRelatorio ch = new ChamarRelatorio("situacaoHorasAluno.jasper", parametro, "certificado_" +"Relatório Horas aluno " + turma.getAbreviacaoTurma());
+				Session sessions = manager.unwrap(Session.class);
+				sessions.doWork(ch);
+				
+				
+				
+				
+				
+			} else {
+				ExibirMensagem.exibirMensagem(Mensagem.NADA_ENCONTRADO);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 		}
 	}
@@ -65,18 +129,24 @@ public class RelatorioProfessorMB {
 		
 		
 		try {
-			List<Certificado> certificados = dao.listar(Certificado.class, " situacao = 3 and idGrupoTurma = "
-					+ getGrupoTurma().getId() + " and atividadeTurma.turma.id = " + turma.getId());
+			List<Certificado> certificados = daoCertificado.listar(Certificado.class, " situacao = 3 and idGrupoTurma = "
+					+ getGrupoTurma().getId() + " and atividadeTurma.matriz.id = " + turma.getMatriz().getId());
+			
+
+			
+			
 			if (!certificados.isEmpty()) {
 				Certificado cs = certificados.get(0);
 
-				ChamarRelatorio ch = new ChamarRelatorio();
+				
 				HashMap parametro = new HashMap<>();
 				parametro.put("GRUPO", grupoTurma.getId());
 				parametro.put("TURMA", turma.getId());
-
-				ch.imprimeRelatorio("detalhado-turma.jasper", parametro, "Relatório detalhado turma "
+				ChamarRelatorio ch = new ChamarRelatorio("detalhado-turma.jasper", parametro, "certificado_" +"Relatório detalhado turma "
 						+ grupoTurma.getGrupo().getDescricao() + " " + turma.getDescricao());
+				Session sessions = manager.unwrap(Session.class);
+				sessions.doWork(ch);
+				 
 			} else {
 				ExibirMensagem.exibirMensagem(Mensagem.NADA_ENCONTRADO);
 			}
@@ -84,21 +154,53 @@ public class RelatorioProfessorMB {
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 		}
 	}
+	
+	public void imprimirCertificadoGrupoTurmaAtividade() {
+		
+		try {
+			List<AtividadeTurma> atividades = daoAtividadesTurma.listar(AtividadeTurma.class, "  matriz = "+ turma.getMatriz().getId());
+			
+			
+		
+			
+			
+			if (!atividades.isEmpty()) {
+			
+				HashMap parametro = new HashMap<>();
+				parametro.put("TURMA", turma.getMatriz().getId());
+				ChamarRelatorio ch = new ChamarRelatorio("grupoTurma.jasper", parametro, "atividades_" +"Relatório atividades turma "
+						 + turma.getDescricao());
+				Session sessions = manager.unwrap(Session.class);
+				sessions.doWork(ch);
+				 
+			} else {
+				ExibirMensagem.exibirMensagem(Mensagem.NADA_ENCONTRADO);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+			
+			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
+		}
+	}
 
 	public void imprimirGrupoAluno() {
 		try {
-			List<Certificado> certificados = dao.listar(Certificado.class, " situacao = 3 and aluno = "
+			List<Certificado> certificados = daoCertificado.listar(Certificado.class, " situacao = 3 and aluno = "
 					+ getAluno().getAlunoTurma().getAluno().getId() + " and  idGrupoTurma = " + grupoTurma.getId());
 
 			if (!certificados.isEmpty()) {
 				Certificado cs = certificados.get(0);
-
-				ChamarRelatorio ch = new ChamarRelatorio();
+				
+				
 				HashMap parametro = new HashMap<>();
 				parametro.put("ALUNO_GRUPO", getAluno().getAlunoTurma().getAluno().getId());
 				parametro.put("GRUPO_ALUNO", grupoTurma.getId());
-				ch.imprimeRelatorio("detalhado-aluno.jasper", parametro,
-						"Relatório por grupo do aluno " + getAluno().getAlunoTurma().getAluno().getNome());
+				ChamarRelatorio ch = new ChamarRelatorio("detalhado-aluno.jasper", parametro, "Relatório por grupo do aluno " + getAluno().getAlunoTurma().getAluno().getNome());
+				Session sessions = manager.unwrap(Session.class);
+				sessions.doWork(ch);
+				
+				  
 			} else {
 				ExibirMensagem.exibirMensagem(Mensagem.NADA_ENCONTRADO);
 			}
@@ -127,13 +229,11 @@ public class RelatorioProfessorMB {
 	}
 
 	public void preencherListaTurma() {	
-		relacoesProfessor = new RecuperarRelacoesProfessor();
 		turmas = relacoesProfessor.recuperarTurmasProfessor();
 	}
 
 	public void preencherListaGrupoTurma() {
 		
-		relacoesProfessor = new RecuperarRelacoesProfessor();
 		grupoTurmas = relacoesProfessor.recuperarGrupoTurmasProfessor();
 	}
 

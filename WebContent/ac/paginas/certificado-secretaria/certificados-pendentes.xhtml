@@ -59,6 +59,10 @@
 					sortBy="#{obj.instituicao}" filterMatchMode="contains">
 					<h:outputText value="#{obj.instituicao}" />
 				</p:column>
+				<p:column headerText="Digital"  
+					sortBy="#{obj.certificadoInterno}" filterMatchMode="contains">
+					<h:outputText value="#{obj.certificadoInterno}" />
+				</p:column>
 				<p:column headerText="Autenticar" style="width:100px">
 					<p:commandButton alt="Autenticar" title="Autenticar"
 						onclick="PF('dlgAutenticar').show();" icon="ui-icon-circle-check"
@@ -99,17 +103,21 @@
 
 					<label>Turma: </label>
 					<h:outputText
-						value="#{certificadoSecretariaMB.certificado.atividadeTurma.turma.descricao}" />
+						value="#{certificadoSecretariaMB.certificado.alunoTurma.turma.abreviacaoTurma}" />
+						
+					<label>Matriz: </label>
+					<h:outputText
+						value="#{certificadoSecretariaMB.certificado.alunoTurma.turma.matriz.descricao}" />
 
 					<label>Data de início da turma: </label>
 					<h:outputText
-						value="#{certificadoSecretariaMB.certificado.atividadeTurma.turma.dataInicioTurma}">
+						value="#{certificadoSecretariaMB.certificado.alunoTurma.turma.dataInicioTurma}">
 						<f:convertDateTime pattern="dd/MM/yyyy" />
 					</h:outputText>
 
 					<label>Curso: </label>
 					<h:outputText
-						value="#{certificadoSecretariaMB.certificado.atividadeTurma.turma.curso.nome}" />
+						value="#{certificadoSecretariaMB.certificado.alunoTurma.turma.curso.abreviacaoCurso}" />
 
 					<label>Descrição: </label>
 					<h:outputText
@@ -144,6 +152,14 @@
 					<label>Quantidade de horas computadas: </label>
 					<h:outputText
 						value="#{certificadoSecretariaMB.certificado.horaComputada}" />
+					
+					<label>URL: </label>
+					<h:outputText
+						value="#{certificadoSecretariaMB.certificado.url}" />
+						
+					<label>Código Autenticação: </label>
+					<h:outputText
+						value="#{certificadoSecretariaMB.certificado.codigoAutenticacao}" />
 
 
 					<label>Certificado: </label>
@@ -210,13 +226,13 @@
 	<!-- ARQUIVO PDF -->
 	<p:dialog header="Arquivo" widgetVar="dlgArquivo" modal="true"
 		id="dlgArquivo" closable="true" closeOnEscape="true" responsive="true"
-		resizable="false" draggable="false">
+		resizable="false" draggable="true">
 		<h:form id="uploadCertificado">
 			<label>Certificado: </label>
 			<h:outputText
 				value="#{certificadoSecretariaMB.certificado.caminhoCertificado}" />
 			<object type="application/pdf"
-				data="${facesContext.externalContext.requestContextPath}/certificadoUpload/#{certificadoSecretariaMB.certificado.caminhoCertificado}.pdf?pfdrid_c=true"
+				data="../../certificados/#{certificadoSecretariaMB.certificado.caminhoCertificado}.pdf?pfdrid_c=true"
 				height="500px" width="100%" internalinstanceid="11" />
 		</h:form>
 	</p:dialog>

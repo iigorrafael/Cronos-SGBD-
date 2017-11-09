@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:body>
+	<ui:composition template="../../../resources/template/template-base.xhtml">
+		<ui:define name="tituloPagina">
+		 - COPE
+		</ui:define>
+
+		<ui:define name="menu">
+			<ui:include src="../../template/menuProfessor.xhtml" />
+		</ui:define>
+
+		<ui:define name="titulo">
+			Cadastro de Projeto de Pesquisa
+		</ui:define>
+
+		<ui:define name="conteudo">
+			<h:form prependId="false">
+				<h:outputLink value="#" onclick="PF('form').back();" styleClass="btn btn-default">Voltar</h:outputLink>
+				<h:outputLink value="#" onclick="PF('form').next();" styleClass="btn btn-default pull-right">Avançar</h:outputLink>
+				<p:wizard flowListener="#{projetoMB.navegacaoNovoExtencao}" showStepStatus="false" showNavBar="false" widgetVar="form">
+					<p:tab id="projeto" title="Dados do Projeto">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Titulo do Projeto:</label>
+								<p:inputText value="#{projetoMB.projeto.titulo}" />
+							</div>
+							<div class="col-md-2">
+								<label>Previsao de inicio:</label>
+								<p:calendar value="#{projetoMB.projeto.dataInicio}" mask="true" />
+							</div>
+							<div class="col-md-2">
+								<label>Previsao de termino</label>
+								<p:calendar value="#{projetoMB.projeto.dataTermino}" mask="true" />
+							</div>
+							<div class="col-md-8">
+								<label>Local de execucao:</label>
+								<p:inputText value="#{projetoMB.projeto.localExecucao}" />
+							</div>
+						</div>
+
+						<div class="ui-fluid">
+							<div class="col-md-5 clearfix">
+								<label>Participantes do Projeto</label>
+							</div>
+							<div class="col-md-12">
+								<p:dataTable value="#{projetoMB.listaParticipanteProjeto}" resizableColumns="true" var="obj" reflow="true" paginator="false"
+									emptyMessage="Nenhum participante cadastrado">
+									<p:column headerText="Participante">
+										#{obj.pessoa.nome}
+									</p:column>
+									<p:column headerText="Função no Projeto">
+										#{obj.funcao}
+									</p:column>
+									<p:column headerText="Carga Hóraria Semanal">
+										#{obj.cargaHoraria}
+									</p:column>
+									<p:column headerText="Identificação">
+										#{obj.pessoa.perfilAluno}
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab id="proposta" title="Identificação do projeto">
+						<div class="ui-fluid">
+							<div class="col-md-4">
+								<label>Grande Área do Conhecimento</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.grandeAreaConhecimento}">
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+									<f:selectItem itemLabel="Exatas e da Terra" itemValue="Exatas e da Terra" />
+									<f:selectItem itemLabel="Biológicas" itemValue="Biológicas" />
+									<f:selectItem itemLabel="Engenharias" itemValue="Engenharias" />
+									<f:selectItem itemLabel="Saúde" itemValue="Saúde" />
+									<f:selectItem itemLabel="Agrárias" itemValue="Agrárias" />
+									<f:selectItem itemLabel="Sociais Aplicadas" itemValue="Sociais Aplicadas" />
+									<f:selectItem itemLabel="Humanas" itemValue="Humanas" />
+									<f:selectItem itemLabel="Linguística, Letras e Artes" itemValue="Linguística, Letras e Artes" />
+									<f:selectItem itemLabel="Outros" itemValue="Outros" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-4">
+								<label>Área do Conhecimento (Nome)</label>
+								<p:inputText value="#{projetoMB.projeto.areaConhecimento}" />
+							</div>
+							<div class="col-md-4">
+								<label>Área do Conhecimento (Código)</label>
+								<p:inputText value="#{projetoMB.projeto.areaConhecimentoCodigo}" />
+							</div>
+							<div class="col-md-4">
+								<label>Sub-Área do Conhecimento (Nome)</label>
+								<p:inputText value="#{projetoMB.projeto.subAreaConhecimento}" />
+							</div>
+							<div class="col-md-4">
+								<label>Sub-Área do Conhecimento (Código)</label>
+								<p:inputText value="#{projetoMB.projeto.subAreaConhecimentoCodigo}" />
+							</div>
+							<div class="col-md-4">
+								<label>Esta ação está vinculada a um Programa?</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.acaoVinculadaPrograma}">
+									<f:selectItem itemLabel="Sim" itemValue="true" />
+									<f:selectItem itemLabel="Não" itemValue="false" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="clearfix"></div>
+							<div class="col-md-4">
+								<label>Este projeto necessita de avaliação por um Comitê de Ética?</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.comiteEtica}">
+									<f:selectItem itemLabel="Sim" itemValue="true" />
+									<f:selectItem itemLabel="Nao" itemValue="false" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-4">
+								<label>Este projeto foi aprovado por um Comitê de Ética?</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.aprovacaoComiteEtica}">
+									<f:selectItem itemLabel="Sim" itemValue="true" />
+									<f:selectItem itemLabel="Não" itemValue="false" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+					</p:tab>
+
+					<p:tab id="resumo" title="Resumo">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Resumo da Proposta</label> <br /> <small>Máximo de 350 palavras, contendo objetivos, metodologia da ação, público
+									alvo, resultados esperados.</small>
+								<p:textEditor height="300" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab id="fundamentacao" title="Fundamentação da Proposta">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Fundamentação da Proposta</label> <br /> <small>Pode ser separada em subtítulos do tipo: Contextualização,
+									Justificativa/Relevância e Revisão Bibliográfica</small>
+								<p:textEditor height="300" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab id="objeivos" title="Objetivos a serem alcançados">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Objetivos a serem alcançados</label> <br /> <small>Descrição sucinta dos objetivos do trabalho. Podem ser divididos
+									em geral e específicos</small>
+								<p:textEditor height="300" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab id="resultados" title="Resultados esperados">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Resultados esperados</label> <br /> <small>Descrição sucinta dos resultados esperados, podem ser divididos em geral
+									e específicos</small>
+								<p:textEditor height="300" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="Material e Métodos">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Material e Métodos</label> <br /> <small>Descrição sucinta dos resultados esperados, podem ser divididos em geral e
+									específicos</small>
+								<p:textEditor height="300" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="Recursos">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Recursos (físicos e matariais)</label> <br /> <small>Elencar como recursos materiais os equipamentos, instrumentos,
+									dispositivos, aparelhos ou ferramentas utilizados na atividade de pesquisa. Também podem entrar nesta categoria espaços como salas
+									de reunião, laboratórios, prédios, terrenos, etc. Especificar a infra-estrutura e o material necessário ao projeto que já estão
+									disponíveis</small>
+								<p:textEditor height="200" style="margin-bottom:10px" />
+							</div>
+							<div class="col-md-12">
+								<label>Recursos financeiros</label> <br /> <small>Devem ser listados os custos relativos às atividades, serviços e até aos
+									recursos materiais a serem utilizados na execução do projeto de pesquisa. Especificar as possíveis fontes dos recursos financeiros.
+									Preencher somente se solicitar recurso financeiro para viabilização da proposta</small>
+								<p:textEditor height="200" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="Bibliografia">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Bibliografia</label> <br /> <small>apresentação dos textos, artigos, revistas e/ou livros utilizados no
+									desenvolvimento do projeto</small>
+								<p:textEditor height="300" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+
+				</p:wizard>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
+

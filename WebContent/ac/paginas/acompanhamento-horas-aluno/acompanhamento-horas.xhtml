@@ -18,10 +18,10 @@
 	<h:form >
 		<div class="ui-fluid">
 			<div class="col-md-12">
-				<label>Truma *</label>
+				<label>Turma *</label>
 				<p:selectOneMenu id="console"
 					value="#{graficoCertificadoAlunoMB.alunoTurmaSelecionada}"
-					converter="converterAlunoTurma" required="true"
+					converter="#{converterAlunoTurma}" required="true"
 					requiredMessage="Selecione uma turma">
 
 					<f:selectItem itemLabel="" />

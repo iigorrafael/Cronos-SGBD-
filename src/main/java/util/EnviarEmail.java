@@ -5,31 +5,52 @@ import org.apache.commons.mail.SimpleEmail;
 
 public class EnviarEmail {
 	public static Boolean enviarEmail(String destinatario, String titulo, String mensagem) {
-		SimpleEmail email = new SimpleEmail();
+	
 		Boolean flag = false;
+		
+		
+		
 		try {
-			email.setDebug(true);
+			SimpleEmail email = new SimpleEmail();
+			// Utilize o hostname do seu provedor de email
+			//System.out.println("alterando hostname...");
 			email.setHostName("smtp.gmail.com");
-			email.setAuthentication("cronos.software21@gmail.com", "cronossoftware2016");
-			email.setSSL(true);
+			// Quando a porta utilizada não é a padrão (gmail = 465)
 			email.setSmtpPort(465);
+			// Adicione os destinatários
+
 			email.addTo(destinatario);
-			email.setFrom("cronos.software21@gmail.com");
+
+			// Configure o seu email do qual enviará
+			email.setFrom("cronos.software21@gmail.com");;
+			// Adicione um assunto
 			email.setSubject(titulo);
+			// Adicione a mensagem do email
 			email.setMsg(mensagem);
+			// Para autenticar no servidor é necessário chamar os dois métodos
+			// abaixo
+		//	System.out.println("autenticando...");
+			email.setSSL(true);
+	//		email.setAuthentication("questionarioifprparanavai@gmail.com", "aquelagwh28");
+			email.setAuthentication("cronos.software21@gmail.com", "cronossoftware2016");
+		//	System.out.println("enviando...");
 			email.send();
-			flag = true;
+		//	System.out.println("Email enviado!");
 			
-			ExibirMensagem.exibirMensagem("valor da flag "+flag);
-			ExibirMensagem.exibirMensagem(Mensagem.ERRO_EMAILTESTE);
+			flag = true;
+		
 		} catch (EmailException e) {
-			ExibirMensagem.exibirMensagem(Mensagem.ERRO_EMAIL);
+			e.printStackTrace();
+			ExibirMensagem.exibirMensagem(Mensagem.ERRO_EMAIL +" "+e);
+
 		}
+		
+		
 		if (flag) {
-			ExibirMensagem.exibirMensagem("falg true");
+	
 			return true;
 		} else {
-			ExibirMensagem.exibirMensagem("falg false");
+		
 			return false;
 		}
 	}

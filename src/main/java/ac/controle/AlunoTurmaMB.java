@@ -1,38 +1,58 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.RecuperarRelacoesProfessor;
 import ac.modelo.AlunoTurma;
 
 import base.modelo.Aluno;
-import dao.DAOGenerico;
 
-@ViewScoped
-@ManagedBean
-public class AlunoTurmaMB {
+import dao.GenericDAO;
+
+@SessionScoped
+@Named("alunoTurmaMB")
+public class AlunoTurmaMB implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private List<AlunoTurma> alunoTurmaSecretaria;
 	private List<AlunoTurma> alunoTurmaAluno;
 	private List<AlunoTurma> alunoTurmaProfessor;
-	private UsuarioSessaoMB usuarioSessao;
+	
 	private Aluno aluno;
-	private DAOGenerico dao;
+	
+	
+	@Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma; 
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+    @Inject
+	private RecuperarRelacoesProfessor recuperarRelacoesProfessor;
 
-	public AlunoTurmaMB() {
-		
+	@PostConstruct
+	public void inicializar (){
+	
 		alunoTurmaSecretaria = new ArrayList<>();
 		alunoTurmaAluno = new ArrayList<>();
-		usuarioSessao = new UsuarioSessaoMB();
-		dao = new DAOGenerico();
+		
+		
 	}
 
 	public void preencherAlunoTurmasSecretaria() {
-		alunoTurmaSecretaria = dao.listaComStatus(AlunoTurma.class);
+		alunoTurmaSecretaria = daoAlunoTurma.listaComStatus(AlunoTurma.class);
 	}
 
 	public void preencherAlunoTurmasAluno() {
@@ -40,13 +60,13 @@ public class AlunoTurmaMB {
 		aluno = new Aluno();
 		aluno = (Aluno) usuarioSessao.recuperarAluno();
 		
-		alunoTurmaAluno = dao.listar(AlunoTurma.class, " aluno = " + aluno.getId());
+		alunoTurmaAluno = daoAlunoTurma.listar(AlunoTurma.class, " aluno = " + aluno.getId());
 		
+	
 	}
 
 	public void preencherAlunoTurmasProfessor() {
 		
-		RecuperarRelacoesProfessor recuperarRelacoesProfessor = new RecuperarRelacoesProfessor();
 		alunoTurmaProfessor = recuperarRelacoesProfessor.recuperarTodosAlunosTurmasAtivas();
 	}
 
@@ -59,6 +79,7 @@ public class AlunoTurmaMB {
 	}
 
 	public List<AlunoTurma> getAlunoTurmaAluno() {
+		
 		return alunoTurmaAluno;
 	}
 

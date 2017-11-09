@@ -134,7 +134,7 @@
 					<p:selectManyMenu id="curso" style="width:100%" required="true"
 						requiredMessage="O campo curso deve ser nulo"
 						value="#{professorMB.cursosSelecionados}"
-						converter="converterCurso" var="c" filter="true"
+						converter="#{converterCurso}" var="c" filter="true"
 						filterMatchMode="contains" showCheckbox="true" scrollHeight="100">
 						<f:selectItems value="#{professorMB.cursos}" var="curso"
 							itemLabel="#{curso.nome}" itemValue="#{curso}" />

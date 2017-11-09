@@ -1,30 +1,42 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import ac.modelo.AlunoTurma;
 import ac.modelo.AtividadeTurma;
-import dao.DAOFiltros;
+import dao.FiltrosDAO; 
 
 @ViewScoped
-@ManagedBean
-public class ListaAtividadesTurmaAlunosMB {
+@Named("listaAtividadesTurmaAlunosMB")
+public class ListaAtividadesTurmaAlunosMB implements Serializable{
 	
-	private DAOFiltros daoFiltros;
-	private UsuarioSessaoMB usuarioSessao;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private AlunoTurma alunoTurma;
 	
+	@Inject
+	private FiltrosDAO daoFiltros;
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
 
 
-	public ListaAtividadesTurmaAlunosMB() {
-		daoFiltros = new DAOFiltros();
+	@PostConstruct
+	public void inicializa() {
 		alunoTurma = new AlunoTurma();
 	
-		usuarioSessao = new UsuarioSessaoMB();
 
 	}
 

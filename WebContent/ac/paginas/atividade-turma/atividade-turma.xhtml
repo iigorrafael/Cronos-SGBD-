@@ -12,7 +12,7 @@
 	<!-- TITULO -->
 	<div class="row">
 		<div class="col-md-12">
-			<h1 class="page-header">Atividades da turma</h1>
+			<h1 class="page-header">Atividades da Matriz</h1>
 		</div>
 	</div>
 	<!-- FIM TITULO -->
@@ -51,15 +51,12 @@
 							target="#{atividadeTurmaMB.atividadeTurma}" />
 					</p:commandButton>
 				</p:column>
-				<p:column headerText="Curso" filterBy="#{obj.turma.curso.nome}"
-					sortBy="#{obj.turma.curso.nome}" filterMatchMode="contains">
-					<h:outputText value="#{obj.turma.curso.nome}" />
+				<p:column headerText="Matriz" filterBy="#{obj.matriz.descricao}"
+					sortBy="#{obj.matriz.descricao}" filterMatchMode="contains">
+					<h:outputText value="#{obj.matriz.descricao}" />
 				</p:column>
 
-				<p:column headerText="Turma" filterBy="#{obj.turma.descricao}"
-					sortBy="#{obj.turma.descricao}" filterMatchMode="contains">
-					<h:outputText value="#{obj.turma.descricao}" />
-				</p:column>
+
 				<p:column headerText="Atividade"
 					filterBy="#{obj.atividade.descricao}"
 					sortBy="#{obj.atividade.descricao}" filterMatchMode="contains">
@@ -108,43 +105,34 @@
 					</div>
 				</div>
 
-				<div class="col-md-11  col-xs-10">
-					<label>Grupo Turma *</label>
+				<div class="col-md-12  col-xs-10">
+					<label>Grupo Matriz *</label>
 					<p:autoComplete id="grupoTurma" dropdown="true" scrollHeight="170"
 						value="#{atividadeTurmaMB.atividadeTurma.grupoTurma}"
 						completeMethod="#{atividadeTurmaMB.completarGrupoTurma}"
-						forceSelection="true" converter="converterGrupoTurma" var="ati"
-						itemLabel="#{ati.grupo.descricao} - #{ati.turma.descricao}"
+						forceSelection="true" converter="#{converterGrupoTurma}" var="ati"
+						itemLabel="#{ati.grupo.descricao} - #{ati.matriz.descricao}"
 						itemValue="#{ati}" required="true"
 						requiredMessage="O campo grupo turma não deve ser nulo">
 
-						<p:ajax event="itemSelect" update="atividade" listener="#{atividadeTurmaMB.preencherListaAtividade()}"
-							 />
+						<p:ajax event="itemSelect" update="atividade"
+							listener="#{atividadeTurmaMB.preencherListaAtividade()}" />
 
 					</p:autoComplete>
 
 
 				</div>
 
-				<div class="col-md-11  col-xs-10">
+				<div class="col-md-12  col-xs-10">
 					<label>Atividade *</label>
 					<p:autoComplete id="atividade" dropdown="true" scrollHeight="170"
 						value="#{atividadeTurmaMB.atividadeTurma.atividade}"
 						completeMethod="#{atividadeTurmaMB.completarAtividade}"
-						forceSelection="true" converter="converterAtividade" var="ati"
+						forceSelection="true" converter="#{converterAtividade}" var="ati"
 						itemLabel="#{ati.descricao}" itemValue="#{ati}" required="true"
 						requiredMessage="O campo atividade não deve ser nulo" />
 				</div>
-				<div class="col-md-11  col-xs-10">
-					<label>Turma *</label>
-					<p:autoComplete id="turma" dropdown="true" scrollHeight="170"
-						value="#{atividadeTurmaMB.atividadeTurma.turma}"
-						completeMethod="#{atividadeTurmaMB.completarTurma}"
-						forceSelection="true" converter="converterTurma" var="tur"
-						itemLabel="#{tur}" itemValue="#{tur}" required="true"
-						requiredMessage="O campo turma não deve ser nulo" />
 
-				</div>
 			</div>
 
 			<div class="ui-fluid">
@@ -185,11 +173,13 @@
 					<p:inputText title="Equivalência" id="equivalenciaHora"
 						type="number" alt="equivalência"
 						rendered="#{!atividadeTurmaMB.atividadeTurma.horaUnica}"
-						value="#{atividadeTurmaMB.atividadeTurma.equivalenciaHora}" required="true"  requiredMessage="digite a equivalência"/>
+						value="#{atividadeTurmaMB.atividadeTurma.equivalenciaHora}"
+						required="true" requiredMessage="digite a equivalência" />
 				</div>
 				<div class="col-md-6">
 					<p:inputText title="Equivalência" id="equivalencia" type="number"
-						alt="equivalência" required="true"  requiredMessage="digite a equivalência"
+						alt="equivalência" required="true"
+						requiredMessage="digite a equivalência"
 						rendered="#{!atividadeTurmaMB.atividadeTurma.horaUnica}"
 						value="#{atividadeTurmaMB.atividadeTurma.equivalencia}" />
 				</div>
@@ -224,13 +214,13 @@
 		<p:outputPanel id="atividadeDetalhe">
 			<h:form id="frmDetalhesAtividadeTurma">
 				<h:panelGrid columns="2">
-					<label>Curso: </label>
+					<label>Matriz: </label>
 					<h:outputText
-						value="#{atividadeTurmaMB.atividadeTurma.turma.curso.nome}" />
+						value="#{atividadeTurmaMB.atividadeTurma.matriz.descricao}" />
 
-					<label>Turma: </label>
+					<label>Grupo: </label>
 					<h:outputText
-						value="#{atividadeTurmaMB.atividadeTurma.turma.descricao}" />
+						value="#{atividadeTurmaMB.atividadeTurma.grupoTurma.grupo.descricao}" />
 
 					<label>Atividade: </label>
 					<h:outputText

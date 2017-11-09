@@ -12,6 +12,20 @@ http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 		<intercept-url pattern="/ac/secretaria/**" access="hasRole('secretaria')" />
 		<intercept-url pattern="/ac/professor/**" access="hasRole('professor')" />
 		<intercept-url pattern="/ac/aluno/**" access="hasRole('aluno')" />
+		<intercept-url pattern="/protocolos/aluno-servidor/**"
+			access="hasRole('aluno') or hasRole('secretaria') or hasRole('professor')" />
+
+		<intercept-url pattern="/protocolos/outros/inicio.jsf/**"
+			access="permitAll" />
+
+		<intercept-url pattern="/protocolos/gerenciamento/**"
+			access="hasRole('secretaria') or hasRole('cadastro_servidor') or hasRole('cadastro_aluno')" />
+
+		<intercept-url pattern="/questionario/adm/**" access="hasRole('questionario')" />
+		<intercept-url pattern="/questionario/formulario.jsf/**"
+			access="hasRole('aluno')" />
+		<intercept-url pattern="/questionario/inicio.jsf/**"
+			access="permitAll" />
 		<intercept-url pattern="/base/servidor/tipo.jsf/**"
 			access="hasRole('cadastro_tipo')" />
 		<intercept-url pattern="/base/servidor/servidor.jsf/**"
@@ -24,6 +38,15 @@ http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 			access="hasRole('cadastro_turma')" />
 		<intercept-url pattern="/base/servidor/inicio.jsf/**"
 			access="hasRole('cadastro_tipo') or hasRole('cadastro_servidor') or hasRole('cadastro_aluno') or hasRole('cadastro_curso') or hasRole('cadastro_turma')" />
+
+		<!-- COPE -->
+		<intercept-url pattern="/cope/**" access="hasRole('aluno')" />
+		<!-- COPE -->
+
+		<!-- SGPB -->
+		<intercept-url pattern="/sgpb/**" access="hasRole('secretaria') or hasRole('professor')" />
+		<!-- SGPB -->
+		
 
 		<access-denied-handler error-page="/negado.jsf" />
 		<form-login login-page="/login.jsf"
@@ -51,29 +74,22 @@ http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 			<password-encoder hash="bcrypt" />
 			<jdbc-user-service data-source-ref="dataSource"
 				users-by-username-query="SELECT usuario as username, 
-				 senha as password, status as enable FROM tab_pessoa WHERE usuario=?"
+			 senha as password, status as enable FROM tab_pessoa WHERE usuario=?"
 
 				authorities-by-username-query="select usuario as username, perfilAluno as authority from 
 				 tab_pessoa as p where p.usuario=?" />
-
 
 		</authentication-provider>
 
 
 	</authentication-manager>
-
-
-
 	<beans:bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<beans:property name="url"
 			value="jdbc:mysql://localhost:3306/cronos" />
 		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<beans:property name="username" value="root" />
-		 <beans:property name="password" value="" /> 
-		
-
-
+		<beans:property name="password" value="" />
 	</beans:bean>
 
 

@@ -1,7 +1,23 @@
 package util;
 
 public class Mensagem {
-	public static final String SUCESSO = "Operação realizada com sucesso";
+	public static final String SUCESSO = "Operação realizada com sucesso";  
+	public static final String ERROENVIAEMAIL = "Não foi possivel enviar o email para : "; 
+	public static final String PARECER = "Informe seu parecer";  
+	public static final String SERVIDORREENVIAR = "Servidor e Prazo parecer não pode ser nulos ";  
+	public static final String SERVIDORCOMUNICA = "Selecione um servidor";  
+	public static final String EMAIL = "Email enviado com sucesso";
+	public static final String FINALIZA = "Para finalizar o protocolo é necessário que todos os envolvidos deem ciencia";  
+	public static final String SELECIONAALUNO = "Selecione um aluno";
+	public static final String ERROEMAIL = "Erro ao enviar o email";
+	public static final String GRAFICO = "Nada encontrado";
+	public static final String QUESTIONARIO = "QUESTIONARIO RESPONDIDO COM SUCESSO";
+	public static final String TURMA = "Turma já cadastrada";
+	public static final String CADASTROCURSO = "Curso já cadastrado";
+	public static final String ATIVIDADE = "Atividade já cadastrada para esse grupo";
+	public static final String ERROCONVERTER = "Erro ao converter";
+	public static final String SETORSERVIDOR = "Servidor já adicionado para esse setor"; 
+	public static final String REMOVERCURSO = "Remova os cursos para esse servidor";
 	public static final String CURSOCADASTRO = "Selecione um curso";
 	public static final String SELECIONEPROFESSOR = "Selecione um curso para o professor";
 	public static final String ADVERTENCIA = "Verifique os campos digitados";
@@ -11,6 +27,7 @@ public class Mensagem {
 	public static final String CURSOJAADICIONADO = "Curso já adicionada";
 	public static final String SERVIDOR = "Servidor não possui um curso vinculado";
 	public static final String TIPOCADASTRO = "Permissão já cadastrada";
+	public static final String MATRIZCADASTRO = "Matriz já cadastrada";
 	public static final String CURSOPROFESSOR = "Professor não pode ficar sem curso";
 	public static final String PERMISSAOSERVIDOR = "Servidor não pode ficar sem Permissão";
 	public static final String CADASTRADO = "E-mail já cadastrado";
@@ -19,8 +36,11 @@ public class Mensagem {
 	public static final String MAXIMO_DE_HORAS = "Maxímo de horas deve ser maior ou igual que o minímo";
 	public static final String SIAPE = "Siape já cadastrado";
 	public static final String RA = "RA já cadastrado";
+	public static final String RATURMA = "Esse aluno está inativo para esse curso, para ativalo clique em proximo";
 	public static final String USUARIO = "E-mail já cadastrado";
 	public static final String DATA_FINALIZAÇÃO = "Data de finalização deve ser maior que a data de início";
+	public static final String UPLOADPDF = "Selecione um certificado para Upload";
+	public static final String URLCODIGO = "Informe a URL do certificado e o código de autenticação";
 	public static final String CAMPOS_NUMERICOS = "Campos numéricos devem ser maior que zero";
 	public static final String CAMPOS_NUMERICOS_ZERO = "Campos numéricos devem ser maior ou igual a zero";
 	public static final String UPLOAD = "Upload realizado com sucesso";
@@ -52,9 +72,10 @@ public class Mensagem {
 	public static final String HORA_ATIVIDADE_MAXIMA = "Já alcançou quantidade de horas para essa atividade";
 	public static final String DATA_TURMA = "Data da turma é anterior da abertura curso escolhido";
 	public static final String DATA_TURMA_ALUNO = "Data da cadastro do aluno é anterior do cadastro da turma";
-	public static final String GRUPO_TURMA_CADASTRADO = "Grupo já cadastrado com a turma";
+	public static final String GRUPO_TURMA_CADASTRADO = "Grupo já cadastrado com a matriz";
 	public static final String ATIVIDADE_TURMA_CADASTRADO = "Atividade já cadastrada com a turma";
 	public static final String QUANTIDADE_HORAS = "Quantidade de horas deve ser maior que zero";
+	public static final String BACKUP = "Backup realizado com sucesso";
 	public static final String MOVIMENTACOES_ANTERIORES = "Movimentações com datas após já cadastras";
 	public static final String DATA_ALUNO_TURMA = "Data de mudança não deve ser nula";
 	public static final String PERIODO_CERTIFICADO_INVALIDO = "Intervalo de realização difere do período de matrículas";

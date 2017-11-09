@@ -1,48 +1,66 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.CalculoEquivalencia;
 import util.ExibirMensagem;
 import util.FecharDialog;
 import util.Mensagem;
 import util.RecuperarRelacoesProfessor;
-import util.ValidaTopoAtividade;
 import ac.modelo.AtividadeTurma;
 import ac.modelo.Certificado;
-import ac.modelo.GrupoTurma;
-
+import ac.modelo.GrupoTurma; 
 import base.modelo.Servidor;
-import dao.DAOGenerico;
+import base.service.CertificadoService; 
+import dao.GenericDAO;
 
-@SessionScoped
-@ManagedBean
-public class CertificadoProfessorMB {
+@ViewScoped
+@Named("certificadoProfessorMB")
+public class CertificadoProfessorMB implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private Certificado certificado;
-	private DAOGenerico dao;
-	private UsuarioSessaoMB usuarioSessao;
+
 	private List<Certificado> certificadosPendentes;
 	private List<Certificado> certificadosInvalidos;
 	private List<Certificado> certificadosValidados;
 	private List<AtividadeTurma> atividadeTurmas;
-	private RecuperarRelacoesProfessor relacoesProfessor;
 	private Boolean calculaEquivalencia;
-	private CalculoEquivalencia calculoEquivalencia;
 	private Double horaCertificado;
+	
+	@Inject
+	private CertificadoService certificadoService;
+	
+	@Inject
+	private GenericDAO<GrupoTurma> daoGrupoTurma;
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	@Inject
+	private RecuperarRelacoesProfessor relacoesProfessor;
+	
+	@Inject
+	private CalculoEquivalencia calculoEquivalencia;
 
-	public CertificadoProfessorMB() {
+	@PostConstruct
+	public void inicializar() {
 		certificado = new Certificado();
-		dao = new DAOGenerico();
-		usuarioSessao = new UsuarioSessaoMB();
+	
 		certificadosPendentes = new ArrayList<>();
 		certificadosInvalidos = new ArrayList<>();
 		certificadosValidados = new ArrayList<>();
 		atividadeTurmas = new ArrayList<>();
-		calculoEquivalencia = new CalculoEquivalencia();
 		horaCertificado = 0.0;
 		preencherListaPendentes();
 		preencherListaValidados();
@@ -58,7 +76,7 @@ public class CertificadoProfessorMB {
 			Servidor professorRecuperarSesao = (Servidor) usuarioSessao.recuperarProfessor(); // alterei professor para servidor
 			certificado.setValidadoProfessor(
 					professorRecuperarSesao.getNome() + ", " + professorRecuperarSesao.getUsuario());
-			dao.alterar(certificado);
+			certificadoService.inserirAlterar(certificado);
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			FecharDialog.fecharDialogCertificadoValidarProfessor();
 			preencherListaPendentes();
@@ -69,14 +87,14 @@ public class CertificadoProfessorMB {
 		}
 		criarNovoCertificado();
 	}
-
+	
 	public void invalidar() {
 		try {
 			certificado.setSituacao(4);
 			Servidor professorRecuperarSesao = (Servidor) usuarioSessao.recuperarProfessor();
 			certificado.setValidadoProfessor(
 					professorRecuperarSesao.getNome() + ", " + professorRecuperarSesao.getUsuario());
-			dao.alterar(certificado);
+			certificadoService.inserirAlterar(certificado);
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			FecharDialog.fecharDialogCertificadoInvalidarProfessor();
 			preencherListaPendentes();
@@ -94,7 +112,7 @@ public class CertificadoProfessorMB {
 			Servidor professorRecuperarSesao = (Servidor) usuarioSessao.recuperarProfessor();
 			certificado.setValidadoProfessor(
 					professorRecuperarSesao.getNome() + ", " + professorRecuperarSesao.getUsuario());
-			dao.alterar(certificado);
+			certificadoService.inserirAlterar(certificado);
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			FecharDialog.fecharDialogPendente();
 			preencherListaPendentes();
@@ -121,7 +139,7 @@ public class CertificadoProfessorMB {
 						certificado.setHoraComputada(calculoEquivalencia.calcularHorasCertificado(certificado));
 					}
 
-					dao.alterar(certificado);
+					certificadoService.inserirAlterar(certificado);
 					ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 					FecharDialog.fecharDialogCertificado();
 					preencherListaPendentes();
@@ -139,22 +157,18 @@ public class CertificadoProfessorMB {
 
 	private void preencherListaPendentes() {
 		
-		relacoesProfessor = new RecuperarRelacoesProfessor();
 		certificadosPendentes = relacoesProfessor.recuperarCertificados(1);
 	}
 
 	private void preencherListaValidados() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
 		certificadosValidados = relacoesProfessor.recuperarCertificados(3);
 	}
 
 	private void preencherListaInvalidos() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
 		certificadosInvalidos = relacoesProfessor.recuperarCertificados(4);
 	}
 
 	public void preencherListaAtividadeTurma() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
 		atividadeTurmas = relacoesProfessor.recuperarAtividadeTurmasProfessor();
 	}
 
@@ -169,14 +183,14 @@ public class CertificadoProfessorMB {
 		return atividadeTurmaSelecionados;
 	}
 
-	public GrupoTurma recuperarGrupoTurma(AtividadeTurma atividadeTurma) {
-		GrupoTurma grupoTurma = new GrupoTurma();
-		grupoTurma = (GrupoTurma) dao
-				.listar(GrupoTurma.class, " grupo = " + atividadeTurma.getAtividade().getGrupo().getId()
-						+ " and turma = " + atividadeTurma.getTurma().getId())
-				.get(0);
-		return grupoTurma;
-	}
+//	public GrupoTurma recuperarGrupoTurma(AtividadeTurma atividadeTurma) {
+//		GrupoTurma grupoTurma = new GrupoTurma();
+//		grupoTurma = (GrupoTurma) daoGrupoTurma
+//				.listar(GrupoTurma.class, " grupo = " + atividadeTurma.getAtividade().getGrupo().getId()
+//						+ " and turma = " + atividadeTurma.getTurma().getId())
+//				.get(0);
+//		return grupoTurma;
+//	}
 
 	private void criarNovoCertificado() {
 		certificado = new Certificado();

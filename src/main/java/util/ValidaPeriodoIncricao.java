@@ -1,21 +1,41 @@
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import ac.modelo.AlunoTurma;
 import ac.modelo.Certificado;
 import ac.modelo.Movimentacao;
-import base.modelo.Aluno;
-import dao.DAOGenerico;
+import base.modelo.Aluno; 
+import dao.GenericDAO;
 
-public class ValidaPeriodoIncricao {
-	private DAOGenerico dao = new DAOGenerico();
-	private List<Movimentacao> movimentacoes = new ArrayList<>();
+public class ValidaPeriodoIncricao implements Serializable{
+
+	private List<Movimentacao> movimentacoes;
+	
+	@PostConstruct
+	public void inicializa(){
+		movimentacoes = new ArrayList<>();
+	}
+
+	private static final long serialVersionUID = 1L;
+	
+	@Inject
+	private GenericDAO<Movimentacao> daoMovimentacao;
 
 	private void recuperarMovimentacao(AlunoTurma aluno) {
+		movimentacoes = new ArrayList<>();
+		System.out.println("entro" + aluno.getId() ); 
+		 
 		try {
-			movimentacoes = dao.listar(Movimentacao.class, " situacao = 1 and alunoTurma = " + aluno.getId());
+			movimentacoes = daoMovimentacao.listar(Movimentacao.class, " situacao = 1 and alunoTurma = " + aluno.getId());
+			
+			System.out.println("tamanhpo " +movimentacoes.size());
+			
 		} catch (Exception e) {
 			System.err.println("Erro em recuperarMovimentacao");
 			e.printStackTrace();
@@ -23,6 +43,7 @@ public class ValidaPeriodoIncricao {
 	}
 
 	public Boolean permitirCadastroCertificado(Certificado certificado) {
+		movimentacoes = new ArrayList<>();
 		recuperarMovimentacao(certificado.getAlunoTurma());
 		Boolean retorno = true;
 		try {

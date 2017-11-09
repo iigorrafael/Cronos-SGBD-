@@ -35,7 +35,7 @@ public class AutenticadoEvento implements Serializable {
     private Date dataHora;    
     
     @ManyToOne
-    private Atividades atividades;
+    private AtividadeEvento atividades;
     
     @ManyToOne
     private Pessoa pessoa;
@@ -57,11 +57,11 @@ public class AutenticadoEvento implements Serializable {
 	}
 
 	
-	public Atividades getAtividades() {
+	public AtividadeEvento getAtividades() {
 		return atividades;
 	}
 
-	public void setAtividades(Atividades atividades) {
+	public void setAtividades(AtividadeEvento atividades) {
 		this.atividades = atividades;
 	}
 

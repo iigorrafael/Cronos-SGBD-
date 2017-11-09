@@ -1,4 +1,4 @@
- package ac.modelo;
+package ac.modelo;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,6 +6,9 @@ import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Entity implementation class for Entity: Pessoa
@@ -30,9 +33,9 @@ public class Pessoa implements Serializable {
 	@Column(nullable = false)
 	private String nome;
 
-	@Pattern(regexp = ".+@.+\\.[a-z]+", message = "E-mail inválido")
-	@NotNull(message = "O campo e-mail não pode ser nulo")
-	@Column(nullable = false)
+//	@Pattern(regexp = ".+@.+\\.[a-z]+", message = "E-mail inválido")
+//	@NotNull(message = "O campo e-mail não pode ser nulo")
+//	@Column(nullable = false)
 	private String usuario;
 
 	private String senha;
@@ -49,17 +52,112 @@ public class Pessoa implements Serializable {
 	@Column(nullable = false)
 	private Boolean status;
 	
-	@Column(name = "biometria1", nullable = false)
-    private String biometria1;
+	@CPF(message="CPF inválido")
+	@NotNull(message = "O campo cpf não pode ser nulo")
+	@Column(nullable = false)
+	private String cpf;
 	
-	@Column(name = "biometria2", nullable = false)
-    private String biometria2;
+	private Date dataNascimento;
 	
-	@Column(name = "biometria3", nullable = false)
-    private String biometria3;
+
+	private String sexo;
 	
-	@Column(name = "biometria4", nullable = false)
-    private String biometria4;
+	private String nomeMae;
+	
+	private String nomePai;
+	
+	@NotNull(message = "O campo rg não pode ser nulo")
+	@Column(nullable = false)
+	private String rg;
+	
+	private String orgaoRg;
+	
+	private String celular;
+	
+	private String telefone;
+	
+	private String natalidade;
+	
+	
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	public Date getDataNascimento() {
+		return dataNascimento;
+	}
+
+	public void setDataNascimento(Date dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+
+	public String getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+
+	public String getNomeMae() {
+		return nomeMae;
+	}
+
+	public void setNomeMae(String nomeMae) {
+		this.nomeMae = nomeMae;
+	}
+
+	public String getNomePai() {
+		return nomePai;
+	}
+
+	public void setNomePai(String nomePai) {
+		this.nomePai = nomePai;
+	}
+
+	public String getRg() {
+		return rg;
+	}
+
+	public void setRg(String rg) {
+		this.rg = rg;
+	}
+
+	public String getOrgaoRg() {
+		return orgaoRg;
+	}
+
+	public void setOrgaoRg(String orgaoRg) {
+		this.orgaoRg = orgaoRg;
+	}
+
+	public String getCelular() {
+		return celular;
+	}
+
+	public void setCelular(String celular) {
+		this.celular = celular;
+	}
+
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+
+	public String getNatalidade() {
+		return natalidade;
+	}
+
+	public void setNatalidade(String natalidade) {
+		this.natalidade = natalidade;
+	}
 
 	public Long getId() {
 		return id;
@@ -112,38 +210,6 @@ public class Pessoa implements Serializable {
 
 	public void setStatus(Boolean status) {
 		this.status = status;
-	}
-
-	public String getBiometria1() {
-		return biometria1;
-	}
-
-	public void setBiometria1(String biometria1) {
-		this.biometria1 = biometria1;
-	}
-
-	public String getBiometria2() {
-		return biometria2;
-	}
-
-	public void setBiometria2(String biometria2) {
-		this.biometria2 = biometria2;
-	}
-
-	public String getBiometria3() {
-		return biometria3;
-	}
-
-	public void setBiometria3(String biometria3) {
-		this.biometria3 = biometria3;
-	}
-
-	public String getBiometria4() {
-		return biometria4;
-	}
-
-	public void setBiometria4(String biometria4) {
-		this.biometria4 = biometria4;
 	}
 
 }

@@ -1,11 +1,14 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.ExibirMensagem;
 import util.FecharDialog;
@@ -15,23 +18,46 @@ import util.RecuperarRelacoesProfessor;
 import ac.modelo.Atividade;
 import ac.modelo.AtividadeTurma;
 import ac.modelo.GrupoTurma;
-import base.modelo.Turma;
-import dao.DAOGenerico;
+import ac.services.AtividadeService;
+import ac.services.AtividadeTurmaService;
+import base.modelo.Turma; 
+import dao.GenericDAO;
 
 @SessionScoped
-@ManagedBean
-public class AtividadeTurmaMB {
+@Named("atividadeTurmaMB")
+public class AtividadeTurmaMB implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private AtividadeTurma atividadeTurma;
 	private List<AtividadeTurma> atividadesTurmas;
 	private List<Atividade> atividades;
 	private List<GrupoTurma> grupoTurmas;
 	private List<Turma> turmas;
+	
+	@Inject
 	private RecuperarRelacoesProfessor relacoesProfessor;
-	private DAOGenerico dao;
+	
+	@Inject
 	private PermiteInativar permiteInativar;
+	
+	@Inject
+	private AtividadeTurmaService atividadeTurmaService;
+	
+	@Inject
+	private GenericDAO<Atividade> daoAtividade;
+	
+	@Inject
+	private GenericDAO<GrupoTurma> daoGrupoTurma;
+	
+	@Inject
+	private GenericDAO<AtividadeTurma> daoAtividadeTurma;
 
-	public AtividadeTurmaMB() {
-		dao = new DAOGenerico();
+	@PostConstruct
+	public void inicializar() {
+		
 		criarNovoObjetoAtividadeTurma();
 		atividadesTurmas = new ArrayList<>();
 		grupoTurmas = new ArrayList<>();
@@ -41,7 +67,8 @@ public class AtividadeTurmaMB {
 	}
 
 	public void salvar() {
-		try {
+		atividadeTurma.setMatriz(atividadeTurma.getGrupoTurma().getMatriz()); 
+	try {
 
 			if (atividadeTurma.getId() == null) {
 				if (verificarAtividadeTurmaIguais(atividadeTurma)) {
@@ -49,8 +76,9 @@ public class AtividadeTurmaMB {
 				} else {
 					if (atividadeTurma.getMinimoHoras() <= atividadeTurma.getMaximoHoras()) {
 						atividadeTurma.setDataCadastro(new Date());
+						
 						atividadeTurma.setStatus(true);
-						dao.inserir(atividadeTurma);
+						atividadeTurmaService.inserirAlterar(atividadeTurma);
 						criarNovoObjetoAtividadeTurma();
 						ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 						FecharDialog.fecharDialogAtividadeTurma();
@@ -71,7 +99,7 @@ public class AtividadeTurmaMB {
 						} else {
 							atividadeTurma.setQuantidadeHoraUnica(null);
 						}
-						dao.alterar(atividadeTurma);
+						atividadeTurmaService.inserirAlterar(atividadeTurma);
 						criarNovoObjetoAtividadeTurma();
 						ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 						FecharDialog.fecharDialogAtividadeTurma();
@@ -86,16 +114,17 @@ public class AtividadeTurmaMB {
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 			e.printStackTrace();
 		}
+	
 
 	}
 	
 
 	public void inativar(AtividadeTurma atividadeTurma) {
-		permiteInativar = new PermiteInativar();
+	
 		try {
 			if (permiteInativar.verificarAtividadeTurmaComCertificado(atividadeTurma.getId())) {
 				atividadeTurma.setStatus(false);
-				dao.alterar(atividadeTurma);
+				atividadeTurmaService.inserirAlterar(atividadeTurma);
 				preencherListaAtividadeTurma();
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			} else {
@@ -111,41 +140,38 @@ public class AtividadeTurmaMB {
 	}
 
 	public void preencherListaAtividadeTurma() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
-		atividadesTurmas = relacoesProfessor.recuperarAtividadeTurmasProfessor();
+		atividadesTurmas = daoAtividadeTurma.listaComStatus(AtividadeTurma.class);
 	}
 
-	public void preencherListaTurma() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
-		turmas = relacoesProfessor.recuperarTurmasProfessor();
-	}
+//	public void preencherListaTurma() {
+//		turmas = relacoesProfessor.recuperarTurmasProfessor();
+//	}
 
 	public void preencherListaAtividade() {
 		
-		atividades = dao.listar(Atividade.class, " grupo.id = "+atividadeTurma.getGrupoTurma().getGrupo().getId());
+		atividades = daoAtividade.listar(Atividade.class, " grupo.id = "+atividadeTurma.getGrupoTurma().getGrupo().getId());
 		
 	
 		
 	}
 	public void preencherListaGrupoTurmas() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
-		grupoTurmas = relacoesProfessor.recuperarGrupoTurmasProfessor();
+		grupoTurmas = daoGrupoTurma.listaComStatus(GrupoTurma.class);
 		
 	}
 
-	public List<Turma> completarTurma(String str) {
-		preencherListaTurma();
-		List<Turma> turmasSelecionadas = new ArrayList<>();
-		for (Turma t : turmas) {
-			if (t.getDescricao().startsWith(str)) {
-				turmasSelecionadas.add(t);
-			}
-		}
-		return turmasSelecionadas;
-	}
+//	public List<Turma> completarTurma(String str) {
+//		preencherListaTurma();
+//		List<Turma> turmasSelecionadas = new ArrayList<>();
+//		for (Turma t : turmas) {
+//			if (t.getDescricao().startsWith(str)) {
+//				turmasSelecionadas.add(t);
+//			}
+//		}
+//		return turmasSelecionadas;
+//	}
 
 	public List<Atividade> completarAtividade(String str) {
-	//	preencherListaAtividade();
+
 		List<Atividade> atividadesSelecionadas = new ArrayList<>();
 		for (Atividade ati : atividades) {
 			if (ati.getDescricao().toLowerCase().startsWith(str)) {
@@ -170,7 +196,7 @@ public class AtividadeTurmaMB {
 	public Boolean verificarAtividadeTurmaIguais(AtividadeTurma atividadeTurma) {
 		try {
 			List<AtividadeTurma> verificador = new ArrayList<>();
-			verificador = dao.listar(AtividadeTurma.class, " turma = " + atividadeTurma.getTurma().getId()
+			verificador = daoAtividadeTurma.listar(AtividadeTurma.class, " matriz = " + atividadeTurma.getMatriz().getId()
 					+ " and atividade = " + atividadeTurma.getAtividade().getId());
 			if (verificador.isEmpty())
 				return false;
@@ -184,8 +210,8 @@ public class AtividadeTurmaMB {
 	public Boolean verificarAtividadeTurmaIguaisAlterar(AtividadeTurma atividadeTurma) {
 		try {
 			List<AtividadeTurma> verificador = new ArrayList<>();
-			verificador = dao.listar(AtividadeTurma.class,
-					" turma = " + atividadeTurma.getTurma().getId() + " and atividade = "
+			verificador = daoAtividadeTurma.listar(AtividadeTurma.class,
+					" matriz = " + atividadeTurma.getMatriz().getId() + " and atividade = "
 							+ atividadeTurma.getAtividade().getId() + " and id = " + atividadeTurma.getId());
 			if (verificador.isEmpty())
 				return true;

@@ -29,7 +29,14 @@ public class Certificado implements Serializable {
 	@NotNull(message = "O campo descrição não pode ser nulo")
 	@Column(nullable = false)
 	private String descricao;
-
+	
+	 
+	private String url;
+	
+	 
+	private String codigoAutenticacao;
+	
+	
 	@NotNull(message = "O campo data de início não pode ser nulo")
 	@Column(name = "data_inicio", nullable = false)
 	private Date dataInicio;
@@ -87,6 +94,10 @@ public class Certificado implements Serializable {
 	private String motivoAlteracao;
 
 	private Boolean atualizado;
+	
+	private boolean backup;
+	
+	private String certificadoInterno;
 
 	// Adicionado para permitir que a exibição do grafico se torne mais rapida
 	@Column(name = "id_grupo_turma")
@@ -98,6 +109,24 @@ public class Certificado implements Serializable {
 
 	public String getDescricao() {
 		return descricao;
+	}
+	
+	
+	
+	public String getCertificadoInterno() {
+		return certificadoInterno;
+	}
+
+	public void setCertificadoInterno(String certificadoInterno) {
+		this.certificadoInterno = certificadoInterno;
+	}
+
+	public boolean isBackup() {
+		return backup;
+	}
+
+	public void setBackup(boolean backup) {
+		this.backup = backup;
 	}
 
 	public void setDescricao(String descricao) {
@@ -255,4 +284,23 @@ public class Certificado implements Serializable {
 	public void setMotivoAlteracao(String motivoAlteracao) {
 		this.motivoAlteracao = motivoAlteracao;
 	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getCodigoAutenticacao() {
+		return codigoAutenticacao;
+	}
+
+	public void setCodigoAutenticacao(String codigoAutenticacao) {
+		this.codigoAutenticacao = codigoAutenticacao;
+	}
+
+ 
+	
 }

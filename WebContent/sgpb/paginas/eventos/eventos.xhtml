@@ -20,7 +20,7 @@
 		<div class="col-md-12">
 			<ol class="breadcrumb">
 				<h:form id="frmCadastrar">
-					<p:commandButton actionListener="#{eventoMB.criarNovoEvento()}"
+					<p:commandButton actionListener="#{eventosMB.criarNovoEvento()}"
 						value="Cadastrar" update=":frmModalSalvar" id="btnCadastrar"
 						onclick="PF('dlgEventos').show(); PF('dlgEventos').content.scrollTop('0')"
 						title="Cadastrar" />
@@ -33,7 +33,7 @@
 	<!-- TABELA-->
 	<div class="col-md-12">
 		<h:form id="frmTabela">
-			<p:dataTable id="tabela" value="#{eventoMB.eventos}" var="obj"
+			<p:dataTable id="tabela" value="#{eventosMB.eventos}" var="obj"
 				resizableColumns="true" rows="10" paginator="true"
 				paginatorPosition="bottom" reflow="true"
 				emptyMessage="Nenhum evento cadastrado"
@@ -44,7 +44,7 @@
 						styleClass="btn btn-block" onclick="PF('dlgDetalhes').show();"
 						icon=" ui-icon-search">
 						<f:setPropertyActionListener value="#{obj}"
-							target="#{eventoMB.evento}" />
+							target="#{eventosMB.evento}" />
 					</p:commandButton>
 				</p:column>
 				<p:column headerText="Evento" sortBy="#{obj.nome}"
@@ -70,10 +70,10 @@
 				<p:column headerText="Atividade" style="width:100px">
 					<p:commandButton update=":frmModalSalvarAtividade" alt="Atividade"
 						title="Atividade" styleClass="btn btn-block"
-						action="#{atividadesEventoMB.EventoAtividade(obj)}"
+						action="#{atividadesEventosMB.EventoAtividade(obj)}"
 						onclick="PF('dlgAtividades').show();" icon="ui-icon-plus">
 						<f:setPropertyActionListener value="#{obj}"
-							target="#{atividadesEventoMB.evento}" />
+							target="#{atividadesEventosMB.evento}" />
 					</p:commandButton>
 				</p:column>
 				<p:column headerText="Alterar" style="width:68px">
@@ -81,11 +81,11 @@
 						title="Alterar" styleClass="btn btn-block"
 						onclick="PF('dlgEventos').show();" icon="ui-icon-pencil">
 						<f:setPropertyActionListener value="#{obj}"
-							target="#{eventoMB.evento}" />
+							target="#{eventosMB.evento}" />
 					</p:commandButton>
 				</p:column>
 				<p:column headerText="Excluir" style="width:68px">
-					<p:commandButton actionListener="#{eventoMB}" icon="ui-icon-trash"
+					<p:commandButton actionListener="#{eventosMB}" icon="ui-icon-trash"
 						title="Excluir" styleClass="btn btn-block"
 						update="frmTabela :dlgInformacao" alt="Excluir">
 						<p:confirm header="Confirmação" message="Deseja excluir?" />
@@ -105,17 +105,17 @@
 			<h:form id="frmDetalhesEvento">
 				<h:panelGrid columns="2">
 					<label>Evento: </label>
-					<h:outputText value="#{eventoMB.evento.nome}" />
+					<h:outputText value="#{eventosMB.evento.nome}" />
 
 					<label>Data: </label>
-					<h:outputText value="#{eventoMB.evento.dataEvento}">
+					<h:outputText value="#{eventosMB.evento.dataEvento}">
 						<f:convertDateTime pattern="dd/MM/yyyy" />
 					</h:outputText>
 
 					<label>Detalhes: </label>
-					<h:outputText value="#{eventoMB.evento.detalhes}" />
+					<h:outputText value="#{eventosMB.evento.detalhes}" />
 					<label>Local: </label>
-					<h:outputText value="#{eventoMB.evento.local}" />
+					<h:outputText value="#{eventosMB.evento.local}" />
 
 				</h:panelGrid>
 			</h:form>
@@ -134,7 +134,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Evento *</label>
 					<p:inputText title="Evento" style="width:100%" id="evento"
-						alt="Evento" value="#{eventoMB.evento.nome}" required="true"
+						alt="Evento" value="#{eventosMB.evento.nome}" required="true"
 						requiredMessage="O campo evento não deve ser nulo" />
 				</p:panelGrid>
 			</div>
@@ -143,7 +143,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Local *</label>
 					<p:inputText title="Local" style="width:100%" id="local"
-						alt="Local" value="#{eventoMB.evento.local}" required="true"
+						alt="Local" value="#{eventosMB.evento.local}" required="true"
 						requiredMessage="O campo local não deve ser nulo" />
 				</p:panelGrid>
 			</div>
@@ -152,7 +152,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Detalhes *</label>
 					<p:inputText title="Detalhes" style="width:100%" id="detalhes"
-						alt="Detalhes" value="#{eventoMB.evento.detalhes}" required="true"
+						alt="Detalhes" value="#{eventosMB.evento.detalhes}" required="true"
 						requiredMessage="O campo detalhes não deve ser nulo" />
 				</p:panelGrid>
 			</div>
@@ -161,7 +161,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Inicio *</label>
 					<p:calendar title="Inicio" style="width:100%" id="dataEvento"
-						alt="Inicio" mask="true" value="#{eventoMB.evento.dataEvento}"
+						alt="Inicio" mask="true" value="#{eventosMB.evento.dataEvento}"
 						required="true" requiredMessage="O campo data não deve ser nulo"
 						pattern="dd/MM/yyyy" />
 				</p:panelGrid>
@@ -172,7 +172,7 @@
 					<label>Encerramento </label>
 					<p:calendar title="Encerramento" style="width:100%"
 						id="dataEventoFim" alt="Encerramento" mask="true"
-						value="#{eventoMB.evento.dataEventoFim}" pattern="dd/MM/yyyy" />
+						value="#{eventosMB.evento.dataEventoFim}" pattern="dd/MM/yyyy" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -185,7 +185,7 @@
 
 			<div class="modal-footer">
 				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
-					actionListener="#{eventoMB.salvar()}"
+					actionListener="#{eventosMB.salvar()}"
 					update=":dlgInformacao :frmTabela" alt="Sim" />
 			</div>
 		</h:form>
@@ -204,7 +204,7 @@
 					<label>Evento *</label>
 					<p:inputText title="Evento" style="width:100%" id="evento"
 						alt="Evento" readonly="true" 
-						value="#{atividadesEventoMB.atividade.evento.nome}"
+						value="#{atividadesEventosMB.atividade.evento.nome}"
 						required="true" requiredMessage="O campo evento não deve ser nulo" />
 				</p:panelGrid>
 			</div>
@@ -213,7 +213,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Descrição *</label>
 					<p:inputText title="Descrião" style="width:100%" id="descrição"
-						alt="Descrião" value="#{atividadesEventoMB.atividade.descricao}"
+						alt="Descrião" value="#{atividadesEventosMB.atividade.descricao}"
 						required="true" requiredMessage="O campo evento não deve ser nulo" />
 				</p:panelGrid>
 			</div>
@@ -223,7 +223,7 @@
 					<label>Data *</label>
 					<p:calendar title="Data" style="width:100%" id="dataEvento"
 						alt="Data" mask="true"
-						value="#{atividadesEventoMB.atividade.dataAutenticacao}"
+						value="#{atividadesEventosMB.atividade.dataAutenticacao}"
 						required="true" requiredMessage="O campo data não deve ser nulo"
 						pattern="dd/MM/yyyy" />
 				</p:panelGrid>
@@ -234,7 +234,7 @@
 					<label>Horário de Início *</label>
 					<p:calendar title="Inicio" style="width:100%" id="horarioInicio"
 						alt="Inicio" mask="true"
-						value="#{atividadesEventoMB.atividade.horarioInicio}"
+						value="#{atividadesEventosMB.atividade.horarioInicio}"
 						required="true" requiredMessage="O campo data não deve ser nulo"
 						pattern="HH:mm" timeOnly="true" />
 				</p:panelGrid>
@@ -245,7 +245,7 @@
 					<label>Horário de Encerramento *</label>
 					<p:calendar title="Final" style="width:100%" id="horarioFim"
 						alt="Final" mask="true"
-						value="#{atividadesEventoMB.atividade.horarioFim}" required="true"
+						value="#{atividadesEventosMB.atividade.horarioFim}" required="true"
 						requiredMessage="O campo data não deve ser nulo" pattern="HH:mm"
 						timeOnly="true" />
 				</p:panelGrid>
@@ -255,7 +255,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Autenticar no Início? *</label>
 					<p:selectBooleanCheckbox
-						value="#{atividadesEventoMB.atividade.autenticarInicio}" />
+						value="#{atividadesEventosMB.atividade.autenticarInicio}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -263,7 +263,7 @@
 					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Autenticar no Final?</label>
 					<p:selectBooleanCheckbox
-						value="#{atividadesEventoMB.atividade.autenticarFim}" />
+						value="#{atividadesEventosMB.atividade.autenticarFim}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -272,7 +272,7 @@
 					<label>Tempo de Tolerância Antes Inicio *</label>
 					<p:inputText title="Tolerancia Antes do Inicio " style="width:100%"
 						id="toleranciaAntesInicio" alt="Descrião"
-						value="#{atividadesEventoMB.atividade.toleranciaAntesInicio}" />
+						value="#{atividadesEventosMB.atividade.toleranciaAntesInicio}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -281,7 +281,7 @@
 					<label>Tempo de Tolerância Após Inicio *</label>
 					<p:inputText title="Tolerancia Após Inicio" style="width:100%"
 						id="toleranciaAposInicio" alt="Tolerancia Após Inicio"
-						value="#{atividadesEventoMB.atividade.toleranciaAposInicio}" />
+						value="#{atividadesEventosMB.atividade.toleranciaAposInicio}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -290,7 +290,7 @@
 					<label>Tempo de Tolerância no Final </label>
 					<p:inputText title="Tolerancia no Final" style="width:100%"
 						id="toleranciaFim" alt="Tolerancia no Final"
-						value="#{atividadesEventoMB.atividade.toleranciaFim}" />
+						value="#{atividadesEventosMB.atividade.toleranciaFim}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -303,7 +303,7 @@
 
 			<div class="modal-footer">
 				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
-					actionListener="#{atividadesEventoMB.salvar()}"
+					actionListener="#{atividadesEventosMB.salvar()}"
 					update=":frmTabela :dlgInformacao" alt="Sim" />
 			</div>
 		</h:form>

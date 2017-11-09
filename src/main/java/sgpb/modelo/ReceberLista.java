@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import ac.modelo.Pessoa;
+
 
 @Entity
 @Table(name = "tab_receber_lista")
@@ -22,15 +24,20 @@ public class ReceberLista implements Serializable{
     @Column(name = "id_receber_lista")
     private Long id;
     
-    @Column(name = "receber_lista_email", nullable = false, columnDefinition = "BOOLEAN")
-	private boolean receberListaEmail;
+    @NotNull(message = "O campo nome não pode ser nulo")
+    @Column(name = "nome_receber_lista", nullable = false)
+	private String nome;
     
-    @NotNull(message = "O campo grupo não pode ser nulo")
-    @Column(name = "email", nullable = false, columnDefinition = "BOOLEAN")
+    
+    @NotNull(message = "O campo e-mail não pode ser nulo")
+    @Column(name = "email_receber_lista", nullable = false)
 	private String email;
     
     @ManyToOne
-    private Atividades atividades;
+    private AtividadeEvento atividades;
+    
+    @ManyToOne
+    private Pessoa pessoa;
 
 	public Long getId() {
 		return id;
@@ -40,20 +47,43 @@ public class ReceberLista implements Serializable{
 		this.id = id;
 	}
 
-	public boolean isReceberListaEmail() {
-		return receberListaEmail;
-	}
-
-	public void setReceberListaEmail(boolean receberListaEmail) {
-		this.receberListaEmail = receberListaEmail;
-	}
-
-	public Atividades getAtividades() {
+	public AtividadeEvento getAtividades() {
 		return atividades;
 	}
 
-	public void setAtividades(Atividades atividades) {
+	public void setAtividades(AtividadeEvento atividades) {
 		this.atividades = atividades;
 	}
 
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public Pessoa getPessoa() {
+		return pessoa;
+	}
+
+	public void setPessoa(Pessoa pessoa) {
+		this.pessoa = pessoa;
+	}
+	
+	
 }

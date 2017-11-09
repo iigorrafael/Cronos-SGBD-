@@ -6,21 +6,28 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
-
-import dao.DAOGenerico;
+import javax.inject.Inject;
+import javax.inject.Named;
+ 
+import dao.GenericDAO;
 import ac.modelo.Movimentacao;
+import base.modelo.Curso;
 import util.Mensagem;
-
-@FacesConverter("converterMovimentacao")
+ 
+@Named("converterMovimentacao")
 public class ConverterMovimentacao implements Converter {
 
+	
+	@Inject
+	private GenericDAO<Movimentacao> dao;
+	
 	@Override
 	public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
 		if (value != null && value.trim().length() > 0) {
-			try {
-				DAOGenerico dao = new DAOGenerico();
-				Object movimentacao = dao.buscarPorId(Movimentacao.class, Long.parseLong(value));
-				return movimentacao;
+			try { 
+				
+				return  dao.buscarPorId(Movimentacao.class, Long.parseLong(value));
+				
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 				throw new ConverterException(

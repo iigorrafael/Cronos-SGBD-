@@ -1,7 +1,11 @@
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import ac.modelo.AlunoTurma;
 import ac.modelo.Atividade;
@@ -9,17 +13,42 @@ import ac.modelo.AtividadeTurma;
 import ac.modelo.Certificado;
 import ac.modelo.GrupoTurma;
 import ac.modelo.ProfessorCurso;
-import base.modelo.Turma;
-import dao.DAOGenerico;
+import base.modelo.Tipo;
+import base.modelo.Turma; 
+import dao.GenericDAO;
 
-public class PermiteInativar {
-	private DAOGenerico dao;
+public class PermiteInativar implements Serializable {
+	
 
+	private static final long serialVersionUID = 1L;
+	
+	@Inject
+	private GenericDAO<Turma> daoTurma; //faz as buscas
+	
+	@Inject
+	private GenericDAO<ProfessorCurso> daoProfessorCurso; //faz as buscas
+	
+	@Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma; //faz as buscas
+	
+	@Inject
+	private GenericDAO<AtividadeTurma> daoAtividadeTurma; //faz as buscas
+	
+	@Inject
+	private GenericDAO<Atividade> daoAtividade; //faz as buscas
+	
+	@Inject
+	private GenericDAO<GrupoTurma> daoGrupoTurma; //faz as buscas
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado; //faz as buscas
+	
+	
 	public Boolean verificarCursoComTurma(Long id) {
-		dao = new DAOGenerico();
+		
 		List<Turma> turmas = new ArrayList<>();
 		try {
-			turmas = dao.listar(Turma.class, " curso.id = " + id + " and status is true ");
+			turmas = daoTurma.listar(Turma.class, " curso.id = " + id + " and status is true ");
 			if (turmas.isEmpty()) {
 				return true;
 			}
@@ -31,10 +60,10 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarCursoComProfessorCurso(Long id) {
-		dao = new DAOGenerico();
+		
 		List<ProfessorCurso> professorCursos = new ArrayList<>();
 		try {
-			professorCursos = dao.listar(ProfessorCurso.class, " curso.id = " + id + " and status is true ");
+			professorCursos = daoProfessorCurso.listar(ProfessorCurso.class, " curso.id = " + id + " and status is true ");
 			if (professorCursos.isEmpty()) {
 				return true;
 			}
@@ -46,10 +75,10 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarTurmaComAtividadeTurma(Long id) {
-		dao = new DAOGenerico();
+	
 		List<AtividadeTurma> atividadesTurmas = new ArrayList<>();
 		try {
-			atividadesTurmas = dao.listar(AtividadeTurma.class, " turma.id = " + id + " and status is true ");
+			atividadesTurmas = daoAtividadeTurma.listar(AtividadeTurma.class, " turma.id = " + id + " and status is true ");
 			if (atividadesTurmas.isEmpty()) {
 				return true;
 			}
@@ -61,10 +90,10 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarTurmaComGrupoTurma(Long id) {
-		dao = new DAOGenerico();
+	
 		List<GrupoTurma> gruposTurmas = new ArrayList<>();
 		try {
-			gruposTurmas = dao.listar(GrupoTurma.class, " turma.id = " + id + " and status is true ");
+			gruposTurmas = daoGrupoTurma.listar(GrupoTurma.class, " turma.id = " + id + " and status is true ");
 			if (gruposTurmas.isEmpty()) {
 				return true;
 			}
@@ -76,10 +105,10 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarTurmaComAlunoTurma(Long id) {
-		dao = new DAOGenerico();
+		
 		List<AlunoTurma> alunosTurmas = new ArrayList<>();
 		try {
-			alunosTurmas = dao.listar(AlunoTurma.class, " turma.id = " + id + " and aluno.status is true ");
+			alunosTurmas = daoAlunoTurma.listar(AlunoTurma.class, " turma.id = " + id + " and aluno.status is true ");
 			if (alunosTurmas.isEmpty()) {
 				return true;
 			}
@@ -91,10 +120,10 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarGrupoComGrupoTurma(Long id) {
-		dao = new DAOGenerico();
+		
 		List<GrupoTurma> gruposTurmas = new ArrayList<>();
 		try {
-			gruposTurmas = dao.listar(GrupoTurma.class, " grupo.id = " + id + " and status is true ");
+			gruposTurmas = daoGrupoTurma.listar(GrupoTurma.class, " grupo.id = " + id + " and status is true ");
 			if (gruposTurmas.isEmpty()) {
 				return true;
 			}
@@ -106,10 +135,10 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarGrupoComAtividade(Long id) {
-		dao = new DAOGenerico();
+		
 		List<Atividade> atividades = new ArrayList<>();
 		try {
-			atividades = dao.listar(Atividade.class, " grupo.id = " + id + " and status is true ");
+			atividades = daoAtividade.listar(Atividade.class, " grupo.id = " + id + " and status is true ");
 			if (atividades.isEmpty()) {
 				return true;
 			}
@@ -121,10 +150,11 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarAtividadeComAtividadeTurma(Long id) {
-		dao = new DAOGenerico();
+		
+
 		List<AtividadeTurma> atividadesTurmas = new ArrayList<>();
 		try {
-			atividadesTurmas = dao.listar(AtividadeTurma.class, " atividade.id = " + id + " and status is true ");
+			atividadesTurmas = daoAtividadeTurma.listar(AtividadeTurma.class, " atividade.id = " + id + " and status is true ");
 			if (atividadesTurmas.isEmpty()) {
 				return true;
 			}
@@ -136,10 +166,10 @@ public class PermiteInativar {
 	}
 
 	public Boolean verificarAtividadeTurmaComCertificado(Long id) {
-		dao = new DAOGenerico();
+
 		List<Certificado> certificados = new ArrayList<>();
 		try {
-			certificados = dao.listar(Certificado.class, " atividadeTurma.id = " + id + " and status is true ");
+			certificados = daoCertificado.listar(Certificado.class, " atividadeTurma.id = " + id + " and status is true ");
 			if (certificados.isEmpty()) {
 				return true;
 			}
@@ -151,11 +181,11 @@ public class PermiteInativar {
 	}
 	
 	public Boolean verificarGrupoTurmaComAtividadeTurma(GrupoTurma grupoTurma) {
-		dao = new DAOGenerico();
+		
 		List<AtividadeTurma> atividadesTurmas = new ArrayList<>();
 		try {
-			atividadesTurmas = dao.listar(AtividadeTurma.class, " atividade.grupo.id = " + grupoTurma.getGrupo().getId() + 
-					" and turma.id = "+grupoTurma.getTurma().getId() + " and status is true ");
+			atividadesTurmas = daoAtividadeTurma.listar(AtividadeTurma.class, " atividade.grupo.id = " + grupoTurma.getGrupo().getId() + 
+					" and matriz.id = "+grupoTurma.getMatriz().getId() + " and status is true ");
 			if (atividadesTurmas.isEmpty()) {
 				return true;
 			}

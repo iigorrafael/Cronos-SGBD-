@@ -1,57 +1,77 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import ac.modelo.Certificado;
-import dao.DAOFiltros;
-import dao.DAOGenerico;
+import dao.FiltrosDAO;
+import dao.GenericDAO;
 
 @ViewScoped
-@ManagedBean
-public class ListaCertificadosAlunosMB {
+@Named("listaCertificadosAlunosMB")
+public class ListaCertificadosAlunosMB implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+	
 	private List<Certificado> certificadosValidados;
 	private List<Certificado> certificadosAutenticados;
 	private List<Certificado> certificadosInvalidados;
 	private List<Certificado> certificadosNaoAuntenticados;
 	private Certificado certificado;
 	private Certificado certificadoBuscado;
-	private DAOFiltros daoFiltros;
-	private UsuarioSessaoMB usuarioSessao;
-	private DAOGenerico dao ;
+	
+	@Inject
+	private FiltrosDAO daoFiltros;
 
-	public ListaCertificadosAlunosMB() {
-		usuarioSessao = new UsuarioSessaoMB();
-		daoFiltros = new DAOFiltros();
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado ;
+
+	@PostConstruct
+	public void inicializar() {
+		
 		certificadosValidados = new ArrayList<>();
 		certificadosAutenticados = new ArrayList<>();
 		certificadosInvalidados = new ArrayList<>();
 		certificadosNaoAuntenticados = new ArrayList<>();
 		certificado = new Certificado();
 		certificadoBuscado = new Certificado();
-		dao = new DAOGenerico();
+		
 		preencherListaCertificadoValidados();
 		preencherListaCertificadoAutenticados();
 		preencherListaCertificadoInvalidados();
 		preencherListaCertificadoNaoAutenticados();
+		
+		
 	}
 
 	public void busca(Certificado cet){
-		certificadoBuscado = (Certificado) dao.buscarPorId(Certificado.class, cet.getId());
+		certificadoBuscado = daoCertificado.buscarPorId(Certificado.class, cet.getId());
 	
 	}
 	public void preencherListaCertificadoValidados() {
+		
 		certificadosValidados = daoFiltros.certificadosAlunos(usuarioSessao.recuperarAluno().getId(), 3);
 	}
 
 	public void preencherListaCertificadoAutenticados() {
 		certificadosAutenticados = daoFiltros.certificadosAlunos(usuarioSessao.recuperarAluno().getId(), 1);
+		
+		
 	}
+	
 
 	public void preencherListaCertificadoInvalidados() {
+		
+	
+		
 		certificadosInvalidados = daoFiltros.certificadosAlunos(usuarioSessao.recuperarAluno().getId(), 4);
 	}
 

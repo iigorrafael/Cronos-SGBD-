@@ -81,7 +81,7 @@
 						<p:autoComplete id="curso" dropdown="true"
 							value="#{turmaMB.turma.curso}" scrollHeight="170"
 							completeMethod="#{turmaMB.completarCursosProfessor}"
-							forceSelection="true" converter="converterCurso" var="cur"
+							forceSelection="true" converter="#{converterCurso}" var="cur"
 							itemLabel="#{cur.nome}" itemValue="#{cur}" required="true"
 							requiredMessage="O campo curso da turma não deve ser nulo" />
 					</div>

@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import base.modelo.Matriz;
 import base.modelo.Turma;
 
 /**
@@ -47,9 +48,9 @@ public class GrupoTurma implements Serializable {
 	private Grupo grupo;
 
 	@NotNull(message = "O campo turma não pode ser nulo")
-	@JoinColumn(name = "id_turma", nullable = false)
+	@JoinColumn(name = "id_matriz", nullable = false)
 	@ManyToOne
-	private Turma turma;
+	private Matriz matriz;
 
 	public Long getId() {
 		return id;
@@ -95,12 +96,19 @@ public class GrupoTurma implements Serializable {
 		this.grupo = grupo;
 	}
 
-	public Turma getTurma() {
-		return turma;
+	public Matriz getMatriz() {
+		return matriz;
 	}
 
-	public void setTurma(Turma turma) {
-		this.turma = turma;
+	public void setMatriz(Matriz matriz) {
+		this.matriz = matriz;
 	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
+	
+ 
 
 }

@@ -1,35 +1,55 @@
 package base.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+import ac.services.AlunoService;
 import base.modelo.Tipo;
+import base.service.TipoService;
 import util.ExibirMensagem;
 import util.FecharDialog;
 import util.Mensagem;
-import util.ValidacoesGerirUsuarios;
-import dao.DAOGenerico;
+import util.ValidacoesGerirUsuarios; 
+import dao.GenericDAO;
 
-@ManagedBean
 
-@SessionScoped
-public class TipoServidorMB {
+@ViewScoped
+@Named("tipoServidorMB")
+public class TipoServidorMB implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+
 
 	private Tipo tipoServidor;
 	private List<Tipo> tipoServidorBusca;
-	private DAOGenerico dao;
 	private List<Tipo> listTipoServidor;
+	
+	@Inject
 	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
 
-	public TipoServidorMB() {
+	
+	@Inject
+	private GenericDAO<Tipo> daoTipo; //faz as buscas
+	
+	@Inject
+	private TipoService tipoService; // inserir no banco
+	
+	
+	@PostConstruct
+	public void inicializar() {
+	
 		tipoServidor = new Tipo();
-		dao = new DAOGenerico();
+	
 		listTipoServidor = new ArrayList<>();
+		listTipoServidor = daoTipo.listaComStatus(Tipo.class);
 		tipoServidorBusca = new ArrayList<>();
-		validacoesGerirUsuarios = new ValidacoesGerirUsuarios();
+		
 	}
 
 	public void preencherListaTipoServidor(Tipo t) {
@@ -38,7 +58,7 @@ public class TipoServidorMB {
 	}
 
 	public void inativarTipoServidor(Tipo t) {
-		dao.update(" Tipo set status = false where id = " + t.getId());
+		tipoService.update(" Tipo set status = false where id = " + t.getId());
 		criarNovoObjeto();
 		ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 		carregarLista();
@@ -47,18 +67,18 @@ public class TipoServidorMB {
 	public void salvar() {
 
 		try {
-
+			
 			if (validacoesGerirUsuarios.buscarPermissao(tipoServidor) == true) {
 				ExibirMensagem.exibirMensagem(Mensagem.TIPOCADASTRO);
 			} else {
 
 				if (tipoServidor.getId() == null) {
 					tipoServidor.setStatus(true);
-					dao.inserir(tipoServidor);
+					tipoService.inserirAlterar(tipoServidor);
 
 				} else {
 					tipoServidor.setStatus(true);
-					dao.alterar(tipoServidor);
+					tipoService.inserirAlterar(tipoServidor);
 				}
 
 				criarNovoObjeto();
@@ -78,12 +98,12 @@ public class TipoServidorMB {
 	}
 
 	public void carregarLista() {
-		listTipoServidor = dao.listaComStatus(Tipo.class);
+		listTipoServidor = daoTipo.listaComStatus(Tipo.class);
 	}
 
 	public List<Tipo> getListTipoServidor() {
 
-		listTipoServidor = dao.listaComStatus(Tipo.class);
+		//listTipoServidor = daoTipo.listaComStatus(Tipo.class);
 
 		return listTipoServidor;
 	}
@@ -107,5 +127,5 @@ public class TipoServidorMB {
 	public void setTipoServidorBusca(List<Tipo> tipoServidorBusca) {
 		this.tipoServidorBusca = tipoServidorBusca;
 	}
-
 }
+

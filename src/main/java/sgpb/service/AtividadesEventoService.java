@@ -3,10 +3,11 @@ package sgpb.service;
 import java.io.Serializable;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import dao.GenericDAO;
-import sgpb.modelo.Atividades;
+import sgpb.modelo.AtividadeEvento;
+import util.Transacional;
+
 
 public class AtividadesEventoService implements Serializable{
 	
@@ -15,10 +16,10 @@ public class AtividadesEventoService implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	@Inject
-	private GenericDAO<Atividades> daoAtividades;
+	private GenericDAO<AtividadeEvento> daoAtividades;
 
-	@Transactional
-	public void inserirAlterar(Atividades atividade){
+	@Transacional
+	public void inserirAlterar(AtividadeEvento atividade){
 		if(atividade.getId()==null){
 			daoAtividades.inserir(atividade);
 		}else{
@@ -26,7 +27,7 @@ public class AtividadesEventoService implements Serializable{
 		}
 	}
 	
-	@Transactional
+	@Transacional
 	public void update(String valor){
 		daoAtividades.update(valor);
 	}

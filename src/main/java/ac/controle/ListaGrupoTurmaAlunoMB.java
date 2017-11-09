@@ -1,53 +1,74 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.annotation.PostConstruct;
+
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import ac.modelo.AlunoTurma;
 import ac.modelo.AtividadeTurma;
 import ac.modelo.GrupoTurma;
 import base.modelo.Aluno;
-import base.modelo.Tipo;
-import base.modelo.Turma;
-import dao.DAOFiltros;
-import dao.DAOGenerico;
+import dao.FiltrosDAO;
+import dao.GenericDAO;
 
 @ViewScoped
-@ManagedBean
-public class ListaGrupoTurmaAlunoMB {
+@Named("listaGrupoTurmaAlunoMB")
+public class ListaGrupoTurmaAlunoMB implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private List<AtividadeTurma> atividadesTurmas;
 	private List<GrupoTurma> gruposTurmas;
-	private DAOFiltros daoFiltros;
-	private UsuarioSessaoMB usuarioSessao;
+
 	private AlunoTurma alunoTurma;
 	private List<AlunoTurma> listAlunoTurmas;
 	private GrupoTurma grupoTurma;
 	private AtividadeTurma atividadeTurma;
 
-	private DAOGenerico dao ;
 	private AlunoTurma alunoTurmaSelecionada;
 	
-	public ListaGrupoTurmaAlunoMB() {
-		daoFiltros = new DAOFiltros();
+	@Inject
+	private FiltrosDAO daoFiltros;
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+    @Inject
+	private GenericDAO<Aluno> daoAluno;
+	
+    @Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma;
+	
+	@PostConstruct
+	public void inicializar() {
+
+
 		alunoTurma = new AlunoTurma();
 		atividadesTurmas = new ArrayList<>();
 		gruposTurmas = new ArrayList<>();
-		usuarioSessao = new UsuarioSessaoMB();
+		
 		grupoTurma = new GrupoTurma();
 		listAlunoTurmas = new ArrayList<>();
 		alunoTurmaSelecionada = new AlunoTurma();
 		atividadeTurma = new AtividadeTurma();
-		dao = new DAOGenerico();
+	
 	
 	}
 
 	private Long recuperarTurmaAluno() {
 		alunoTurma = (AlunoTurma) daoFiltros.buscarTurmaAluno(usuarioSessao.recuperarAluno().getId()).get(0);
+		
 		return alunoTurma.getId();
+		
 	}
 
 	public void preencherGruposTurmas() {
@@ -81,8 +102,9 @@ public class ListaGrupoTurmaAlunoMB {
 
 	public List<AlunoTurma> getListAlunoTurmas() {
 		
-		Aluno  aluno = (Aluno) dao.buscarPorId(Aluno.class, usuarioSessao.recuperarAluno().getId());
-		listAlunoTurmas = dao.listar(AlunoTurma.class, " controle = 1 and aluno  = "+aluno.getId());
+		Aluno  aluno = daoAluno.buscarPorId(Aluno.class, usuarioSessao.recuperarAluno().getId());
+		
+	    listAlunoTurmas =  daoAlunoTurma.listar(AlunoTurma.class, " controle = 1 and aluno  = "+aluno.getId());
 		
 		return listAlunoTurmas;
 	} 

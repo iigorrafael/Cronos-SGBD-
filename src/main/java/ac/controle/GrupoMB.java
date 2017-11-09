@@ -1,29 +1,50 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.ExibirMensagem;
 import util.FecharDialog;
 import util.Mensagem;
 import util.PermiteInativar;
 import ac.modelo.Grupo;
-import dao.DAOGenerico;
+import ac.services.GrupoService;
+
+import dao.GenericDAO;
 
 @SessionScoped
-@ManagedBean
-public class GrupoMB {
+@Named("grupoMB")
+public class GrupoMB implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private Grupo grupo;
 	private List<Grupo> grupos;
-	private DAOGenerico dao;
+
+	@Inject
 	private PermiteInativar permiteInativar;
 
-	public GrupoMB() {
-		dao = new DAOGenerico();
+	@Inject
+    private GrupoService grupoService;
+	
+	@Inject
+	private GenericDAO<Grupo> daoGrupo;
+
+	@PostConstruct
+	public void inicializar() {
+	
 		criarNovoObjetoGrupo();
 		grupos = new ArrayList<>();
 		preencherListaGrupo();
@@ -34,13 +55,13 @@ public class GrupoMB {
 			if (grupo.getId() == null) {
 				grupo.setStatus(true);
 				grupo.setDataCadastro(new Date());
-				dao.inserir(grupo);
+				grupoService.inserirAlterar(grupo);
 				FecharDialog.fecharDialogGrupo();
 				criarNovoObjetoGrupo();
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherListaGrupo();
 			} else {
-				dao.alterar(grupo);
+				grupoService.inserirAlterar(grupo);
 				FecharDialog.fecharDialogGrupo();
 				criarNovoObjetoGrupo();
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
@@ -53,12 +74,12 @@ public class GrupoMB {
 	}
 
 	public void inativar(Grupo grupo) {
-		permiteInativar = new PermiteInativar();
+	
 		try {
 			if (permiteInativar.verificarGrupoComGrupoTurma(grupo.getId())) {
 				if (permiteInativar.verificarGrupoComAtividade(grupo.getId())) {
 					grupo.setStatus(false);
-					dao.alterar(grupo);
+					grupoService.inserirAlterar(grupo);
 					preencherListaGrupo();
 					ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				} else {
@@ -77,7 +98,7 @@ public class GrupoMB {
 	}
 
 	public void preencherListaGrupo() {
-		grupos = dao.listaComStatus(Grupo.class);
+		grupos = daoGrupo.listaComStatus(Grupo.class);
 	}
 
 	public Grupo getGrupo() {

@@ -91,19 +91,23 @@
 					<h:outputText
 						value="#{certificadoSecretariaMB.certificado.atividadeTurma.atividade.descricao}" />
 
+					<label>Matriz: </label>
+					<h:outputText
+						value="#{certificadoSecretariaMB.certificado.atividadeTurma.matriz.descricao}" />
+
 					<label>Turma: </label>
 					<h:outputText
-						value="#{certificadoSecretariaMB.certificado.atividadeTurma.turma.descricao}" />
+						value="#{certificadoSecretariaMB.certificado.alunoTurma.turma.abreviacaoTurma}" />
 
 					<label>Data de início da turma: </label>
 					<h:outputText
-						value="#{certificadoSecretariaMB.certificado.atividadeTurma.turma.dataInicioTurma}">
+						value="#{certificadoSecretariaMB.certificado.alunoTurma.turma.dataInicioTurma}">
 						<f:convertDateTime pattern="dd/MM/yyyy" />
 					</h:outputText>
 
 					<label>Curso: </label>
 					<h:outputText
-						value="#{certificadoSecretariaMB.certificado.atividadeTurma.turma.curso.nome}" />
+						value="#{certificadoSecretariaMB.certificado.alunoTurma.turma.curso.abreviacaoCurso}" />
 
 					<label>Descrição: </label>
 					<h:outputText
@@ -150,6 +154,14 @@
 					<label>Justificativa: </label>
 					<h:outputText
 						value="#{certificadoSecretariaMB.certificado.justificativa}" />
+						
+					<label>URL: </label>
+					<h:outputText
+						value="#{certificadoSecretariaMB.certificado.url}" />
+						
+					<label>Código Autenticação: </label>
+					<h:outputText
+						value="#{certificadoSecretariaMB.certificado.codigoAutenticacao}" />
 
 					<label>Certificado: </label>
 					<p:commandButton alt="Certificado PDF" title="Certificado PDF"
@@ -188,13 +200,13 @@
 	<!-- ARQUIVO PDF -->
 	<p:dialog header="Arquivo" widgetVar="dlgArquivo" modal="true"
 		id="dlgArquivo" closable="true" closeOnEscape="true" responsive="true"
-		resizable="false" draggable="false">
+		resizable="false" draggable="true">
 		<h:form id="uploadCertificado">
 			<label>Certificado: </label>
 			<h:outputText
 				value="#{certificadoSecretariaMB.certificado.caminhoCertificado}" />
 			<object type="application/pdf"
-				data="${facesContext.externalContext.requestContextPath}/certificadoUpload/#{certificadoSecretariaMB.certificado.caminhoCertificado}.pdf?pfdrid_c=true"
+				data="../../certificados/#{certificadoSecretariaMB.certificado.caminhoCertificado}.pdf?pfdrid_c=true"
 				height="500px" width="100%" internalinstanceid="11" />
 		</h:form>
 	</p:dialog>

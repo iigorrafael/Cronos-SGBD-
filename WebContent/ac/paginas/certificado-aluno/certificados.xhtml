@@ -8,6 +8,8 @@
 
 <h:body>
 
+
+
 	<!-- TITULO -->
 	<div class="row">
 		<div class="col-md-12">
@@ -15,6 +17,8 @@
 		</div>
 	</div>
 	<!-- FIM TITULO -->
+	
+	
 
 	<!-- BOTÃO CADASTRAR -->
 	<div class="row container-fluid">
@@ -31,6 +35,11 @@
 		</div>
 	</div>
 	<!-- FIM DO BOTÃO CADASTRAR -->
+	
+	
+	
+		 
+
 	<!-- TABELA-->
 	<div class="col-md-12">
 		<h:form id="frmTabela">
@@ -57,11 +66,13 @@
 							target="#{certificadoMB.certificado}" />
 					</p:commandButton>
 				</p:column>
+
+
 				<p:column headerText="Turma"
-					filterBy="#{obj.alunoTurma.turma.descricao}"
-					sortBy="#{obj.alunoTurma.turma.descricao}"
+					filterBy="#{obj.alunoTurma.turma.abreviacaoTurma}"
+					sortBy="#{obj.alunoTurma.turma.abreviacaoTurma}"
 					filterMatchMode="contains">
-					<h:outputText value="#{obj.alunoTurma.turma.descricao}" />
+					<h:outputText value="#{obj.alunoTurma.turma.abreviacaoTurma}" />
 				</p:column>
 
 				<p:column headerText="Atividade"
@@ -83,8 +94,8 @@
 
 				<p:column headerText="Alterar" style="width:68px">
 					<p:commandButton alt="Alterar" update=":frmModalSalvarEditar"
-						styleClass="btn btn-block" onclick="PF('dlgCertificadoEditar').show();"
-						icon="ui-icon-pencil"
+						styleClass="btn btn-block"
+						onclick="PF('dlgCertificadoEditar').show();" icon="ui-icon-pencil"
 						actionListener="#{certificadoMB.permitirPDF(obj)}">
 						<f:setPropertyActionListener value="#{obj}"
 							target="#{certificadoMB.certificado}" />
@@ -102,10 +113,10 @@
 
 	</div>
 	<!--FIM DA TABELA-->
-
+	
 	<!-- DIALOG SALVAR -->
 	<p:dialog header="Certificado" widgetVar="dlgCertificado" modal="true"
-		responsive=" true" width="60%" id="dlgCertificado" closable="false"
+		responsive=" true" width="60%" id="dlgCertificado" closable="true"
 		closeOnEscape="true" resizable="false" draggable="false">
 
 		<h:form id="frmModalSalvar" enctype="multipart/form-data">
@@ -131,17 +142,20 @@
 				<div class="col-md-12">
 					<label>Turma *</label>
 
-					<p:selectOneMenu id="console" disabled="#{certificadoMB.controleAltera}"
+					<p:selectOneMenu id="console"
+						disabled="#{certificadoMB.controleAltera}"
 						value="#{certificadoMB.certificado.alunoTurma}"
-						converter="alunoTurmaConverte" required="true" requiredMessage="Selecione uma turma">
-						
+						converter="#{alunoTurmaConverte}" required="true"
+						requiredMessage="Selecione uma turma">
+
 						<f:selectItem itemValue="" itemLabel="" />
 
 						<f:selectItems value="#{certificadoMB.listAlunoTurma}" var="t"
-							itemValue="#{t}" itemLabel="#{t.turma.descricao}" />
-							
-							 <p:ajax event="change" update="atividade" listener="#{certificadoMB.controle()}" />
-							
+							itemValue="#{t}" itemLabel="#{t.turma.abreviacaoTurma}" />
+
+						<p:ajax event="change" update="atividade"
+							listener="#{certificadoMB.controle()}" />
+
 
 					</p:selectOneMenu>
 
@@ -173,21 +187,66 @@
 						pattern="dd/MM/yyyy" mask="true" required="true"
 						requiredMessage="O campo data de finalização não deve ser nulo" />
 				</div>
+
+
+
+
 			</div>
+
 			<div class="ui-fluid">
-				<div class="col-md-11 col-xs-10">
+				<div class="col-md-12 col-xs-10">
 					<label>Atividade *</label>
-					<p:autoComplete id="atividade" dropdown="true" scrollHeight="170" disabled="#{certificadoMB.controle}"
+					<p:autoComplete id="atividade" dropdown="true" scrollHeight="170"
+						disabled="#{certificadoMB.controle}"
 						value="#{certificadoMB.certificado.atividadeTurma}"
 						completeMethod="#{certificadoMB.completarAtividadeTurma}"
-						forceSelection="true" converter="converterAtividadeTurma"
+						forceSelection="true" converter="#{converterAtividadeTurma}"
 						var="att" itemLabel="#{att.atividade.descricao}"
 						itemValue="#{att}" required="true"
 						requiredMessage="O campo atividade não deve ser nulo" />
 
-					<small>Campos obrigatórios *</small>
+
 				</div>
 			</div>
+
+			<div class="ui-fluid">
+				<br />
+				<div class="col-md-3">
+					<label> </label> <label>Certificado Digital : </label>
+
+				</div>
+				<div class="col-md-9">
+					<p:selectOneRadio id="CertInterno" required="true"
+						requiredMessage="Informe se o certificado é interno ou não"
+						value="#{certificadoMB.certificado.certificadoInterno}">
+						<f:selectItem itemLabel="Sim" itemValue="sim" />
+						<f:selectItem itemLabel="Não" itemValue="não" />
+						
+						<p:ajax event="change" listener="#{certificadoMB.controleAutenticacaoURL()}"  update="url cod" />
+						
+					</p:selectOneRadio>
+
+				</div>
+
+				<label> </label>
+
+			</div>
+
+
+			<div class="ui-fluid">
+				<div class="col-md-6">
+					<label>URL para autenticação</label>
+					<p:inputText title="url" alt="autenticacao" id="url"
+						value="#{certificadoMB.certificado.url}" disabled="#{certificadoMB.controleURL}" />
+				</div>
+
+				<div class="col-md-6">
+					<label>Código de autenticação</label>
+					<p:inputText title="cod" alt="codigo" id="cod"
+						value="#{certificadoMB.certificado.codigoAutenticacao}" disabled="#{certificadoMB.controleURL}"/>
+				</div>
+			</div>
+
 			<div class="ui-fluid">
 				<div class="col-md-12">
 					<p:outputLabel for="certificadoPDF" value="Certificado PDF"
@@ -203,14 +262,18 @@
 						update=":frmModalSalvar:certificadoPDF :dlgInformacao" />
 				</div>
 			</div>
+			<div class="ui-fluid">
+				<div class="col-md-12">
+					<small>Campos obrigatórios *</small>
+				</div>
+			</div>
 			<div class="modal-footer">
 				<p:commandButton value="Salvar" id="btnSalvar" alt="Sim"
 					styleClass="ui-priority-primary"
 					actionListener="#{certificadoMB.salvar()}"
 					update=":frmTabela :dlgInformacao" />
 
-				<p:commandButton value="Cancelar"
-					onclick="PF('dlgCertificado').hide();" alt="Cancelar" />
+
 			</div>
 		</h:form>
 
@@ -231,7 +294,7 @@
 
 					<label>Turma: </label>
 					<h:outputText
-						value="#{certificadoMB.certificado.atividadeTurma.turma.descricao}" />
+						value="#{certificadoMB.certificado.alunoTurma.turma.abreviacaoTurma}" />
 
 					<label>Atividade: </label>
 					<h:outputText
@@ -270,27 +333,29 @@
 	</p:dialog>
 	<!-- FIM DO DIALOG DETALHES -->
 
+
 	<!-- ARQUIVO PDF -->
 	<p:dialog header="Arquivo" widgetVar="dlgArquivo" modal="true"
 		id="dlgArquivo" closable="true" closeOnEscape="true" responsive="true"
-		resizable="false" draggable="false">
+		resizable="false" draggable="true">
 		<h:form id="uploadCertificado">
 			<label>Certificado: </label>
 			<h:outputText value="#{certificadoMB.certificado.caminhoCertificado}" />
-			<object type="application/pdf"
-				data="${facesContext.externalContext.requestContextPath}/certificadoUpload/#{certificadoMB.certificado.caminhoCertificado}.pdf?pfdrid_c=true"
-				height="500px" width="100%" internalinstanceid="11" />
+			<object id="myPdff" type="application/pdf"
+				data="../../certificados/#{certificadoMB.certificado.caminhoCertificado}.pdf"
+				height="500px" width="100%"> </object>
 		</h:form>
 	</p:dialog>
 	<!-- FIM ARQUIVO PDF -->
-	
-	
-	
-	
+
+
+
+
 	<!-- DIALOG Editar -->
-	<p:dialog header="Certificado" widgetVar="dlgCertificadoEditar" modal="true"
-		responsive=" true" width="60%" id="dlgCertificadoEditar" closable="false"
-		closeOnEscape="true" resizable="false" draggable="false">
+	<p:dialog header="Certificado" widgetVar="dlgCertificadoEditar"
+		modal="true" responsive=" true" width="60%" id="dlgCertificadoEditar"
+		closable="false" closeOnEscape="true" resizable="false"
+		draggable="false">
 
 		<h:form id="frmModalSalvarEditar" enctype="multipart/form-data">
 			<div class="ui-fluid">
@@ -317,9 +382,10 @@
 
 					<p:selectOneMenu id="consoleEditar" disabled="true"
 						value="#{certificadoMB.certificado.alunoTurma}"
-						converter="alunoTurmaConverte">
-						
-						<f:selectItem itemValue="" itemLabel="#{certificadoMB.certificado.alunoTurma.turma.descricao}" />
+						converter="#{alunoTurmaConverte}">
+
+						<f:selectItem itemValue=""
+							itemLabel="#{certificadoMB.certificado.alunoTurma.turma.abreviacaoTurma}" />
 
 					</p:selectOneMenu>
 
@@ -355,10 +421,11 @@
 			<div class="ui-fluid">
 				<div class="col-md-11 col-xs-10">
 					<label>Atividade *</label>
-					<p:autoComplete id="atividadeEditar" dropdown="true" scrollHeight="170" disabled="true"
+					<p:autoComplete id="atividadeEditar" dropdown="true"
+						scrollHeight="170" disabled="true"
 						value="#{certificadoMB.certificado.atividadeTurma}"
 						completeMethod="#{certificadoMB.completarAtividadeTurma}"
-						forceSelection="true" converter="converterAtividadeTurma"
+						forceSelection="true" converter="#{converterAtividadeTurma}"
 						var="att" itemLabel="#{att.atividade.descricao}"
 						itemValue="#{att}" required="true"
 						requiredMessage="O campo atividade não deve ser nulo" />
@@ -371,7 +438,8 @@
 					<p:outputLabel for="certificadoPDFEditar" value="Certificado PDF"
 						id="pdfIDEditar" />
 
-					<p:fileUpload mode="advanced" id="certificadoPDFEditar" fileLimit="1"
+					<p:fileUpload mode="advanced" id="certificadoPDFEditar"
+						fileLimit="1"
 						fileLimitMessage="É possível selecionar apenas um arquivo"
 						invalidFileMessage="Tipo de arquivo inválido"
 						fileUploadListener="#{certificadoMB.upload}" auto="true"
@@ -388,13 +456,14 @@
 					update=":frmTabela :dlgInformacao" />
 
 				<p:commandButton value="Cancelar"
-					onclick="PF('dlgCertificadoEditar').hide();" alt="Cancelar" actionListener="#{certificadoMB.controleCancela()}"/>
+					onclick="PF('dlgCertificadoEditar').hide();" alt="Cancelar"
+					actionListener="#{certificadoMB.controleCancela()}" />
 			</div>
 		</h:form>
 
 	</p:dialog>
 	<!-- FIM DO DIALOG EDITAR -->
-	
-	
+
+
 </h:body>
 </html>

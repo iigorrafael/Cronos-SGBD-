@@ -56,27 +56,19 @@
 					filterBy="#{obj.descricao}" filterMatchMode="contains">
 					<h:outputText value="#{obj.descricao}" />
 				</p:column>
-				<p:column headerText="Início" sortBy="#{obj.horarioInicio}"
+				<p:column headerText="Início" sortBy="#{obj.horarioInicio}" style="width:140px"
 					filterBy="#{obj.horarioInicio}" filterMatchMode="contains">
 					<h:outputText value="#{obj.horarioInicio}">
 						<f:convertDateTime type="time" pattern="HH:mm" />
 					</h:outputText>
 				</p:column>
-				<p:column headerText="Encerramento" sortBy="#{obj.horarioFim}"
+				<p:column headerText="Final" sortBy="#{obj.horarioFim}" style="width:140px"
 					filterBy="#{obj.horarioFim}" filterMatchMode="contains">
 					<h:outputText value="#{obj.horarioFim}">
 						<f:convertDateTime type="time" pattern="HH:mm" />
 					</h:outputText>
 				</p:column>
-				<p:column headerText="Autenticação no Início"
-					sortBy="#{obj.autenticarInicio}" filterBy="#{obj.autenticarInicio}"
-					filterMatchMode="contains">
-					<h:outputText layout="inline" value="Sim"
-						rendered="#{obj.autenticarInicio}" />
-					<h:outputText layout="inline" value="Não"
-						rendered="#{!obj.autenticarInicio}" />
-				</p:column>
-				<p:column headerText="Autenticação no Final"
+				<p:column headerText="Autenticação no Final" style="width:200px"
 					sortBy="#{obj.autenticarFim}" filterBy="#{obj.autenticarFim}"
 					filterMatchMode="contains">
 					<h:outputText layout="inline" rendered="#{obj.autenticarFim}"
@@ -99,6 +91,15 @@
 					filterMatchMode="contains">
 					<h:outputText value="{obj.toleranciaFim}" />
 				</p:column> -->
+				<p:column headerText="E-mails" style="width:68px">
+					<p:commandButton update=":frmModalEmail" alt="E-mails"
+						title="E-mails" styleClass="btn btn-block"
+						onclick="PF('dlgEmail').show();" icon="ui-icon-pencil">
+						<f:setPropertyActionListener value="#{obj}"
+							target="#{atividadesEventoMB.atividade}" />
+							 <f:ajax listener="#{atividadesEventoMB.preencherListaReceberListas}" />
+					</p:commandButton>
+				</p:column>
 				<p:column headerText="Alterar" style="width:68px">
 					<p:commandButton update=":frmModalSalvar" alt="Alterar"
 						title="Alterar" styleClass="btn btn-block"
@@ -143,7 +144,7 @@
 					<p:autoComplete id="evento" dropdown="true"
 						value="#{atividadesEventoMB.atividade.evento}" scrollHeight="170"
 						completeMethod="#{atividadesEventoMB.completarEventos}"
-						forceSelection="true" converter="converterEvento" var="eve"
+						forceSelection="true" converter="#{converterEvento}" var="eve"
 						itemLabel="#{eve.nome}" itemValue="#{eve}" required="true"
 						requiredMessage="O campo evento não deve ser nulo" />
 				</div>
@@ -163,7 +164,7 @@
 					<label>Data *</label>
 					<p:calendar title="Data" style="width:100%" id="dataEvento"
 						alt="Data" mask="true"
-						value="#{atividadesEventoMB.atividade.dataAutenticacao}"
+						value="#{atividadesEventoMB.atividade.dataAtividade}"
 						required="true" requiredMessage="O campo data não deve ser nulo"
 						pattern="dd/MM/yyyy" />
 				</p:panelGrid>
@@ -193,14 +194,6 @@
 			<div class="ui-fluid">
 				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
 					styleClass="ui-panelgrid-blank" columns="1">
-					<label>Autenticar no Início? *</label>
-					<p:selectBooleanCheckbox
-						value="#{atividadesEventoMB.atividade.autenticarInicio}" />
-				</p:panelGrid>
-			</div>
-			<div class="ui-fluid">
-				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
-					styleClass="ui-panelgrid-blank" columns="1">
 					<label>Autenticar no Final?</label>
 					<p:selectBooleanCheckbox
 						value="#{atividadesEventoMB.atividade.autenticarFim}" />
@@ -212,7 +205,7 @@
 					<label>Tempo de Tolerância Antes Inicio *</label>
 					<p:inputText title="Tolerancia Antes do Inicio " style="width:100%"
 						id="toleranciaAntesInicio" alt="Descrião"
-						value="#{atividadesEventoMB.atividade.toleranciaAntesInicio}" />
+						value="#{atividadesEventoMB.atividade.tempoAntesInicio}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -221,7 +214,7 @@
 					<label>Tempo de Tolerância Após Inicio *</label>
 					<p:inputText title="Tolerancia Após Inicio" style="width:100%"
 						id="toleranciaAposInicio" alt="Tolerancia Após Inicio"
-						value="#{atividadesEventoMB.atividade.toleranciaAposInicio}" />
+						value="#{atividadesEventoMB.atividade.tempoAposInicio}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -230,7 +223,7 @@
 					<label>Tempo de Tolerância no Final </label>
 					<p:inputText title="Tolerancia no Final" style="width:100%"
 						id="toleranciaFim" alt="Tolerancia no Final"
-						value="#{atividadesEventoMB.atividade.toleranciaFim}" />
+						value="#{atividadesEventoMB.atividade.tempoAntesFim}" />
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
@@ -249,5 +242,78 @@
 		</h:form>
 	</p:dialog>
 	<!-- FIM DO MODAL SALVAR -->
+
+	<!-- MODAL EMAIL -->
+	<p:dialog header="Receber Lista por E-mail" widgetVar="dlgEmail"
+		modal="true" responsive="true" width="60%" id="dlgEmail"
+		closable="true" closeOnEscape="true" resizable="false"
+		draggable="false">
+		<h:form id="frmModalEmail">
+
+			<!-- FORM PRA CADASTRADOS -->
+
+			<h3 class="page-header">Usuario Cadastrado</h3>
+
+			<div class="ui-fluid">
+				<div class="col-md-12">
+					<label>Usuario</label>
+					<p:autoComplete id="usuario" dropdown="true"
+						value="#{atividadesEventoMB.usuario}" scrollHeight="170"
+						completeMethod="#{atividadesEventoMB.completarPessoas}"
+						forceSelection="true" converter="#{converterPessoa}" var="user"
+						itemLabel="#{user.nome}" itemValue="#{user}" />
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
+					actionListener="#{atividadesEventoMB.addListaEmailUsuario()}"
+					update=":frmTabela :dlgInformacao" alt="Sim" />
+			</div>
+
+			<!-- FORM PARA PESSOAS NÃO CADASTRADAS NO SISTEMA -->
+
+			<h3 class="page-header">Não Cadastrado</h3>
+
+			<div class="ui-fluid">
+				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
+					styleClass="ui-panelgrid-blank" columns="1">
+					<label>Nome</label>
+					<p:inputText title="Nome" style="width:100%" id="nome" alt="Nome"
+						value="#{atividadesEventoMB.receberLista.nome}" />
+				</p:panelGrid>
+			</div>
+
+			<div class="ui-fluid">
+				<p:panelGrid columnClasses="ui-grid-col-1, ui-grid-col-12"
+					styleClass="ui-panelgrid-blank" columns="1">
+					<label>E-mail</label>
+					<p:inputText title="Não cadastrado" style="width:100%"
+						id="naoCadastrado" alt="Não cadastrado"
+						value="#{atividadesEventoMB.receberLista.email}" />
+				</p:panelGrid>
+			</div>
+
+			<div class="modal-footer">
+				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
+					actionListener="#{atividadesEventoMB.addListaEmail()}"
+					update=":frmTabela :dlgInformacao" alt="Sim" />
+			</div>
+
+			<!-- PAGINATOR PRA EXIBIR DADOS -->
+
+			<p:dataList value="#{atividadesEventoMB.receberListas}" var="var"
+				type="unordered" itemType="none" paginator="true" rows="10"
+				styleClass="paginated">
+				<f:facet name="header">
+            Paginator
+        </f:facet>
+				<h:outputText value="Nome: #{var.nome}  |   E-mail: #{var.email}" />
+
+			</p:dataList>
+		</h:form>
+	</p:dialog>
+	<!-- FIM DO MODAL EMAIL -->
+
 </h:body>
 </html>

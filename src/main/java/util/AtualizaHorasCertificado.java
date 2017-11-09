@@ -1,34 +1,56 @@
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import ac.modelo.AlunoTurma;
 import ac.modelo.Atividade;
 import ac.modelo.AtividadeTurma;
 import ac.modelo.Certificado;
-import dao.DAOGenerico;
+import base.modelo.Tipo;
+import base.service.AlunoTurmaService;
+import base.service.CertificadoService; 
+import dao.GenericDAO;
 
-public class AtualizaHorasCertificado {
+public class AtualizaHorasCertificado implements Serializable{
+	
+	
+	private static final long serialVersionUID = 1L;
 
-	private DAOGenerico dao;
+
 	private List<Certificado> certificados;
 	private List<Atividade> atividadesCertificados;
 	private List<AtividadeTurma> atividadeTurmas;
-	private CalculoEquivalencia calculoEquivalencia;
+	
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado; 
+	
+	@Inject
+	private GenericDAO<AtividadeTurma> daoAtividadeTurma; 
+	
+	@Inject
+	private CertificadoService certificadoService;
+	
+	@Inject
+	private CalculoEquivalencia calculoEquivalencia; 
+	
 
 	public AtualizaHorasCertificado() {
-		dao = new DAOGenerico();
+		
 		certificados = new ArrayList<>();
 		atividadesCertificados = new ArrayList<>();
 		atividadeTurmas = new ArrayList<>();
-		calculoEquivalencia = new CalculoEquivalencia();
+		
 	}
 
 	public void buscarCertificados(AlunoTurma alunoTurma) {
 		try {
 			certificados = new ArrayList<>();
-			certificados = (List<Certificado>) dao.listar(Certificado.class,
+			certificados = (List<Certificado>) daoCertificado.listar(Certificado.class,
 					" aluno = " + alunoTurma.getAluno().getId());
 		} catch (Exception e) {
 			System.err.println("buscarCertificados");
@@ -54,7 +76,7 @@ public class AtualizaHorasCertificado {
 			verificarAtividades(alunoTurma);
 
 			for (int i = 0; i <= atividadesCertificados.size() - 1; i++) {
-				atividadeTurmas.addAll(dao.listar(AtividadeTurma.class, " atividade = "
+				atividadeTurmas.addAll(daoAtividadeTurma.listar(AtividadeTurma.class, " atividade = "
 						+ atividadesCertificados.get(i).getId() + " and turma = " + alunoTurma.getTurma().getId()));
 
 			}
@@ -70,25 +92,25 @@ public class AtualizaHorasCertificado {
 			if (certificados.size() > 0) {
 				buscarAtividades(alunoTurma);
 				buscarCertificados(alunoTurma);
-				dao.update(" Certificado set atualizado = false where aluno = " + alunoTurma.getAluno().getId());
+				certificadoService.update(" Certificado set atualizado = false where aluno = " + alunoTurma.getAluno().getId());
 
 				for (int i = 0; i <= certificados.size() - 1; i++) {
 					for (int c = 0; c <= atividadeTurmas.size() - 1; c++) {
 						if (certificados.get(i).getAtividadeTurma().getAtividade().getId() == atividadeTurmas.get(c)
 								.getAtividade().getId()) {
 
-							dao.update(" Certificado set atividadeTurma = " + atividadeTurmas.get(c).getId()
+							certificadoService.update(" Certificado set atividadeTurma = " + atividadeTurmas.get(c).getId()
 									+ " where id = " + certificados.get(i).getId());
 
 							certificados.get(i).setHoraComputada(
 									calculoEquivalencia.calcularHorasCertificado(certificados.get(i)));
-							dao.alterar(certificados.get(i));
+							certificadoService.inserirAlterar(certificados.get(i));
 
-							dao.update(" Certificado set atualizado = true where id = " + certificados.get(i).getId());
+							certificadoService.update(" Certificado set atualizado = true where id = " + certificados.get(i).getId());
 						}
 					}
 				}
-				dao.update(" Certificado set status = false where aluno = " + alunoTurma.getAluno().getId()
+				certificadoService.update(" Certificado set status = false where aluno = " + alunoTurma.getAluno().getId()
 						+ " and atualizado = false ");
 
 			}

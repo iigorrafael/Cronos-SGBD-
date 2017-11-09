@@ -2,6 +2,7 @@ package base.modelo;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import ac.modelo.Pessoa;
 
@@ -28,17 +29,35 @@ public class Aluno extends Pessoa implements Serializable {
 	
 	
 	private String telefoneResponsavel;
+	
+//	
+//	private boolean liberado;
+	
+	
+	private Integer qtdRespostas;
 
 	@Column(name = "permite_cadastro_certificado")
 	private Integer permiteCadastroCertificado;
 
 
+	public Integer getQtdRespostas() {
+		return qtdRespostas;
+	}
+
+	
+//	public boolean isLiberado() {
+//		return liberado;
+//	}
+//
+//
+//	public void setLiberado(boolean liberado) {
+//		this.liberado = liberado;
+//	}
 
 
-
-
-
-
+	public void setQtdRespostas(Integer qtdRespostas) {
+		this.qtdRespostas = qtdRespostas;
+	}
 
 	public String getNomeResponsavel() {
 		return nomeResponsavel;

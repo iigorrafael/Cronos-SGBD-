@@ -39,13 +39,13 @@
 				resizableColumns="true" reflow="true" rows="10" paginator="true"
 				paginatorPosition="bottom" emptyMessage="Nenhuma turma cadastrada"
 				rowsPerPageTemplate="5,10,15,30,50,100">
-				<p:column headerText="Curso" filterBy="#{obj.curso.nome}"
-					sortBy="#{obj.curso.nome}" filterMatchMode="contains">
-					<h:outputText value="#{obj.curso.nome}" />
+				<p:column headerText="Curso" filterBy="#{obj.curso.abreviacaoCurso}"
+					sortBy="#{obj.curso.abreviacaoCurso}" filterMatchMode="contains">
+					<h:outputText value="#{obj.curso.abreviacaoCurso}" />
 				</p:column>
-				<p:column headerText="Turma" filterBy="#{obj.descricao}"
-					sortBy="#{obj.descricao}" filterMatchMode="contains">
-					<h:outputText value="#{obj.descricao}" />
+				<p:column headerText="Turma" filterBy="#{obj.abreviacaoTurma}"
+					sortBy="#{obj.abreviacaoTurma}" filterMatchMode="contains">
+					<h:outputText value="#{obj.abreviacaoTurma}" />
 				</p:column>
 				<p:column headerText="Data de início"
 					sortBy="#{obj.dataInicioTurma}">
@@ -53,7 +53,11 @@
 						<f:convertDateTime pattern="dd/MM/yyyy" />
 					</h:outputText>
 				</p:column>
-
+				<p:column headerText="Matriz"
+					sortBy="#{obj.matriz.descricao}">
+					<h:outputText value="#{obj.matriz.descricao}"> 
+					</h:outputText>
+				</p:column> 
 				<p:column headerText="Alterar" style="width:68px">
 					<p:commandButton update=":frmModalSalvar" title="alterar"
 						alt="Alterar" onclick="PF('dlgTurma').show();"
@@ -82,24 +86,44 @@
 		closeOnEscape="true" resizable="false" draggable="false">
 		<h:form id="frmModalSalvar">
 			<div class="ui-fluid">
-				<div class="col-md-11">
+				<div class="col-md-12">
 					<label>Curso da turma *</label>
 					<p:autoComplete id="curso" dropdown="true"
 						value="#{turmaMB.turma.curso}" scrollHeight="170"
 						completeMethod="#{turmaMB.completarCursos}" forceSelection="true"
-						converter="converterCurso" var="cur" itemLabel="#{cur.nome}"
+						converter="#{converterCurso}" var="cur" itemLabel="#{cur.nome}"
 						itemValue="#{cur}" required="true"
 						requiredMessage="O campo curso da turma não deve ser nulo" />
 				</div>
 			</div>
+			
+			<div class="ui-fluid">
+				<div class="col-md-12">
+					<label>Matriz da turma *</label>
+					<p:autoComplete id="matriz" dropdown="true"
+						value="#{turmaMB.turma.matriz}" scrollHeight="170"
+						completeMethod="#{turmaMB.completarMatriz}" forceSelection="true"
+						converter="#{converterMatriz}" var="cur" itemLabel="#{cur.descricao}"
+						itemValue="#{cur}" required="true"
+						requiredMessage="O campo matriz da turma não deve ser nulo" />
+				</div>
+			</div>
 
 			<div class="ui-fluid">
-				<div class="col-md-6">
+				<div class="col-md-12">
 					<label>Descrição *</label>
 					<p:inputText title="Minímo de horas" id="ano" alt="ano da turma"
 						required="true"
 						requiredMessage="O campo ano da turma não deve ser nulo"
 						value="#{turmaMB.turma.descricao}" />
+				</div>
+				
+					<div class="col-md-6">
+					<label>Abreviação *</label>
+					<p:inputText title="abreviacao" id="abrev" alt="abreviacao"
+						required="true"
+						requiredMessage="O campo abreviação da turma não deve ser nulo"
+						value="#{turmaMB.turma.abreviacaoTurma}" />
 				</div>
 				<div class="col-md-6">
 					<label>Data de abertura *</label>
@@ -123,8 +147,7 @@
 					actionListener="#{turmaMB.salvar()}"
 					update="frmTabela :dlgInformacao" alt="Sim" />
 
-				<p:commandButton value="Cancelar"
-					oncomplete="PF('dlgTurma').hide();" alt="Cancelar" />
+				 
 
 			</div>
 		</h:form>

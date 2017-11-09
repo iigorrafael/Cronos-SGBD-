@@ -1,35 +1,60 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+
+import org.hibernate.Session;
 
 import util.ChamarRelatorio;
 import util.ExibirMensagem;
 import util.Mensagem;
 import util.RecuperarRelacoesProfessor;
+import util.Transacional;
 import util.VerificaSituacaoTurma;
 import ac.modelo.AlunoTurma;
 import ac.modelo.Certificado;
 import ac.modelo.Movimentacao;
-import base.modelo.Turma;
-import dao.DAOGenerico;
-import dao.DAOMovimentacaoAluno;
+import base.modelo.Turma; 
+import dao.GenericDAO;
+import dao.MovimentacaoAlunoDAO;
 
 @ViewScoped
-@ManagedBean
-public class RelatorioSecretariaMB {
-	private DAOGenerico dao;
+@Named("relatorioSecretariaMB")
+public class RelatorioSecretariaMB implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private Turma turma;
-	private DAOMovimentacaoAluno daoMovimentacaoAluno;
 	private List<Turma> turmas;
+	
 
-	public RelatorioSecretariaMB() {
-		dao = new DAOGenerico();
-		daoMovimentacaoAluno = new DAOMovimentacaoAluno();
+	
+	@Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma;
+	
+	@Inject
+	private GenericDAO<Turma> daoTurma;
+	
+	@Inject
+	private VerificaSituacaoTurma verificaSituacaoTurma;
+	
+	@Inject
+	private EntityManager manager;
+	
+    @Transacional
+	public void relatorioSecretariaMB() {
+	
 		turma = new Turma();
 		preencherListaTurma();
 		
@@ -37,28 +62,35 @@ public class RelatorioSecretariaMB {
 	}
 
 	public void imprimirCertificadoSituacao() {
-		VerificaSituacaoTurma verificaSituacaoTurma = new VerificaSituacaoTurma();
+		
+		
+		
+		
+		
 		try {
-			verificaSituacaoTurma.recuperarCertificados(turma);
-			List<AlunoTurma> alunoTurmas = dao.listar(AlunoTurma.class, " aluno.id is not null ");
+			verificaSituacaoTurma.recuperarCertificados(turma); 
+			List<AlunoTurma> alunoTurmas = daoAlunoTurma.listar(AlunoTurma.class, " aluno.id is not null ");
 			if (!alunoTurmas.isEmpty()) {
 
-				ChamarRelatorio ch = new ChamarRelatorio();
 				HashMap parametro = new HashMap<>();
-				parametro.put("TURMA", getTurma().getId());
-
-				ch.imprimeRelatorio("situacao.jasper", parametro,
-						"Relatório de situação da turma " + getTurma().getDescricao());
+				parametro.put("TURMA", turma.getId());
+				ChamarRelatorio ch = new ChamarRelatorio("situacao.jasper", parametro, "certificado_" + "Relatório de situação da turma " + turma.getDescricao());
+				Session sessions = manager.unwrap(Session.class);
+				sessions.doWork(ch);
+		
 			} else {
 				ExibirMensagem.exibirMensagem(Mensagem.NADA_ENCONTRADO);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 		}
 	}
 
 	public void preencherListaTurma() {
-		turmas = dao.listaComStatus(Turma.class);
+ 
+		
+		turmas = daoTurma.listaComStatus(Turma.class);
 	}
 
 	public List<Turma> completarTurma(String str) {

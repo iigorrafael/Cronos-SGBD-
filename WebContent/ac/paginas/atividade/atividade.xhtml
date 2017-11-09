@@ -86,12 +86,12 @@
 				</p:panelGrid>
 			</div>
 			<div class="ui-fluid">
-				<div class="col-md-11  col-xs-10">
+				<div class="col-md-12  col-xs-10">
 					<label>Grupo *</label>
 					<p:autoComplete id="grupo" dropdown="true" scrollHeight="170"
 						value="#{atividadeMB.atividade.grupo}"
 						completeMethod="#{atividadeMB.completarGrupo}"
-						forceSelection="true" converter="converterGrupo" var="gru"
+						forceSelection="true" converter="#{converterGrupo}" var="gru"
 						itemLabel="#{gru.descricao}" itemValue="#{gru}" required="true"
 						requiredMessage="O campo Grupo não deve ser nulo" />
 				</div>

@@ -6,21 +6,28 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
-
-import dao.DAOGenerico;
+import javax.inject.Inject;
+import javax.inject.Named;
+ 
+import dao.GenericDAO;
+import base.modelo.Curso;
 import base.modelo.Turma;
 import util.Mensagem;
-
-@FacesConverter("converterTurma")
+ 
+@Named("converterTurma")
 public class ConverterTurma implements Converter {
 
+	@Inject
+	private GenericDAO<Turma> dao;
+
+	
 	@Override
 	public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
 		if (value != null && value.trim().length() > 0) {
 			try {
-				DAOGenerico dao = new DAOGenerico();
-				Object turma = dao.buscarPorId(Turma.class, Long.parseLong(value));
-				return turma;
+		    
+				return dao.buscarPorId(Turma.class, Long.parseLong(value));
+			
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new ConverterException(

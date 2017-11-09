@@ -1,12 +1,14 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import util.ExibirMensagem;
 import util.FecharDialog;
 import util.Mensagem;
@@ -14,31 +16,61 @@ import util.PermiteInativar;
 import util.RecuperarRelacoesProfessor;
 import ac.modelo.Grupo;
 import ac.modelo.GrupoTurma;
+import ac.services.GrupoTurmaService;
+import base.modelo.Matriz;
 import base.modelo.Turma;
-import dao.DAOGenerico;
+import dao.GenericDAO;
 
 @SessionScoped
-@ManagedBean
-public class GrupoTurmaMB {
+@Named("grupoTurmaMB")
+public class GrupoTurmaMB implements Serializable {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private GrupoTurma grupoTurma;
 	private List<Turma> turmas;
 	private List<GrupoTurma> grupoTurmas;
 	private List<Grupo> grupos;
-	private DAOGenerico dao;
+	
+	
+	
+	@Inject
+	private GrupoTurmaService grupoTurmaService;
+	
+	@Inject
+	private GenericDAO<Grupo> daoGrupo;
+	
+	@Inject
+	private GenericDAO<GrupoTurma> daoGrupoTurma;
+	
+	@Inject
+	private GenericDAO<Matriz> daoMatriz;
+	
+    @Inject
 	private RecuperarRelacoesProfessor relacoesProfessor;
+    
+    @Inject
 	private PermiteInativar permiteInativar;
 
-	public GrupoTurmaMB() {
-		dao = new DAOGenerico();
+    @PostConstruct
+	public void inicializar() {
+		
 		criarNovoObjetoGrupoTurma();
 		turmas = new ArrayList<>();
 		grupoTurmas = new ArrayList<>();
 		grupos = new ArrayList<>();
-		dao = new DAOGenerico();
+		
 		preencherListaGrupoTurma();
+		
 	}
 
 	public void salvar() {
+	 
+		
 		try {
 
 			if (grupoTurma.getId() == null) {
@@ -49,7 +81,7 @@ public class GrupoTurmaMB {
 						if (grupoTurma.getMaximoHoras() >= grupoTurma.getMinimoHoras()) {
 							grupoTurma.setDataCadastro(new Date());
 							grupoTurma.setStatus(true);
-							dao.inserir(grupoTurma);
+							grupoTurmaService.inserirAlterar(grupoTurma);
 							ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 							criarNovoObjetoGrupoTurma();
 							preencherListaGrupoTurma();
@@ -68,7 +100,7 @@ public class GrupoTurmaMB {
 				} else {
 					if (grupoTurma.getMaximoHoras() >= 0 && grupoTurma.getMinimoHoras() >= 0) {
 						if (grupoTurma.getMaximoHoras() >= grupoTurma.getMinimoHoras()) {
-							dao.alterar(grupoTurma);
+							grupoTurmaService.inserirAlterar(grupoTurma);
 							ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 							criarNovoObjetoGrupoTurma();
 							preencherListaGrupoTurma();
@@ -90,11 +122,10 @@ public class GrupoTurmaMB {
 	}
 
 	public void inativar(GrupoTurma grupoTurma) {
-		permiteInativar = new PermiteInativar();
 		try {
 			if (permiteInativar.verificarGrupoTurmaComAtividadeTurma(grupoTurma)) {
 				grupoTurma.setStatus(false);
-				dao.alterar(grupoTurma);
+				grupoTurmaService.inserirAlterar(grupoTurma);
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherListaGrupoTurma();
 			} else {
@@ -111,24 +142,22 @@ public class GrupoTurmaMB {
 	}
 
 	public void preencherListaGrupoTurma() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
-		grupoTurmas = relacoesProfessor.recuperarGrupoTurmasProfessor();
+		grupoTurmas = daoGrupoTurma.listaComStatus(GrupoTurma.class);
+		
+	
 	}
 
-	public void preencherListaTurma() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
-		turmas = relacoesProfessor.recuperarTurmasProfessor();
-	}
+ 
 
 	public void preencherListaGrupo() {
-		grupos = dao.listaComStatus(Grupo.class);
+		grupos = daoGrupo.listaComStatus(Grupo.class);
 	}
 
 	public Boolean verificarGrupoTurmaIguais(GrupoTurma grupoTurma) {
 		try {
 			List<GrupoTurma> verificador = new ArrayList<>();
-			verificador = dao.listar(GrupoTurma.class,
-					" turma = " + grupoTurma.getTurma().getId() + " and grupo = " + grupoTurma.getGrupo().getId());
+			verificador = daoGrupoTurma.listar(GrupoTurma.class,
+					" matriz = " + grupoTurma.getMatriz().getId() + " and grupo = " + grupoTurma.getGrupo().getId());
 			if (verificador.isEmpty())
 				return false;
 		} catch (Exception e) {
@@ -141,7 +170,7 @@ public class GrupoTurmaMB {
 	public Boolean verificarGrupoTurmaIguaisAlterar(GrupoTurma grupoTurma) {
 		try {
 			List<GrupoTurma> verificador = new ArrayList<>();
-			verificador = dao.listar(GrupoTurma.class, " turma = " + grupoTurma.getTurma().getId() + " and grupo = "
+			verificador = daoGrupoTurma.listar(GrupoTurma.class, " matriz = " + grupoTurma.getMatriz().getId() + " and grupo = "
 					+ grupoTurma.getGrupo().getId() + " and id = " + grupoTurma.getId());
 			if (verificador.isEmpty())
 				return true;
@@ -152,15 +181,15 @@ public class GrupoTurmaMB {
 		return false;
 	}
 
-	public List<Turma> completarTurma(String str) {
-		preencherListaTurma();
-		List<Turma> turmasSelecionadas = new ArrayList<>();
-		for (Turma t : turmas) {
+	public List<Matriz> completarMatriz(String str) { 
+		List<Matriz> listMatriz = daoMatriz.listaComStatus(Matriz.class);
+		List<Matriz> listMatrizSelecionada = new ArrayList<>();
+		for (Matriz t : listMatriz) {
 			if (t.getDescricao().startsWith(str)) {
-				turmasSelecionadas.add(t);
+				listMatrizSelecionada.add(t);
 			}
 		}
-		return turmasSelecionadas;
+		return listMatrizSelecionada;
 	}
 
 	public List<Grupo> completarGrupos(String str) {

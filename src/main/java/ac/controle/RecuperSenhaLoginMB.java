@@ -1,34 +1,47 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.CriptografiaSenha;
 import util.EnviarEmail;
 import util.GeradorSenhas;
 import ac.modelo.Pessoa;
-import dao.DAOGenerico;
+import ac.services.PessoaService;
+import dao.GenericDAO;
 
 @ViewScoped
-@ManagedBean
-public class RecuperSenhaLoginMB {
+@Named("recuperSenhaLoginMB")
+public class RecuperSenhaLoginMB implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private String email;
-	private DAOGenerico dao;
+	
 	private List<Pessoa> lista;
 	private String mensagem;
 	
-	public RecuperSenhaLoginMB() {
-		dao = new DAOGenerico();
+	@Inject
+	private GenericDAO<Pessoa> daoPessoa;
+	
+	@Inject
+	private PessoaService pessoaService;
+	
+	@PostConstruct
+	public void inicializa() {
 		lista = new ArrayList<>();
 		mensagem = "";
 		email = "";
 	}
 	public Boolean buscarEmail() {
-		lista = dao.listaComStatus(Pessoa.class);
+		lista = daoPessoa.listaComStatus(Pessoa.class);
 		return lista.stream().anyMatch(p -> p.getUsuario().equals(email));
 	}
 
@@ -36,7 +49,7 @@ public class RecuperSenhaLoginMB {
 		String senha;
 		if (buscarEmail()) {
 			senha = GeradorSenhas.gerarSenha();
-			dao.updateSenha(CriptografiaSenha.criptografar(senha), email);
+			pessoaService.updateSenha(CriptografiaSenha.criptografar(senha), email);
 			if (EnviarEmail.enviarEmail(email, "Cronos, Recuperação de senha ",
 					"Olá, " + "\n" + "Sua nova senha: " + senha)) {
 				mensagem = "E-mail enviado";

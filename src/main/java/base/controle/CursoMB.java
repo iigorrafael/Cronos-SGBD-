@@ -1,64 +1,126 @@
 package base.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+import ac.modelo.GrupoTurma;
 import base.modelo.Curso;
+import base.modelo.Tipo;
+import base.service.CursoService;
+import base.service.TipoService;
 import util.ExibirMensagem;
 import util.FecharDialog;
 import util.Mensagem;
 import util.PermiteInativar;
-import dao.DAOGenerico;
+import dao.GenericDAO;
 
 @SessionScoped
-@ManagedBean
-public class CursoMB {
+@Named("cursoMB")
+public class CursoMB implements Serializable {
 
-	private DAOGenerico dao;
+	private static final long serialVersionUID = 1L;
+
 	private Curso curso;
 	private List<Curso> cursos;
 	private Date dataFechamento;
+
+	@Inject
+	private GenericDAO<Curso> daoCurso; // faz as buscas
+
+	@Inject
 	private PermiteInativar permiteInativar;
 
-	public CursoMB() {
-		dao = new DAOGenerico();
+	@Inject
+	private CursoService cursoService; // inserir no banco
+
+	@PostConstruct
+	public void inicializar() {
+		// dao = new DAOGenerico();
 		cursos = new ArrayList<>();
 		criarNovoCurso();
 		preencherListaCurso();
 	}
 
 	public void salvar() {
+
 		try {
 			if (curso.getId() == null) {
-				curso.setStatus(true);
-				curso.setDataCadastro(new Date());
-				dao.inserir(curso);
-				criarNovoCurso();
-				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
-				preencherListaCurso();
+				if (verificarCursoIguais(curso)) {
+					ExibirMensagem.exibirMensagem(Mensagem.CADASTROCURSO);
+				} else {
+
+					curso.setNome(curso.getNome().toUpperCase());
+					curso.setAbreviacaoCurso(curso.getAbreviacaoCurso().toUpperCase());
+					curso.setStatus(true);
+					curso.setDataCadastro(new Date());
+					cursoService.inserirAlterar(curso);
+					criarNovoCurso();
+					ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+					preencherListaCurso();
+					FecharDialog.fecharDialogCurso();
+				}
 			} else {
-				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
-				dao.alterar(curso);
-				criarNovoCurso();
-				preencherListaCurso();
+				if (verificarCursoIguais(curso) && verificarCursoIguaisAlterar(curso)) {
+					ExibirMensagem.exibirMensagem(Mensagem.CADASTROCURSO);
+				} else {
+					curso.setNome(curso.getNome().toUpperCase());
+					curso.setAbreviacaoCurso(curso.getAbreviacaoCurso().toUpperCase());
+					cursoService.inserirAlterar(curso);
+					ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+					criarNovoCurso();
+					preencherListaCurso();
+					FecharDialog.fecharDialogCurso();
+				}
 			}
-		} catch (Exception e) {
+		}
+
+		catch (Exception e) {
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 		}
-		FecharDialog.fecharDialogCurso();
+
+	}
+
+	public Boolean verificarCursoIguais(Curso curso) {
+		try {
+			List<Curso> verificador = new ArrayList<>();
+			verificador = daoCurso.listar(Curso.class, " nome = '" + curso.getNome().toUpperCase() + "'");
+			if (verificador.isEmpty())
+				return false;
+		} catch (Exception e) {
+			System.err.println("Erro no metodo verificarGrupoTurmaIguais");
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	public Boolean verificarCursoIguaisAlterar(Curso curso) {
+		try {
+			List<Curso> verificador = new ArrayList<>();
+			verificador = daoCurso.listar(Curso.class,
+					" nome = '" + curso.getNome().toUpperCase() + "' and id = " + curso.getId());
+			if (verificador.isEmpty())
+				return true;
+		} catch (Exception e) {
+			System.err.println("Erro no metodo verificarGrupoTurmaIguais");
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public void inativar(Curso curso) {
-		permiteInativar = new PermiteInativar();
+
 		try {
 			if (permiteInativar.verificarCursoComTurma(curso.getId())) {
 				if (permiteInativar.verificarCursoComProfessorCurso(curso.getId())) {
 					curso.setStatus(false);
-					dao.alterar(curso);
+					cursoService.inserirAlterar(curso);
 					ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 					preencherListaCurso();
 				} else {
@@ -73,7 +135,7 @@ public class CursoMB {
 	}
 
 	public void preencherListaCurso() {
-		cursos = dao.listaComStatus(Curso.class);
+		cursos = daoCurso.listaComStatus(Curso.class);
 	}
 
 	public void criarNovoCurso() {

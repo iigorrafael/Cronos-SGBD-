@@ -5,10 +5,16 @@ import ac.modelo.Pessoa;
 
 import base.modelo.Aluno;
 import base.modelo.Servidor;
-import dao.DAOUsuario;
+import dao.UsuarioDAO;
 
+import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -16,17 +22,27 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 @SessionScoped
-@ManagedBean
-public class UsuarioSessaoMB {
+@Named("usuarioSessaoMB")
+public class UsuarioSessaoMB implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private Pessoa pessoa;
 	private Servidor servidor;
+	private Pessoa alunoServidor;
 	private Aluno usuarioAluno;
 	private Servidor secretaria;
 	private Servidor administrador;
 
-	private DAOUsuario daoUsuario;
 
-	public UsuarioSessaoMB() {
+	@Inject
+	private UsuarioDAO daoUsuario;
+
+	
+	 public UsuarioSessaoMB() {
+		
+		 System.out.println("no usuario");
+		 
 		pessoa = new Pessoa();
 		SecurityContext context = SecurityContextHolder.getContext();
 		if (context instanceof SecurityContext) {
@@ -35,13 +51,15 @@ public class UsuarioSessaoMB {
 				pessoa.setUsuario(((User) authentication.getPrincipal()).getUsername());
 			}
 		}
+		
 	}
 
 	public Pessoa recuperarAluno() {
 		usuarioAluno = new Aluno();
-		daoUsuario = new DAOUsuario();
+		
 		try {
 			usuarioAluno = (Aluno) daoUsuario.retornarLogado(Aluno.class, pessoa.getUsuario()).get(0);
+			
 		} catch (Exception e) {
 		}
 		return usuarioAluno;
@@ -49,12 +67,29 @@ public class UsuarioSessaoMB {
 	
 	public Pessoa recuperarServidor() {
 		servidor = new Servidor();
-		daoUsuario = new DAOUsuario();
+	
 		try {
 			servidor = (Servidor) daoUsuario.retornarLogado(Servidor.class, pessoa.getUsuario()).get(0);
 		} catch (Exception e) {
 		}
+		
+		
+		
 		return servidor;
+	}	
+	
+	
+	public Pessoa recuperarPessoa() {
+		alunoServidor = new Pessoa();
+	
+		try {
+			alunoServidor = (Pessoa) daoUsuario.retornarLogado(Pessoa.class, pessoa.getUsuario()).get(0);
+		} catch (Exception e) {
+		}
+		
+		
+		
+		return alunoServidor;
 	}	
 	
 	
@@ -62,7 +97,7 @@ public class UsuarioSessaoMB {
 	public Servidor recuperarCadastroServidor() {
 	
 		servidor = new Servidor();
-		daoUsuario = new DAOUsuario();
+	
 		try {
 			servidor = (Servidor) daoUsuario.retornarLogado(Servidor.class, pessoa.getUsuario()).get(0);
 		} catch (Exception e) {
@@ -76,7 +111,7 @@ public class UsuarioSessaoMB {
 
 		
 		secretaria = new Servidor();
-		daoUsuario = new DAOUsuario();
+		
 		try {
 			secretaria = (Servidor) daoUsuario.retornarLogado(Servidor.class, pessoa.getUsuario()).get(0);
 			
@@ -89,7 +124,7 @@ public class UsuarioSessaoMB {
 	public Servidor recuperarProfessor() { //public Professor recuperarProfessor() {
 		
 		servidor = new Servidor();// professor = new Professor();
-		daoUsuario = new DAOUsuario();
+		
 		try {
 			servidor = (Servidor) daoUsuario.retornarLogado(Servidor.class, pessoa.getUsuario()).get(0);
 		} catch (Exception e) {
@@ -101,7 +136,7 @@ public class UsuarioSessaoMB {
 
 
 		administrador = new Servidor();
-		daoUsuario = new DAOUsuario();
+	
 		try {
 			administrador = (Servidor) daoUsuario.retornarLogado(Servidor.class, pessoa.getUsuario()).get(0);
 		} catch (Exception e) {

@@ -79,19 +79,28 @@
 		<h:form id="frmModalSalvar">
 
 			<div class="ui-fluid">
+			
+					<div class="col-md-12">
+						<label>Nome do curso *</label>
+						<p:inputText title="Nome do curso" id="nome"
+							value="#{cursoMB.curso.nome}" required="true"
+							requiredMessage="O campo nome não deve ser nulo" />
+					</div>
+					
 				<div class="col-md-8">
-					<label>Nome do curso *</label>
-					<p:inputText title="Nome do curso" id="nome"
-						value="#{cursoMB.curso.nome}" required="true"
-						requiredMessage="O campo nome não deve ser nulo" />
+						<label>Abreviação *</label>
+						<p:inputText title="abreviacao do curso" id="abreviacao"
+							value="#{cursoMB.curso.abreviacaoCurso}" required="true"
+							requiredMessage="O campo abreviação não deve ser nulo" />
 				</div>
-			</div>
-			<div class="col-md-4">
-				<label>Data de abertura *</label>
-				<p:calendar id="dtAbertura" value="#{cursoMB.curso.dataAbertura}"
-					pattern="dd/MM/yyyy" mask="true" required="true"
-					requiredMessage="O campo data de abertura não deve ser nulo" />
+				
+				<div class="col-md-4">
+					<label>Data de abertura *</label>
+					<p:calendar id="dtAbertura" value="#{cursoMB.curso.dataAbertura}"
+						pattern="dd/MM/yyyy" mask="true" required="true"
+						requiredMessage="O campo data de abertura não deve ser nulo" />
 
+				</div>
 			</div>
 			<div class="ui-fluid">
 				<div class="col-md-12">
@@ -100,6 +109,8 @@
 
 				</div>
 			</div>
+
+
 
 			<div class="modal-footer">
 				<p:commandButton value="Salvar" styleClass="ui-priority-primary"

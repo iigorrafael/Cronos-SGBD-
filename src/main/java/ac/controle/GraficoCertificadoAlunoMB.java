@@ -1,5 +1,6 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,9 +8,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashMap;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
 
+import org.hibernate.Session;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.BarChartModel;
@@ -18,45 +24,68 @@ import org.primefaces.model.chart.ChartSeries;
 import ac.modelo.AlunoTurma;
 import ac.modelo.Certificado;
 import ac.modelo.GrupoTurma;
-import base.modelo.Aluno;
-import dao.DAOFiltros;
-import dao.DAOGenerico;
+import base.modelo.Aluno; 
+import dao.FiltrosDAO;
+import dao.GenericDAO;
 import util.ChamarRelatorio;
 import util.ExibirMensagem;
 import util.Mensagem;
 
 @ViewScoped
-@ManagedBean
-public class GraficoCertificadoAlunoMB {
+@Named("graficoCertificadoAlunoMB")
+public class GraficoCertificadoAlunoMB  implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private AlunoTurma alunoTurmaSelecionada;
 	private List<AlunoTurma> listAlunoTurmas;
-
 	private BarChartModel grafico;
 	private AlunoTurma alunoTurma;
-	private DAOFiltros daoFiltros;
-	private UsuarioSessaoMB usuarioSessao;
 	private List<Certificado> certificados;
 	private List<Long> idGrupos;
 	private Set<Long> idGruposSelecionados;
-	private DAOGenerico dao;
 	private ChartSeries totalGrupo;
 	private ChartSeries totalCertificado;
 	private List<Long> gruposTurmas;
+	
+	@Inject
+	private FiltrosDAO daoFiltros;
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado;
+	
+	@Inject
+	private GenericDAO<GrupoTurma> daoGrupoTurma;
+	
+	@Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma;
+	
+	@Inject
+	private GenericDAO<Aluno> daoAluno;
+	
+	@Inject
+	private EntityManager manager;
 
-	public GraficoCertificadoAlunoMB() {
+	@PostConstruct
+	public void inicializar() {
 
 		alunoTurmaSelecionada = new AlunoTurma();
 		listAlunoTurmas = new ArrayList<>();
 
 		grafico = new BarChartModel();
 		alunoTurma = new AlunoTurma();
-		daoFiltros = new DAOFiltros();
-		usuarioSessao = new UsuarioSessaoMB();
+		
 		certificados = new ArrayList<>();
 		idGrupos = new ArrayList<>();
 		idGruposSelecionados = new HashSet<>();
-		dao = new DAOGenerico();
+
 		totalGrupo = new ChartSeries();
 		totalCertificado = new ChartSeries();
 		gruposTurmas = new ArrayList<>();
@@ -117,15 +146,15 @@ public class GraficoCertificadoAlunoMB {
 		for (int i = 0; i <= gruposTurmas.size() - 1; i++) {
 			if (alunoTurmaSelecionada.getId() == null) {
 
-				certificados = dao.listar(Certificado.class, " situacao = 3 and aluno = "
+				certificados = daoCertificado.listar(Certificado.class, " situacao = 3 and aluno = "
 						+ usuarioSessao.recuperarAluno().getId() + " and idGrupoTurma = " + gruposTurmas.get(i));
 			} else {
-				certificados = dao.listar(Certificado.class, " situacao = 3 and alunoTurma = "
+				certificados = daoCertificado.listar(Certificado.class, " situacao = 3 and alunoTurma = "
 						+ alunoTurmaSelecionada.getId() + " and idGrupoTurma = " + gruposTurmas.get(i));
 			}
 			for (Certificado c : certificados) {
 				somaCertificados = somaCertificados + c.getHoraComputada();
-				grupoTurma = (GrupoTurma) dao.listar(GrupoTurma.class, " id = " + c.getIdGrupoTurma()).get(0);
+				grupoTurma =  daoGrupoTurma.listar(GrupoTurma.class, " id = " + c.getIdGrupoTurma()).get(0);
 			}
 			if (somaCertificados > 0.0) {
 				criarGrafico(somaCertificados, grupoTurma);
@@ -165,18 +194,20 @@ public class GraficoCertificadoAlunoMB {
 				ExibirMensagem.exibirMensagem(Mensagem.TURMAGRUPO);
 			} else {
 
-				List<Certificado> certificados = dao.listar(Certificado.class,
-						" alunoTurma = " + alunoTurmaSelecionada.getId() + " and atividadeTurma.turma = "
-								+ alunoTurmaSelecionada.getTurma().getId() + " and situacao = 3");
+				List<Certificado> certificados = daoCertificado.listar(Certificado.class,
+						" alunoTurma = " + alunoTurmaSelecionada.getId() + " and atividadeTurma.matriz = "
+								+ alunoTurmaSelecionada.getTurma().getMatriz().getId() + " and situacao = 3");
 
 				if (!certificados.isEmpty()) {
 					Certificado cs = certificados.get(0);
-
-					ChamarRelatorio ch = new ChamarRelatorio();
+					
 					HashMap parametro = new HashMap<>();
 					parametro.put("ALUNOTURMA", alunoTurmaSelecionada.getId());
-
-					ch.imprimeRelatorio("grupoTurmaAlunoOutro2.jasper", parametro, "Relatório situação nos grupos");
+					ChamarRelatorio ch = new ChamarRelatorio("grupoTurmaAlunoOutro2.jasper", parametro, "Relatório situação nos grupos");
+					Session sessions = manager.unwrap(Session.class);
+					sessions.doWork(ch);
+					
+					  
 				} else {
 					ExibirMensagem.exibirMensagem(Mensagem.NADA_ENCONTRADO);
 				}
@@ -205,8 +236,8 @@ public class GraficoCertificadoAlunoMB {
 
 	public List<AlunoTurma> getListAlunoTurmas() {
 
-		Aluno aluno = (Aluno) dao.buscarPorId(Aluno.class, usuarioSessao.recuperarAluno().getId());
-		listAlunoTurmas = dao.listar(AlunoTurma.class, " controle = 1 and aluno  = " + aluno.getId());
+		Aluno aluno =  daoAluno.buscarPorId(Aluno.class, usuarioSessao.recuperarAluno().getId());
+		listAlunoTurmas = daoAlunoTurma.listar(AlunoTurma.class, " controle = 1 and aluno  = " + aluno.getId());
 
 		return listAlunoTurmas;
 	}

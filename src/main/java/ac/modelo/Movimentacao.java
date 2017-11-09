@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 
+import org.jboss.logging.annotations.Message;
 
 /**
  * Entity implementation class for Entity: Movimentacao

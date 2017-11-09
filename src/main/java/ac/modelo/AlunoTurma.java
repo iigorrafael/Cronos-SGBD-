@@ -43,7 +43,8 @@ public class AlunoTurma implements Serializable {
 	
 	@Column(name = "permite_cadastro_certificado")
 	private Integer permiteCadastroCertificado;
-
+	
+	private boolean liberado;
 
 	@Column(name = "data_mudanca", nullable = false)
 	private Date dataMudanca;
@@ -52,6 +53,8 @@ public class AlunoTurma implements Serializable {
 	private Date momentoMudanca; 
 	
 	private String justificativa;  
+	
+	private Integer situacao;
 	
 	private int controle;
 
@@ -65,9 +68,26 @@ public class AlunoTurma implements Serializable {
 	public Aluno getAluno() {
 		return aluno;
 	}
+	
+	public boolean isLiberado() {
+		return liberado;
+	}
+
+	public void setLiberado(boolean liberado) {
+		this.liberado = liberado;
+	}
 
 	public void setAluno(Aluno aluno) {
 		this.aluno = aluno;
+	}
+	
+
+	public Integer getSituacao() {
+		return situacao;
+	}
+
+	public void setSituacao(Integer situacao) {
+		this.situacao = situacao;
 	}
 
 	public Turma getTurma() {

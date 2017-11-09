@@ -44,17 +44,17 @@
 				</p:column>
 
 				<p:column headerText="Curso"
-					filterBy="#{obj.atividadeTurma.turma.curso.nome}"
-					sortBy="#{obj.atividadeTurma.turma.curso.nome}"
+					filterBy="#{obj.alunoTurma.turma.curso.abreviacaoCurso}"
+					sortBy="#{obj.alunoTurma.turma.curso.abreviacaoCurso}"
 					filterMatchMode="contains">
-					<h:outputText value="#{obj.atividadeTurma.turma.curso.nome}" />
+					<h:outputText value="#{obj.alunoTurma.turma.curso.abreviacaoCurso}" />
 				</p:column>
 
 				<p:column headerText="Turma"
-					filterBy="#{obj.atividadeTurma.turma.descricao}"
-					sortBy="#{obj.atividadeTurma.turma.descricao}"
+					filterBy="#{obj.alunoTurma.turma.abreviacaoTurma}"
+					sortBy="#{obj.alunoTurma.turma.abreviacaoTurma}"
 					filterMatchMode="contains">
-					<h:outputText value="#{obj.atividadeTurma.turma.descricao}" />
+					<h:outputText value="#{obj.alunoTurma.turma.abreviacaoTurma}" />
 				</p:column>
 
 				<p:column headerText="Aluno" filterBy="#{obj.aluno.nome}"
@@ -95,20 +95,24 @@
 					<label>Atividade: </label>
 					<h:outputText
 						value="#{certificadoProfessorMB.certificado.atividadeTurma.atividade.descricao}" />
+						
+					<label>Matriz: </label>
+					<h:outputText
+						value="#{certificadoProfessorMB.certificado.atividadeTurma.matriz.descricao}" />
 
 					<label>Turma: </label>
 					<h:outputText
-						value="#{certificadoProfessorMB.certificado.atividadeTurma.turma.descricao}" />
+						value="#{certificadoProfessorMB.certificado.alunoTurma.turma.abreviacaoTurma}" />
 
 					<label>Data de início da turma: </label>
 					<h:outputText
-						value="#{certificadoProfessorMB.certificado.atividadeTurma.turma.dataInicioTurma}">
+						value="#{certificadoProfessorMB.certificado.alunoTurma.turma.dataInicioTurma}">
 						<f:convertDateTime pattern="dd/MM/yyyy" />
 					</h:outputText>
 
 					<label>Curso: </label>
 					<h:outputText
-						value="#{certificadoProfessorMB.certificado.atividadeTurma.turma.curso.nome}" />
+						value="#{certificadoProfessorMB.certificado.alunoTurma.turma.curso.abreviacaoCurso}" />
 
 					<label>Descrição: </label>
 					<h:outputText
@@ -203,13 +207,13 @@
 	<!-- ARQUIVO PDF -->
 	<p:dialog header="Arquivo" widgetVar="dlgArquivo" modal="true"
 		id="dlgArquivo" closable="true" closeOnEscape="true" responsive="true"
-		resizable="false" draggable="false">
+		resizable="false" draggable="true">
 		<h:form id="uploadCertificado">
 			<label>Certificado: </label>
 			<h:outputText
 				value="#{certificadoProfessorMB.certificado.caminhoCertificado}" />
 	    	<object type="application/pdf"
-				data="${facesContext.externalContext.requestContextPath}/certificadoUpload/#{certificadoProfessorMB.certificado.caminhoCertificado}.pdf?pfdrid_c=true"
+				data="../../certificados/#{certificadoProfessorMB.certificado.caminhoCertificado}.pdf?pfdrid_c=true"
 				height="500px" width="100%" internalinstanceid="11" />
 		</h:form>
 	</p:dialog>

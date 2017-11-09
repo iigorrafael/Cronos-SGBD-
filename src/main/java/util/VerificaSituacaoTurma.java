@@ -1,55 +1,77 @@
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import ac.modelo.AlunoTurma;
 import ac.modelo.Certificado;
 import ac.modelo.GrupoTurma;
+import ac.services.AlunoService;
 import base.modelo.Aluno;
-import base.modelo.Turma;
-import dao.DAOFiltros;
-import dao.DAOGenerico;
+import base.modelo.Turma; 
+import dao.FiltrosDAO;
+import dao.GenericDAO;
 
-public class VerificaSituacaoTurma {
-	private DAOGenerico dao;
+public class VerificaSituacaoTurma implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private List<GrupoTurma> grupoTurmas;
 	private List<Certificado> certificados;
 	private List<AlunoTurma> alunosTurmas;
-	private DAOFiltros daoFiltros;
-
-	public VerificaSituacaoTurma() {
-		dao = new DAOGenerico();
+	
+	
+	@Inject
+	private GenericDAO<GrupoTurma> daoGrupoTurma;
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado;
+	
+	@Inject
+	private AlunoService alunoService;
+	
+	@Inject
+	private  FiltrosDAO daoFiltros;
+	
+	public  VerificaSituacaoTurma() {
 		grupoTurmas = new ArrayList<>();
 		alunosTurmas = new ArrayList<>();
 		certificados = new ArrayList<>();
-		daoFiltros = new DAOFiltros();
+
 	}
 
 	public void recuperarGrupoTurma(Turma turma) {
-		grupoTurmas = dao.listar(GrupoTurma.class, " turma = " + turma.getId());
+		grupoTurmas = daoGrupoTurma.listar(GrupoTurma.class, " matriz = " + turma.getMatriz().getId());
 	}
 
 	public void recuperarAlunoTurmas(Turma turma) {
 		alunosTurmas = daoFiltros.buscarAlunoTurma(turma.getId());
+
 	}
 
 	public void recuperarCertificados(Turma turma) {
-//		recuperarAlunoTurmas(turma);
-//		for (AlunoTurma a : alunosTurmas) {
-//			certificados
-//					.addAll(dao.listar(Certificado.class, " aluno = " + a.getAluno().getId() + " and situacao = 3"));
-//			calcularSituacao(turma, a);
-//			certificados = new ArrayList<>();
-//		}
 
 		recuperarAlunoTurmas(turma);
+	
+		
+		
 		for (AlunoTurma a : alunosTurmas) {
-			certificados
-					.addAll(dao.listar(Certificado.class, " alunoTurma = " + a.getId() + " and situacao = 3"));
+
+			certificados.addAll(daoCertificado.listar(Certificado.class, " alunoTurma = " + a.getId() + " and situacao = 3"));
 			calcularSituacao(turma, a);
 			certificados = new ArrayList<>();
+			
+			
 		}
+		
+	
 		
 	}
 
@@ -84,9 +106,9 @@ public class VerificaSituacaoTurma {
 
 	public void alterarSituacao(AlunoTurma alunoTurma, Boolean situacao) {
 		if (situacao) {
-			dao.update(" Aluno set situacao = 'Completou' where id = " + alunoTurma.getAluno().getId());
+			alunoService.update(" Aluno set situacao = 'Completou' where id = " + alunoTurma.getAluno().getId());
 		} else {
-			dao.update(" Aluno set situacao = 'Não Completou' where id = " + alunoTurma.getAluno().getId());
+			alunoService.update(" Aluno set situacao = 'Não Completou' where id = " + alunoTurma.getAluno().getId());
 		}
 	}
 }

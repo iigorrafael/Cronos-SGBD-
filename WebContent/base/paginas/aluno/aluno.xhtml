@@ -79,8 +79,23 @@
 										styleClass="btn btn-block"
 										actionListener="#{alunoMB.alterar(obj)}"
 										onclick="PF('dlgAlunoEditarDados').show();"
-										update="frmModalSalvarEditarDados">
-									</p:commandButton>
+										update="frmModalSalvarEditarDados"/>
+								</p:column>
+								
+									<p:column headerText="Data" style="width:68px">
+									<p:commandButton icon="ui-icon-pencil"
+										styleClass="btn btn-block"
+										actionListener="#{alunoMB.alterarDataMudanca(obj)}"
+										onclick="PF('dlgAlunoEditarData').show();"
+										update="frmModalSalvarEditarData"/>
+								</p:column>
+
+
+								<p:column headerText="Curso" style="width:68px">
+									<p:commandButton icon="ui-icon-pencil" 
+								    	actionListener="#{alunoMB.alterar(obj)}"
+										styleClass="btn btn-block" oncomplete="PF('dlgAlunoCursoEditar').show();"
+										update=":frmModalEditarCurso" />
 								</p:column>
 								<p:column headerText="Senha" style="width:68px">
 									<p:commandButton icon="ui-icon-pencil"
@@ -95,7 +110,7 @@
 										icon="ui-icon-trash" title="Excluir"
 										styleClass="btn btn-block" update="frmTabela :dlgInformacao"
 										alt="Excluir">
-										<p:confirm header="Confirmação" message="Deseja excluir?" />
+										<p:confirm header="Confirmação" message="Ao excluir o aluno, ele será desvinculado de todos os cursos, deseja excluir?" />
 									</p:commandButton>
 								</p:column>
 							</p:dataTable>
@@ -125,6 +140,12 @@
 									filterBy="#{obj2.alunoTurma.aluno.nome}"
 									filterMatchMode="contains">
 									<h:outputText value="#{obj2.alunoTurma.aluno.nome}" />
+								</p:column>
+								<p:column headerText="Turma"
+									sortBy="#{obj2.alunoTurma.aluno.nome}"
+									filterBy="#{obj2.alunoTurma.turma.descricao}"
+									filterMatchMode="contains">
+									<h:outputText value="#{obj2.alunoTurma.turma.descricao}" />
 								</p:column>
 								<p:column headerText="Ra" sortBy="#{obj2.alunoTurma.ra}"
 									filterBy="#{obj2.alunoTurma.ra}" filterMatchMode="contains">
@@ -176,7 +197,7 @@
 	<!-- DIALOG SALVAR -->
 	<p:dialog header="Aluno" widgetVar="dlgAluno" modal="true"
 		id="dlgAluno" closable="true" closeOnEscape="true" resizable="false"
-		draggable="false" responsive="true" width="60%">
+		draggable="false" responsive="true" width="65%">
 		<h:form id="frmModalSalvar">
 			<div class="ui-fluid">
 				<div class="col-md-12">
@@ -199,21 +220,82 @@
 
 			<div class="ui-fluid">
 
+				<div class="col-md-4">
+					<label>CPF *</label>
+					<p:inputMask title="cpf" styleClass="col-md-12" id="cpf" alt="cpf"
+						value="#{alunoMB.aluno.cpf}" required="true" mask="999.999.999-99"
+						requiredMessage="O campo cpf não deve ser nulo" />
+				</div>
+				<div class="col-md-4">
+					<label>RG *</label>
+					<p:inputText title="rg" styleClass="col-md-12" id="rg" alt="rg"
+						value="#{alunoMB.aluno.rg}" required="true" requiredMessage="O campo rg não deve ser nulo" />
+				</div>
+
+				<div class="col-md-4">
+					<label>Orgão emissor *</label>
+					<p:inputText title="emissor" styleClass="col-md-12" id="emissor"
+						alt="emissor" value="#{alunoMB.aluno.orgaoRg}" required="true"
+						requiredMessage="O campo orgão emissor não deve ser nulo" />
+				</div>
+			</div>
+
+			<div class="ui-fluid">
+
+				<div class="col-md-4">
+					<label>Sexo*</label>
+					<p:selectOneRadio id="sexoCadastra" value="#{alunoMB.aluno.sexo}">
+						<f:selectItem itemLabel="Masculino" itemValue="M" />
+
+						<f:selectItem itemLabel="Feminino" itemValue="F" />
+					</p:selectOneRadio>
+				</div>
+				<div class="col-md-4">
+					<label>Natalidade *</label>
+					<p:inputText title="natalidade" styleClass="col-md-12"
+						id="natalidade" alt="natalidade"
+						value="#{alunoMB.aluno.natalidade}" required="true"
+						requiredMessage="O campo natalidade não deve ser nulo" />
+				</div>
+
+				<div class="col-md-4">
+					<label>Data de nascimento *</label>
+					<p:calendar id="dtAbertura" value="#{alunoMB.aluno.dataNascimento}"
+						pattern="dd/MM/yyyy" mask="true" required="true"
+						requiredMessage="O campo data de nascimento não deve ser nulo" />
+
+				</div>
+			</div>
+
+			<div class="ui-fluid">
+
 				<div class="col-md-6">
-					<label>Nome Responsável *</label>
-					<p:inputText title="Nome" styleClass="col-md-12"
-						id="nomeRespnsavel" alt="nome"
-						value="#{alunoMB.aluno.nomeResponsavel}" required="true"
-						requiredMessage="O campo responsável não deve ser nulo" />
+					<label>Nome Pai *</label>
+					<p:inputText title="NomePai" styleClass="col-md-12" id="nomePai"
+						alt="nomePai" value="#{alunoMB.aluno.nomePai}" required="true"
+						requiredMessage="O campo Nome Pai não deve ser nulo" />
 				</div>
 				<div class="col-md-6">
-					<label>Telefone Responsável *</label>
-					<p:inputMask title="Nome" styleClass="col-md-12"
-						id="telefoneResponsavel" alt="nome"
-						value="#{alunoMB.aluno.telefoneResponsavel}" required="true"
-						requiredMessage="O campo telefone responsável não deve ser nulo"
-						mask="(99)9999-9999" />
+					<label>Nome Mãe *</label>
+					<p:inputText title="NomeMãe" styleClass="col-md-12" id="nomeMae"
+						alt="nomeMae" value="#{alunoMB.aluno.nomeMae}" required="true"
+						requiredMessage="O campo nome mãe não deve ser nulo" />
 				</div>
+
+			</div>
+			<div class="ui-fluid">
+				<div class="col-md-6">
+					<label>Telefone </label>
+					<p:inputText title="telefone" styleClass="col-md-12" id="telefone"
+						alt="telefone" value="#{alunoMB.aluno.telefone}"  />
+				</div>
+
+				<div class="col-md-6">
+					<label>Celular </label>
+					<p:inputText title="Celular" styleClass="col-md-12" id="celular"
+						alt="celular" value="#{alunoMB.aluno.celular}" />
+				</div>
+
 			</div>
 
 			<div class="ui-fluid">
@@ -236,7 +318,7 @@
 				<div class="col-md-12">
 					<label></label>
 					<p:commandButton value="Curso" alt="Sim"
-					    actionListener="#{alunoMB.abrirCurso()}" 
+						actionListener="#{alunoMB.abrirCurso()}"
 						styleClass="ui-priority-primary" update=":dlgInformacao" />
 				</div>
 			</div>
@@ -246,14 +328,14 @@
 					<small>Campos obrigatórios *</small>
 				</div>
 			</div>
-			
-			</h:form>
-			<div class="modal-footer">
 
-				<p:commandButton value="Cancelar" onclick="PF('dlgAluno').hide();"
-					alt="Cancelar" />
-			</div>
-		
+		</h:form>
+		<div class="modal-footer">
+
+			<p:commandButton value="Cancelar" onclick="PF('dlgAluno').hide();"
+				alt="Cancelar" />
+		</div>
+
 	</p:dialog>
 	<!-- FIM DO DIALOG SALVAR -->
 
@@ -276,7 +358,7 @@
 					<p:autoComplete id="turma" dropdown="true" scrollHeight="170"
 						value="#{alunoMB.alunoTurma.turma}"
 						completeMethod="#{alunoMB.completarTurma}" forceSelection="true"
-						converter="converterTurma" var="tur" itemLabel="#{tur}"
+						converter="#{converterTurma}" var="tur" itemLabel="#{tur}"
 						itemValue="#{tur}" required="true"
 						requiredMessage="O campo turma não deve ser nulo" />
 				</div>
@@ -393,6 +475,7 @@
 							<f:selectItem itemLabel="Cancelamento" itemValue="3" />
 							<f:selectItem itemLabel="Abandono" itemValue="4" />
 							<f:selectItem itemLabel="Concluiu" itemValue="5" />
+							<f:selectItem itemLabel="Transferência" itemValue="6" />
 						</p:selectOneMenu>
 					</div>
 				</div>
@@ -452,7 +535,7 @@
 	<!-- DIALOG SALVAR Editar -->
 	<p:dialog header="Aluno" widgetVar="dlgAlunoEditarDados" modal="true"
 		id="dlgAlunoEditarDados" closable="true" closeOnEscape="true"
-		resizable="false" draggable="false" responsive="true" width="60%">
+		resizable="false" draggable="true" responsive="true" width="60%">
 		<h:form id="frmModalSalvarEditarDados">
 
 
@@ -477,33 +560,90 @@
 
 			<div class="ui-fluid">
 
-				<div class="col-md-6">
-					<label>Nome Responsável *</label>
-					<p:inputText title="Nome" styleClass="col-md-12"
-						id="nomeRespnsavel" alt="nome"
-						value="#{alunoMB.aluno.nomeResponsavel}" required="true"
-						requiredMessage="O campo responsável não deve ser nulo" />
+				<div class="col-md-4">
+					<label>CPF *</label>
+					<p:inputMask title="cpf" styleClass="col-md-12" id="cpf" alt="cpf"
+						value="#{alunoMB.aluno.cpf}" required="true" mask="999.999.999-99"
+						requiredMessage="O campo cpf não deve ser nulo" />
 				</div>
-				<div class="col-md-6">
-					<label>Telefone Responsável *</label>
-					<p:inputMask title="Nome" styleClass="col-md-12"
-						id="telefoneResponsavel" alt="nome"
-						value="#{alunoMB.aluno.telefoneResponsavel}" required="true"
-						requiredMessage="O campo telefone responsável não deve ser nulo"
-						mask="(99)9999-9999" />
+				<div class="col-md-4">
+					<label>RG *</label>
+					<p:inputText title="rg" styleClass="col-md-12" id="rg" alt="rg"
+						value="#{alunoMB.aluno.rg}" required="true" 
+						requiredMessage="O campo rg não deve ser nulo" />
+				</div>
+
+				<div class="col-md-4">
+					<label>Orgão emissor *</label>
+					<p:inputText title="emissor" styleClass="col-md-12" id="emissor"
+						alt="emissor" value="#{alunoMB.aluno.orgaoRg}" required="true"
+						requiredMessage="O campo orgão emissor não deve ser nulo" />
 				</div>
 			</div>
 
 			<div class="ui-fluid">
 
-				<div class="col-md-12">
-					<label></label>
-					<p:commandButton value="Curso" alt="Sim"
-						actionListener="#{alunoMB.salvarIrCurso()}"
-						styleClass="ui-priority-primary"
-						update=":frmModalEditarCurso :dlgInformacao" />
+				<div class="col-md-4">
+					<label>Sexo*</label>
+					<p:selectOneRadio id="sexo" value="#{alunoMB.aluno.sexo}">
+						<f:selectItem itemLabel="Masculino" itemValue="M" />
+
+						<f:selectItem itemLabel="Feminino" itemValue="F" />
+					</p:selectOneRadio>
+				</div>
+				<div class="col-md-4">
+					<label>Natalidade *</label>
+					<p:inputText title="natalidade" styleClass="col-md-12"
+						id="natalidade" alt="natalidade"
+						value="#{alunoMB.aluno.natalidade}" required="true"
+						requiredMessage="O campo natalidade não deve ser nulo" />
+				</div>
+
+				<div class="col-md-4">
+					<label>Data de nascimento *</label>
+					<p:calendar id="dtAbertura" value="#{alunoMB.aluno.dataNascimento}"
+						pattern="dd/MM/yyyy" mask="true" required="true"
+						requiredMessage="O campo data de nascimento não deve ser nulo" />
+
 				</div>
 			</div>
+
+			<div class="ui-fluid">
+
+				<div class="col-md-6">
+					<label>Nome Pai *</label>
+					<p:inputText title="NomePai" styleClass="col-md-12" id="nomePai"
+						alt="nomePai" value="#{alunoMB.aluno.nomePai}" required="true"
+						requiredMessage="O campo Nome Pai não deve ser nulo" />
+				</div>
+				<div class="col-md-6">
+					<label>Nome Mãe *</label>
+					<p:inputText title="NomeMãe" styleClass="col-md-12" id="nomeMae"
+						alt="nomeMae" value="#{alunoMB.aluno.nomeMae}" required="true"
+						requiredMessage="O campo nome mãe não deve ser nulo" />
+				</div>
+
+			</div>
+			<div class="ui-fluid">
+				<div class="col-md-6">
+					<label>Telefone </label>
+					<p:inputText title="telefone" styleClass="col-md-12" id="telefone"
+						alt="telefone" value="#{alunoMB.aluno.telefone}"  />
+				</div>
+
+				<div class="col-md-6">
+					<label>Celular </label>
+					<p:inputText title="Celular" styleClass="col-md-12" id="celular"
+						alt="celular" value="#{alunoMB.aluno.celular}"
+						  />
+				</div>
+				
+				<div class="col-md-12">
+				   <label></label>
+				</div>
+
+			</div>
+
 			<div class="ui-fluid">
 				<div class="col-md-12">
 					<small>Campos obrigatórios *</small>
@@ -514,11 +654,65 @@
 				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
 					alt="Sim" actionListener="#{alunoMB.salvarEditar()}"
 					update=":dlgInformacao :frmTabela" />
+					
+					<p:commandButton value="Cancelar"
+			     	onclick="PF('dlgAlunoEditarDados').hide();" alt="Cancelar" />
 
 			</div>
 		</h:form>
 	</p:dialog>
 	<!-- FIM DO DIALOG SALVAR -->
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- DIALOG SALVAR Editar data mudança-->
+	<p:dialog header="Aluno" widgetVar="dlgAlunoEditarData" modal="true"
+		id="dlgAlunoEditarData" closable="true" closeOnEscape="true"
+		resizable="false" draggable="true" responsive="true" width="60%">
+		<h:form id="frmModalSalvarEditarData">
+
+
+			<div class="ui-fluid">
+				<div class="col-md-12">
+					<label>Nome *</label>
+					<p:inputText title="Nome" styleClass="col-md-12" id="nomeEditar"
+						value="#{alunoMB.alunoTurmaAltera.aluno.nome}" alt="nome" required="true"
+						requiredMessage="O campo nome não deve ser nulo" />
+				</div>
+			
+
+				<div class="col-md-12">
+					<label>Data Mudança *</label>
+					<p:calendar title="data" styleClass="col-md-12" id="emailEditarData" pattern="dd/MM/yyyy"
+						alt="nomeData" value="#{alunoMB.alunoTurmaAltera.dataMudanca}" required="true"
+						requiredMessage="O campo e-mail não deve ser nulo" />
+				</div>
+			</div>
+
+			
+
+			
+			<div class="modal-footer">
+
+				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
+					alt="Sim" actionListener="#{alunoMB.editarData()}"
+					update=":dlgInformacao :frmTabela" />
+					
+					<p:commandButton value="Cancelar"
+			     	onclick="PF('dlgAlunoEditarData').hide();" alt="Cancelar" />
+
+			</div>
+		</h:form>
+	</p:dialog>
+	<!-- FIM DO DIALOG SALVAR Data mudança-->
+	
+	
+	
 
 
 
@@ -528,6 +722,19 @@
 		resizable="false" draggable="false" responsive="true" width="60%">
 		<h:form id="frmModalEditarCurso">
 			<div class="ui-fluid">
+			
+			
+				<div class="col-md-1">
+					<label>Aluno: </label>
+				</div>
+				<div class="col-md-11">
+				
+					<p:outputLabel title="Nome" styleClass="col-md-12" id="nomeEditarCurso"
+						value="#{alunoMB.aluno.nome}" alt="nome" required="true"
+						requiredMessage="O campo nome não deve ser nulo" />
+				</div>
+			
+			
 				<div class="col-md-12">
 					<label>RA *</label>
 					<p:inputText title="RA" styleClass="col-md-12" id="ra" alt="ra"
@@ -541,7 +748,7 @@
 					<p:autoComplete id="turma" dropdown="true" scrollHeight="170"
 						value="#{alunoMB.alunoTurma.turma}"
 						completeMethod="#{alunoMB.completarTurma}" forceSelection="true"
-						converter="converterTurma" var="tur" itemLabel="#{tur}"
+						converter="#{converterTurma}" var="tur" itemLabel="#{tur}"
 						itemValue="#{tur}" required="true"
 						requiredMessage="O campo turma não deve ser nulo" />
 				</div>
@@ -564,7 +771,7 @@
 				<label></label>
 				<p:commandButton value="Incluir" styleClass="ui-priority-primary"
 					alt="Sim" actionListener="#{alunoMB.salvarTurma()}"
-					update=":frmModalEditarCurso :frmModalEditarCurso:tabela :dlgInformacao" />
+					update=":frmTabela :frmModalEditarCurso :frmModalEditarCurso:tabela :dlgInformacao" />
 			</div>
 			<div class="ui-fluid">
 				<div class="col-md-12">
@@ -604,10 +811,11 @@
 		<div class="modal-footer">
 			<p:commandButton value="Finalizar" styleClass="ui-priority-primary"
 				alt="Sim" update=":frmTabela :dlgInformacao"
-				actionListener="#{alunoMB.fecharDialog()}" />
+				actionListener="#{alunoMB.preencherListaAlunos()}"
+				onclick="PF('dlgAlunoCursoEditar').hide();" />
 
-			<p:commandButton value="Voltar"
-				onclick="PF('dlgAlunoCursoEditar').hide();" alt="Voltar" />
+			<p:commandButton value="Cancelar"
+				onclick="PF('dlgAlunoCursoEditar').hide();" alt="cancelar" />
 		</div>
 	</p:dialog>
 	<!-- FIM DO DIALOG SALVAR CURSO -->
@@ -632,7 +840,7 @@
 					<h:outputText title="Nome" styleClass="col-md-12"
 						id="nomeEditarSenha" value="#{alunoMB.aluno.nome}" alt="nome" />
 				</div>
-				
+
 				<div class="col-md-6">
 					<label>Senha *</label>
 					<p:password title="Senha" styleClass="col-md-12" id="Editarsenha1"
@@ -656,7 +864,8 @@
 			<div class="modal-footer">
 
 				<p:commandButton value="Salvar" styleClass="ui-priority-primary"
-					alt="Sim" update=":frmTabela :dlgInformacao" actionListener="#{alunoMB.salvarSenha()}"/>
+					alt="Sim" update=":frmTabela :dlgInformacao"
+					actionListener="#{alunoMB.salvarSenha()}" />
 
 				<p:commandButton value="Cancelar"
 					onclick="PF('dlgAlunoEditarSenha').hide();" alt="Cancelar" />

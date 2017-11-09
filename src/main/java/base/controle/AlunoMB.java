@@ -1,14 +1,18 @@
 package base.controle;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
-import javax.print.attribute.standard.Sides;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.AtualizaHorasCertificado;
 import util.CriptografiaSenha;
@@ -18,46 +22,97 @@ import util.Mensagem;
 import util.RecuperarRelacoesProfessor;
 import util.ValidacoesGerirUsuarios;
 import ac.modelo.AlunoTurma;
-import ac.modelo.AtividadeTurma;
 import ac.modelo.Movimentacao;
 import ac.modelo.Permissao;
-import ac.modelo.ProfessorCurso;
+import ac.services.AlunoService;
 import base.modelo.Aluno;
-import base.modelo.Tipo;
+import base.modelo.Curso;
 import base.modelo.Turma;
-import dao.DAOGenerico;
-import dao.DAOMovimentacaoAluno;
+import base.service.AlunoTurmaService;
+import base.service.CertificadoService;
+import base.service.MovimentacaoService;
+import dao.GenericDAO;
+import dao.MovimentacaoAlunoDAO;
+import questionario.modelo.Email;
+import questionario.service.EmailService;
 
 //@ViewScoped
 @SessionScoped
-@ManagedBean
-public class AlunoMB {
+@Named("alunoMB")
+public class AlunoMB implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private Aluno aluno;
-
+	private AlunoTurma alunoTurmaAlterar;
 	private Movimentacao movimentacao;
 	private List<Turma> turmas;
 	private AlunoTurma alunoTurmaAltera;
-	private DAOGenerico dao;
-	private DAOMovimentacaoAluno daoMovimentacaoAluno;
+	private Email email;
+	//private DAOGenerico dao;
+	//private DAOMovimentacaoAluno daoMovimentacaoAluno;
 	private List<Movimentacao> alunosAtivos;
 	private List<Movimentacao> alunosTrancados;
 	private Movimentacao auxMovimentacao;
 	private AlunoTurma alunoTurma;
 	private List<AlunoTurma> listAlunoTurma;
-	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
+	
 	private List<Turma> turmasProfessor;
 	private List<Movimentacao> alunosAtivosProfessor;
 	private List<Movimentacao> alunosTrancadosProfessor;
-	private RecuperarRelacoesProfessor relacoesProfessor;
-	private AtualizaHorasCertificado atualizaHorasCertificado;
+	
+	
 	private Permissao permissao;
 	private Movimentacao movs ;
-
-	public AlunoMB() {
+	
+	@Inject
+	private AlunoService alunoService;
+	
+	@Inject
+	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
+	
+	@Inject
+	private AlunoTurmaService alunoTurmaService;
+	
+	@Inject
+	private MovimentacaoService movimentacaoService;
+	
+	@Inject
+	private GenericDAO<Aluno> daoAluno;
+	
+	@Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma;
+	
+	@Inject
+	private GenericDAO<Turma> daoTurma;
+	
+	@Inject
+	private GenericDAO<Movimentacao> daoMovimentacao;
+	
+	@Inject
+	private GenericDAO<Curso> daoCurso;
+	
+	@Inject
+	private MovimentacaoAlunoDAO movimentacaoAlunoDAO;
+	
+	@Inject
+	private EmailService emailService;
+	
+	@Inject
+	private CertificadoService certificadoService;
+	
+	@Inject
+	private RecuperarRelacoesProfessor relacoesProfessor;
+	
+	@Inject
+	private AtualizaHorasCertificado atualizaHorasCertificado;
+	
+	@PostConstruct
+	public void inicializar() {
+		System.out.println("No Inicializar");
 		criarNovoObjetoAluno();
-		dao = new DAOGenerico();
-		daoMovimentacaoAluno = new DAOMovimentacaoAluno();
+		//dao = new DAOGenerico();
+		//daoMovimentacaoAluno = new DAOMovimentacaoAluno();
 		movimentacao = new Movimentacao();
 		turmasProfessor = new ArrayList<>();
 		permissao = new Permissao();
@@ -67,11 +122,11 @@ public class AlunoMB {
 		alunoTurmaAltera = new AlunoTurma();
 		auxMovimentacao = new Movimentacao();
 		alunoTurma = new AlunoTurma();
-		validacoesGerirUsuarios = new ValidacoesGerirUsuarios();
+		email = new Email();
 		alunosAtivosProfessor = new ArrayList<>();
 		alunosTrancadosProfessor = new ArrayList<>();
-		relacoesProfessor = new RecuperarRelacoesProfessor();
-		atualizaHorasCertificado = new AtualizaHorasCertificado();
+		alunoTurmaAlterar = new AlunoTurma();
+
 		listAlunoTurma = new ArrayList<>();
 		movs = new Movimentacao();
 		atualizarListas();
@@ -79,12 +134,16 @@ public class AlunoMB {
 	}
 
 	public void buscarRaAluno(Movimentacao m) {
-		alunoTurma = (AlunoTurma) dao.buscarPorId(AlunoTurma.class, m.getAlunoTurma().getId());
-		aluno = (Aluno) dao.buscarPorId(Aluno.class, alunoTurma.getAluno().getId());
+		alunoTurma = daoAlunoTurma.buscarPorId(AlunoTurma.class, m.getAlunoTurma().getId());
+		aluno = daoAluno.buscarPorId(Aluno.class, alunoTurma.getAluno().getId());
 	}
+	
+	
+	
+	
 
 	public void adicionarTurma() {
-
+	
 		if (listAlunoTurma.size() == 0) {
 			listAlunoTurma.add(alunoTurma);
 			alunoTurma = new AlunoTurma();
@@ -122,19 +181,28 @@ public class AlunoMB {
 
 	public void alterar(Movimentacao movimentacao) {
 		this.movimentacao = movimentacao;
-		listAlunoTurma = dao.listar(AlunoTurma.class,
-				" controle = 1 and aluno = " + movimentacao.getAlunoTurma().getAluno().getId());
-		
-		aluno = (Aluno) dao.buscarPorId(Aluno.class, movimentacao.getAlunoTurma().getAluno().getId());
-	
-
+		listAlunoTurma = daoAlunoTurma.listar(AlunoTurma.class, " controle = 1 and aluno = " + movimentacao.getAlunoTurma().getAluno().getId());
+		aluno =daoAluno.buscarPorId(Aluno.class, movimentacao.getAlunoTurma().getAluno().getId());
 	}
 
+	
+	public void alterarDataMudanca(Movimentacao movimentacao) {
+		
+		this.movimentacao = movimentacao;
+		alunoTurmaAltera = movimentacao.getAlunoTurma();
+	 
+	}
 
 	public void salvarTurma() {
 
+		
 		try {
 
+			if (validacoesGerirUsuarios.buscarRA(alunoTurma)) {
+				ExibirMensagem.exibirMensagem(Mensagem.RA);
+			}
+			else {
+			
 			if (validarRelaciomanetoAluno(alunoTurma)) {
 				listAlunoTurma.add(alunoTurma);
 				alunoTurma = new AlunoTurma();
@@ -147,7 +215,7 @@ public class AlunoMB {
 						a.setStatus(true);
 						a.setPermiteCadastroCertificado(1); // coloquei aqui
 						a.setMomentoMudanca(new Date());
-						dao.inserir(a);
+						alunoTurmaService.inserirAlterar(a);
 
 						atualizaHorasCertificado.alterarHoras(a);
 
@@ -159,15 +227,18 @@ public class AlunoMB {
 						movimentacao.setStatus(true);
 						movimentacao.setControle(true);
 
-						dao.inserir(movimentacao);
+						movimentacaoService.inserirAlterar(movimentacao);
 					}
 				}
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+				preencherListaAlunos();
 
 			} else {
 				ExibirMensagem.exibirMensagem(Mensagem.CURSOSELECIONADO);
 			}
-
+			
+			
+			}
 		} catch (Exception e) {
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 			e.printStackTrace();
@@ -201,15 +272,17 @@ public class AlunoMB {
 				aluno.setStatus(true);
 				aluno.setPerfilAluno("aluno");
 				aluno.setSenha(CriptografiaSenha.criptografar(aluno.getSenha()));
-				dao.inserir(aluno);
-
+				//dao.inserir(aluno);
+				
+				alunoService.inserirAlterar(aluno);
+				
 				for (AlunoTurma a : listAlunoTurma) {
 
 					a.setAluno(aluno);
 					a.setControle(1);
 					a.setStatus(true);
 					a.setPermiteCadastroCertificado(1); // coloquei aqui
-					dao.inserir(a);
+					alunoTurmaService.inserirAlterar(a);
 
 					movimentacao = new Movimentacao();
 
@@ -219,7 +292,7 @@ public class AlunoMB {
 					movimentacao.setStatus(true);
 					movimentacao.setControle(true);
 
-					dao.inserir(movimentacao);
+					movimentacaoService.inserirAlterar(movimentacao);
 
 				}
 				FecharDialog.fecharDialogAlunoCurso();
@@ -240,7 +313,7 @@ public class AlunoMB {
 	private Boolean validarRelacionarCursosAluno(AlunoTurma alTurma) {
 		List<AlunoTurma> alunoBusca = new ArrayList<>();
 		try {
-			alunoBusca = dao.listar(AlunoTurma.class,
+			alunoBusca = daoAlunoTurma.listar(AlunoTurma.class,
 					" turma = " + alTurma.getTurma().getId() + " and status = true and aluno = " + aluno.getId());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,7 +333,7 @@ public class AlunoMB {
 				ExibirMensagem.exibirMensagem(Mensagem.RA);
 			} else {
 				
-				dao.alterar(aluno);
+				alunoService.inserirAlterar(aluno);
 
 				FecharDialog.fecharDialogEditarAluno();
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
@@ -273,34 +346,31 @@ public class AlunoMB {
 		}
 	}
 	
-	
-	public void salvarIrCurso() {
-		try {
-			if ((validacoesGerirUsuarios.buscarUsuarios(aluno))
-					&& (validacoesGerirUsuarios.buscarUsuarioAlterar(aluno))) {
-				ExibirMensagem.exibirMensagem(Mensagem.USUARIO);
-			} else if ((validacoesGerirUsuarios.buscarRA(alunoTurma))
-					&& (validacoesGerirUsuarios.buscarRaAlterar(alunoTurma))) {
-				ExibirMensagem.exibirMensagem(Mensagem.RA);
-			} else {
-				dao.alterar(aluno);
-
-				FecharDialog.abrirDialogEditarAluno();
-				atualizarListas();
-			}
-
-		} catch (Exception e) {
-			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
-			e.printStackTrace();
-		}
+	public void editarData(){
+		
+		alunoTurmaService.inserirAlterar(alunoTurmaAltera);
+		
+		
+		movimentacao.setDataMovimentacao(alunoTurmaAltera.getDataMudanca());
+		movimentacaoService.inserirAlterar(movimentacao);
+		
+		FecharDialog.fecharDialogDATAAluno();
+		ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+		alunoTurmaAltera = new AlunoTurma();
+		movimentacao = new Movimentacao();
+		
+		atualizarListas();
 	}
+	 
+	
+	
 	
 	public void salvarSenha() {
 		try {
 			
 				aluno.setSenha(CriptografiaSenha.criptografar(aluno.getSenha()));
 				aluno.setPerfilAluno("aluno");
-				dao.alterar(aluno);
+				alunoService.inserirAlterar(aluno);
 
 				FecharDialog.fecharDialogEditarSenha();
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
@@ -318,7 +388,7 @@ public class AlunoMB {
 			
 			
 			List<AlunoTurma> listAlunoTurmas = new ArrayList<>();
-			listAlunoTurmas = dao.listar(AlunoTurma.class, " aluno.id ="+movimentacao.getAlunoTurma().getAluno().getId());
+			listAlunoTurmas = daoAlunoTurma.listar(AlunoTurma.class, " aluno.id ="+movimentacao.getAlunoTurma().getAluno().getId());
 			List<Movimentacao> m = new ArrayList<>();
 			
 			
@@ -338,7 +408,7 @@ public class AlunoMB {
 	public void inavitarMovimentacao(AlunoTurma aluno){
 		
 		List<Movimentacao> listMov = new ArrayList<>();
-		listMov = dao.listar(Movimentacao.class, " alunoTurma.id = "+aluno.getId());
+		listMov = daoMovimentacao.listar(Movimentacao.class, " alunoTurma.id = "+aluno.getId());
 		for(Movimentacao m : listMov){
 	    	
 	    	
@@ -347,8 +417,8 @@ public class AlunoMB {
 			m.setDataMovimentacao(new Date());
 			m.setStatus(false);
 			m.getAlunoTurma().getAluno().setStatus(false);
-			dao.inserir(m);
-			dao.alterar(m.getAlunoTurma().getAluno());
+			movimentacaoService.inserirAlterar(m);
+			alunoService.inserirAlterar(m.getAlunoTurma().getAluno());
 
 			
 			inativarCertificados(m.getAlunoTurma().getId());
@@ -382,7 +452,7 @@ public class AlunoMB {
 				Date dataInicial = calendarData.getTime();
 
 				Movimentacao mov = new Movimentacao();
-				mov = (Movimentacao) daoMovimentacaoAluno.listarTodos(Movimentacao.class,
+				mov = (Movimentacao) movimentacaoAlunoDAO.listarTodos(Movimentacao.class,
 						" a.dataMovimentacao = (select max(b.dataMovimentacao) "
 								+ " from Movimentacao b where b.alunoTurma = a.alunoTurma) "
 								+ " and a.status is true and a.alunoTurma.status = true and dataMovimentacaoFim = null and a.alunoTurma = "
@@ -391,19 +461,51 @@ public class AlunoMB {
 
 				mov.setControle(false);
 				mov.setDataMovimentacaoFim(dataInicial);
-				dao.alterar(mov);
+				movimentacaoService.inserirAlterar(mov);
 
 				AlunoTurma aluno = new AlunoTurma();
-				aluno = (AlunoTurma) dao.buscarPorId(AlunoTurma.class, movimentacao.getAlunoTurma().getId());
+				aluno = daoAlunoTurma.buscarPorId(AlunoTurma.class, movimentacao.getAlunoTurma().getId());
 				aluno.setControle(0);
-				dao.alterar(aluno);
+				
 
 				auxMovimentacao.setAlunoTurma(movimentacao.getAlunoTurma());
 				auxMovimentacao.setStatus(true);
 				auxMovimentacao.setControle(false);
 
-				dao.inserir(auxMovimentacao);
-
+				movimentacaoService.inserirAlterar(auxMovimentacao);
+				
+				if(auxMovimentacao.getSituacao()==5){
+//					
+//					Curso cursoAluno = new Curso();
+//					cursoAluno = daoCurso.buscarPorId(Curso.class, auxMovimentacao.getAlunoTurma().getTurma().getCurso().getId());
+					
+					aluno.setSituacao(5);
+					aluno.setLiberado(false);
+					alunoTurmaService.inserirAlterar(aluno);
+					
+					//liberar para responder o questionário
+					Aluno alunoResponde = new Aluno(); 
+					alunoResponde = daoAluno.buscarPorId(Aluno.class, aluno.getAluno().getId());
+					 
+				   // email.setCursos(auxMovimentacao.getAlunoTurma().getTurma().getCurso());
+					//email.setTurma(auxMovimentacao.getAlunoTurma().getTurma());
+					email.setEnviado(false);
+					email.setStatus(true);
+					email.setAlunoTurma(auxMovimentacao.getAlunoTurma());
+					
+					//email.setAluno(alunoResponde);
+					emailService.inserirAlterar(email);
+					//enviar o email para responder 
+					
+				}else{
+					aluno.setSituacao(0);
+					alunoTurmaService.inserirAlterar(aluno);
+				}
+				aluno = new AlunoTurma();
+				email = new Email();
+				
+				
+				
 				FecharDialog.fecharDialogAlunoCursoEditar();
 				FecharDialog.fecharDialogAlunoEditarCurso();
 				FecharDialog.fecharDialogAlunoTrancamento();
@@ -412,7 +514,7 @@ public class AlunoMB {
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				auxMovimentacao = new Movimentacao();
 
-				dao.update(" AlunoTurma set permiteCadastroCertificado = 2 where id = "
+				alunoTurmaService.update(" AlunoTurma set permiteCadastroCertificado = 2 where id = "
 						+ movimentacao.getAlunoTurma().getId());
 
 			
@@ -445,7 +547,7 @@ public class AlunoMB {
 				Date dataInicial = calendarData.getTime();
 
 				Movimentacao mov = new Movimentacao();
-				mov = (Movimentacao) daoMovimentacaoAluno.listarTodos(Movimentacao.class,
+				mov = (Movimentacao) movimentacaoAlunoDAO.listarTodos(Movimentacao.class,
 						" a.dataMovimentacao = (select max(b.dataMovimentacao) "
 								+ " from Movimentacao b where b.alunoTurma = a.alunoTurma) "
 								+ " and a.status is true and a.alunoTurma.status = true and dataMovimentacaoFim = null and a.alunoTurma = "
@@ -454,20 +556,20 @@ public class AlunoMB {
 
 				mov.setDataMovimentacaoFim(dataInicial);
 				mov.setControle(true);
-				dao.alterar(mov);
+				movimentacaoService.inserirAlterar(mov);
 
 				AlunoTurma aluno = new AlunoTurma();
-				aluno = (AlunoTurma) dao.buscarPorId(AlunoTurma.class, movimentacao.getAlunoTurma().getId());
+				aluno = daoAlunoTurma.buscarPorId(AlunoTurma.class, movimentacao.getAlunoTurma().getId());
 				aluno.setControle(1);
-				dao.alterar(aluno);
+				alunoTurmaService.inserirAlterar(aluno);
 
 				auxMovimentacao.setAlunoTurma(movimentacao.getAlunoTurma());
 				auxMovimentacao.setSituacao(1);
 				auxMovimentacao.setStatus(true);
 				auxMovimentacao.setControle(true);
-				dao.inserir(auxMovimentacao);
+				movimentacaoService.inserirAlterar(auxMovimentacao);
 
-				dao.update(" AlunoTurma set permiteCadastroCertificado = 1 where id = "
+				alunoTurmaService.update(" AlunoTurma set permiteCadastroCertificado = 1 where id = "
 						+ movimentacao.getAlunoTurma().getId());
 
 				FecharDialog.fecharDialogAlunoDestrancar();
@@ -505,29 +607,29 @@ public class AlunoMB {
 
 	public void preencherListaAlunos() {
 		alunosAtivos = new ArrayList<>();
-		alunosAtivos = daoMovimentacaoAluno.buscarAtivo();
+		alunosAtivos = movimentacaoAlunoDAO.buscarAtivo();
 	}
 
 	public void preencherListaTrancados() {
 		alunosTrancados = new ArrayList<>();
-		alunosTrancados = daoMovimentacaoAluno.buscarTrancado();
+		alunosTrancados = movimentacaoAlunoDAO.buscarTrancado();
 	}
 
 	public void preencherListaTurma() {
 		turmas = new ArrayList<>();
-		turmas = dao.listaComStatus(Turma.class);
+		turmas = daoTurma.listaComStatus(Turma.class);
 	}
 
 	public void atualizarListas() {
 		preencherListaAlunos();
 		preencherListaTrancados();
-		preencherListaAlunosAtivosProfessor();
-		preencherListaAlunosTrancadosProfessor();
+	  //preencherListaAlunosAtivosProfessor();
+		//preencherListaAlunosTrancadosProfessor();
 	}
 
 	public void inativarCertificados(Long id) {
 		try {
-			dao.update(" Certificado set status = false where alunoTurma = " + id);
+			certificadoService.update(" Certificado set status = false where alunoTurma = " + id);
 			ExibirMensagem.exibirMensagem(Mensagem.INATIVAR_CERTIFICADOS);
 		} catch (Exception e) {
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO_INATIVAR_CERTIFICADOS);
@@ -538,7 +640,7 @@ public class AlunoMB {
 	public void inativarMovimentacoes(Long id) {
 
 		try {
-			dao.update(" Movimentacao set status = false where alunoTurma = " + id);
+			movimentacaoService.update(" Movimentacao set status = false where alunoTurma = " + id);
 
 			ExibirMensagem.exibirMensagem(Mensagem.INATIVAR_MOVIMENTACOES);
 		} catch (Exception e) {
@@ -550,7 +652,7 @@ public class AlunoMB {
 	public void inativarAlunoTurma(Long id) {
 
 		try {
-			dao.update(" AlunoTurma set status = false where aluno = " + id);
+			alunoTurmaService.update(" AlunoTurma set status = false where aluno = " + id);
 
 			ExibirMensagem.exibirMensagem(Mensagem.INATIVAR_ALUNO_TURMA);
 		} catch (Exception e) {
@@ -561,7 +663,7 @@ public class AlunoMB {
 
 	public Turma validarDataTurmaComAluno() {
 		Turma turma = new Turma();
-		turma = (Turma) dao.listar(Turma.class, " id = " + alunoTurma.getTurma().getId()).get(0);
+		turma = daoTurma.listar(Turma.class, " id = " + alunoTurma.getTurma().getId()).get(0);
 		return turma;
 	}
 
@@ -569,14 +671,14 @@ public class AlunoMB {
 		AlunoTurma alunoTurma = new AlunoTurma();
 
 	
-		alunoTurma = (AlunoTurma) daoMovimentacaoAluno.buscarMaiorAlunoTurma(aluno.getId()).get(0);
+		alunoTurma = movimentacaoAlunoDAO.buscarMaiorAlunoTurma(aluno.getId()).get(0);
 		return alunoTurma;
 	}
 
 	public Movimentacao permitirCadastrarMovimentacao(AlunoTurma aluno) {
 		Movimentacao mov = new Movimentacao();
 
-		mov = (Movimentacao) daoMovimentacaoAluno.buscarMaiorMovimentacao(aluno.getId()).get(0);
+		mov =  movimentacaoAlunoDAO.buscarMaiorMovimentacao(aluno.getId()).get(0);
 		return mov;
 	}
 
@@ -592,22 +694,20 @@ public class AlunoMB {
 	}
 
 	public void preencherListaTurmaProfessor() {
-		relacoesProfessor = new RecuperarRelacoesProfessor();
+		
 		turmasProfessor = relacoesProfessor.recuperarTurmasProfessor();
 	}
 
-	public void preencherListaAlunosAtivosProfessor() {
-		alunosAtivosProfessor = new ArrayList<>();
-		alunosAtivosProfessor = relacoesProfessor.recuperarAlunoMovimentacaoAtivo();
+//	public void preencherListaAlunosAtivosProfessor() {
+//		alunosAtivosProfessor = new ArrayList<>();
+//		alunosAtivosProfessor = relacoesProfessor.recuperarAlunoMovimentacaoAtivo();
+//}
 
-		
-	}
+//	public void preencherListaAlunosTrancadosProfessor() {
+//		alunosTrancadosProfessor = new ArrayList<>();
+//		alunosTrancadosProfessor = relacoesProfessor.recuperarAlunoMovimentacaoTrancados();
 
-	public void preencherListaAlunosTrancadosProfessor() {
-		alunosTrancadosProfessor = new ArrayList<>();
-		alunosTrancadosProfessor = relacoesProfessor.recuperarAlunoMovimentacaoTrancados();
-
-	}
+//	}
 
 	public Aluno getAluno() {
 		return aluno;
@@ -695,6 +795,16 @@ public class AlunoMB {
 
 	public void setListAlunoTurma(List<AlunoTurma> listAlunoTurma) {
 		this.listAlunoTurma = listAlunoTurma;
+	}
+	
+	
+
+	public AlunoTurma getAlunoTurmaAlterar() {
+		return alunoTurmaAlterar;
+	}
+
+	public void setAlunoTurmaAlterar(AlunoTurma alunoTurmaAlterar) {
+		this.alunoTurmaAlterar = alunoTurmaAlterar;
 	}
 
 	public List<Movimentacao> getAlunosTrancadosProfessor() {

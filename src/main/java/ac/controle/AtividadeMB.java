@@ -1,11 +1,14 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.ExibirMensagem;
 import util.FecharDialog;
@@ -13,20 +16,36 @@ import util.Mensagem;
 import util.PermiteInativar;
 import ac.modelo.Atividade;
 import ac.modelo.Grupo;
-import dao.DAOGenerico;
+import ac.services.AtividadeService;
+import dao.GenericDAO;
 
 @SessionScoped
-@ManagedBean
-public class AtividadeMB {
+@Named("atividadeMB")
+public class AtividadeMB implements Serializable{
 
+	
+	private static final long serialVersionUID = 1L;
+	
+	
 	private Atividade atividade;
 	private List<Atividade> atividades;
 	private List<Grupo> grupos;
-	private DAOGenerico dao;
+	
+	@Inject
 	private PermiteInativar permiteInativar;
+	
+	@Inject
+	private GenericDAO<Atividade> daoAtividade;
+	
+	@Inject
+	private GenericDAO<Grupo> daoGrupo;
+	
+	@Inject
+	private AtividadeService atividadeService;
 
-	public AtividadeMB() {
-		dao = new DAOGenerico();
+	@PostConstruct
+	public void inicializar() {
+	
 		criarNovoObjetoAtividade();
 		atividades = new ArrayList<>();
 		grupos = new ArrayList<>();
@@ -36,33 +55,41 @@ public class AtividadeMB {
 
 	public void salvar() {
 		try {
+			
+			List<Atividade> listaAtividade=daoAtividade.listar(Atividade.class, " descricao='"+ atividade.getDescricao()+ "' and grupo.id='"+atividade.getGrupo().getId()+"'");
+			if(listaAtividade.size() > 0){
+				ExibirMensagem.exibirMensagem(Mensagem.ATIVIDADE);
+			}else{
+				
 			if (atividade.getId() == null) {
 				atividade.setDataCadastro(new Date());
 				atividade.setStatus(true);
-				dao.inserir(atividade);
+				atividadeService.inserirAlterar(atividade);
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				FecharDialog.fecharDialogAtividade();
 				criarNovoObjetoAtividade();
 				preencherListaAtividade();
 			} else {
-				dao.alterar(atividade);
+				atividadeService.inserirAlterar(atividade);
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				FecharDialog.fecharDialogAtividade();
 				criarNovoObjetoAtividade();
 				preencherListaAtividade();
 			}
+			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 		}
 	}
 
 	public void inativar(Atividade atividade) {
-		permiteInativar = new PermiteInativar();
+	
 		try {
 			if (permiteInativar.verificarAtividadeComAtividadeTurma(atividade.getId())) {
 				atividade.setStatus(false);
-				dao.alterar(atividade);
+				atividadeService.inserirAlterar(atividade);
 				preencherListaAtividade();
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			} else {
@@ -80,11 +107,11 @@ public class AtividadeMB {
 	}
 
 	public void preencherListaAtividade() {
-		atividades = dao.listaComStatus(Atividade.class);
+		atividades = daoAtividade.listaComStatus(Atividade.class);
 	}
 
 	public void preencherListaGrupo() {
-		grupos = dao.listaComStatus(Grupo.class);
+		grupos = daoGrupo.listaComStatus(Grupo.class);
 	}
 
 	public List<Grupo> completarGrupo(String str) {

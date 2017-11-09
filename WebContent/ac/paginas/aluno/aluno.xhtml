@@ -395,7 +395,7 @@
 					<p:autoComplete id="turma" dropdown="true" scrollHeight="170"
 						value="#{alunoMB.alunoTurma.turma}"
 						completeMethod="#{alunoMB.completarTurma}" forceSelection="true"
-						converter="converterTurma" var="tur" itemLabel="#{tur}"
+						converter="#{converterTurma}" var="tur" itemLabel="#{tur}"
 						itemValue="#{tur}" required="true"
 						requiredMessage="O campo turma não deve ser nulo" />
 				</div>
@@ -459,7 +459,7 @@
 					<p:autoComplete id="turma" dropdown="true" scrollHeight="170"
 						value="#{alunoMB.alunoTurma.turma}"
 						completeMethod="#{alunoMB.completarTurma}" forceSelection="true"
-						converter="converterTurma" var="tur" itemLabel="#{tur}"
+						converter="#{converterTurma}" var="tur" itemLabel="#{tur}"
 						itemValue="#{tur}" required="true"
 						requiredMessage="O campo turma não deve ser nulo" />
 				</div>

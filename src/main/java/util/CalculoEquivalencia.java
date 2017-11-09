@@ -1,8 +1,13 @@
 package util;
 
+import java.io.Serializable;
+
 import ac.modelo.Certificado;
 
-public class CalculoEquivalencia {
+public class CalculoEquivalencia  implements Serializable{
+	
+	
+	private static final long serialVersionUID = 1L;
 
 	public Double calculo(Double horasMaxima, Double equivalencia1, Double equivalencia2) {
 		Double horasCalculadas = 0.0;

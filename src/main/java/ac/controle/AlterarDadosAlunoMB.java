@@ -1,37 +1,59 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.CriptografiaSenha;
 import util.ExibirMensagem;
 import util.Mensagem;
 import util.ValidacoesGerirUsuarios;
 import ac.modelo.AlunoTurma;
+
+import ac.services.AlunoService;
 import base.modelo.Aluno;
-import dao.DAOGenerico;
+
+import dao.GenericDAO;
 
 @SessionScoped
-@ManagedBean
-public class AlterarDadosAlunoMB {
+@Named("alterarDadosAlunoMB")
+public class AlterarDadosAlunoMB implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 
 	private base.modelo.Aluno aluno;
-	private DAOGenerico dao;
-	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
-	private UsuarioSessaoMB usuarioSessao;
+	
 	private String senha;
 	private String senha2;
 	private List<AlunoTurma> alunoTurmaAluno;
 	private AlunoTurma retornaAlunoTurma;
+	
+	@Inject
+	private AlunoService alunoService;
+	
+	@Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma;
+	
+	@Inject
+	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
 
-	public AlterarDadosAlunoMB() {
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+
+	@PostConstruct
+	public void inicializar() {
 		aluno = new Aluno();
-		dao = new DAOGenerico();
-		validacoesGerirUsuarios = new ValidacoesGerirUsuarios();
-		usuarioSessao = new UsuarioSessaoMB();
+	
 		senha = "";
 		senha2 = "";
 		alunoTurmaAluno = new ArrayList<>();
@@ -50,7 +72,7 @@ public class AlterarDadosAlunoMB {
 					aluno.setSenha(senha);
 					aluno.setSenha(CriptografiaSenha.criptografar(aluno.getSenha()));
 				}
-				dao.alterar(aluno);
+				alunoService.inserirAlterar(aluno);
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherAluno();
 			}
@@ -65,13 +87,12 @@ public class AlterarDadosAlunoMB {
 		try {
 			aluno = (Aluno) usuarioSessao.recuperarAluno();
 			
-			
-			alunoTurmaAluno = dao.listar(AlunoTurma.class, " aluno = " + aluno.getId());
-			for(AlunoTurma a : alunoTurmaAluno){
-
-				retornaAlunoTurma = (AlunoTurma) dao.buscarPorId(AlunoTurma.class, a.getId());
-				
-			}
+//			alunoTurmaAluno = daoAlunoTurma.listar(AlunoTurma.class, " aluno = " + aluno.getId());
+//			for(AlunoTurma a : alunoTurmaAluno){
+//
+//				retornaAlunoTurma =  daoAlunoTurma.buscarPorId(AlunoTurma.class, a.getId());
+//				
+//			}
 		} catch (Exception e) {
 			System.err.println("Erro preencherAluno");
 			e.printStackTrace();

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:body>
+	<ui:composition template="../../../resources/template/template-base.xhtml">
+		<ui:define name="tituloPagina">
+		 - COPE
+		</ui:define>
+
+		<ui:define name="menu">
+			<ui:include src="../../template/menuProfessor.xhtml" />
+		</ui:define>
+
+		<ui:define name="titulo">
+			Cadastro de Projeto de Extencao <abbr title="Que e a poha do seu publico alvo ????">detalhes</abbr>
+		</ui:define>
+
+		<ui:define name="conteudo">
+			<h:form prependId="false">
+				<p:wizard flowListener="#{projetoMB.navegacaoNovoExtencao}">
+					<p:tab id="projeto" title="Dados do Projeto">
+						<div class="ui-fluid">
+							<div class="col-md-9">
+								<label>Titulo do Projeto:</label>
+								<p:inputText value="#{projetoMB.projeto.titulo}" />
+							</div>
+							<div class="col-md-3">
+								<label>Proposta de fluxo continuo:</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.fluxoContinuo}">
+									<f:selectItem itemLabel="Sim" itemValue="true" />
+									<f:selectItem itemLabel="Nao" itemValue="false" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-2">
+								<label>Previsao de inicio:</label>
+								<p:calendar value="#{projetoMB.projeto.dataInicio}" mask="true" />
+							</div>
+							<div class="col-md-2">
+								<label>Previsao de termino</label>
+								<p:calendar value="#{projetoMB.projeto.dataTermino}" mask="true" />
+							</div>
+							<div class="col-md-8">
+								<label>Local de execucao:</label>
+								<p:inputText value="#{projetoMB.projeto.localExecucao}" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab id="resumo" title="Resumo">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Resumo da Proposta</label>
+								<p:textEditor  height="100" style="margin-bottom:10px" />
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab id="proposta" title="Proposta de ação de extensão">
+						<div class="ui-fluid">
+							<div class="col-md-4">
+								<label>Caracterizacao da acao:</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.fluxoContinuo}">
+									<f:selectItem itemLabel="Programa" itemValue="1" />
+									<f:selectItem itemLabel="Projeto" itemValue="2" />
+									<f:selectItem itemLabel="Curso Livre de Extensao" itemValue="3" />
+									<f:selectItem itemLabel="Evento" itemValue="4" />
+									<f:selectItem itemLabel="Prestacao de Servicos" itemValue="5" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-4">
+								<label>Título da Ação de Extensão:</label>
+								<p:inputText />
+							</div>
+							<div class="col-md-4">
+								<label>Area tematica:</label>
+								<p:inputText />
+							</div>
+
+							<div class="col-md-3">
+								<label>Esta vinculada a um programa:</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.fluxoContinuo}">
+									<f:selectItem itemLabel="Sim" itemValue="1" />
+									<f:selectItem itemLabel="Nao" itemValue="2" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-7">
+								<label>Titulo do programa:</label>
+								<p:inputText />
+							</div>
+							<div class="col-md-2">
+								<label>N do processo no COPE:</label>
+								<p:inputNumber />
+							</div>
+
+							<div class="col-md-2">
+								<label>Periodicidade:</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.fluxoContinuo}">
+									<f:selectItem itemLabel="Eventual" itemValue="1" />
+									<f:selectItem itemLabel="Semanal" itemValue="2" />
+									<f:selectItem itemLabel="Mensal" itemValue="3" />
+									<f:selectItem itemLabel="Anual" itemValue="4" />
+									<f:selectItem itemLabel="Outro" itemValue="5" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-2">
+								<label>A Abrangência é:</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.fluxoContinuo}">
+									<f:selectItem itemLabel="Local" itemValue="1" />
+									<f:selectItem itemLabel="Municipal" itemValue="2" />
+									<f:selectItem itemLabel="Regional" itemValue="3" />
+									<f:selectItem itemLabel="Estadual" itemValue="4" />
+									<f:selectItem itemLabel="Nacional" itemValue="5" />
+									<f:selectItem itemLabel="Outro" itemValue="6" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-4">
+								<label>Local de Realização:</label>
+								<p:inputText />
+							</div>
+							<div class="col-md-2">
+								<label>Tem Limite de Vagas:</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.fluxoContinuo}">
+									<f:selectItem itemLabel="Sim" itemValue="1" />
+									<f:selectItem itemLabel="Nao" itemValue="2" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-md-2">
+								<label>Tem inscrição:</label>
+								<p:selectOneMenu value="#{projetoMB.projeto.fluxoContinuo}">
+									<f:selectItem itemLabel="Sim" itemValue="1" />
+									<f:selectItem itemLabel="Nao" itemValue="2" />
+									<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-md-12">
+								<label>Público-Alvo</label>
+								<p:selectManyCheckbox>
+									<f:selectItem itemLabel="Alunos IFPR" itemValue="1" />
+									<f:selectItem itemLabel="Docentes do IFPR" itemValue="2" />
+									<f:selectItem itemLabel="Alunos Externo" itemValue="3" />
+									<f:selectItem itemLabel="Professores da Edu. Basica" itemValue="4" />
+									<f:selectItem itemLabel="Comunidade externa" itemValue="5" />
+									<f:selectItem itemLabel="Outro" itemValue="6" />
+								</p:selectManyCheckbox>
+							</div>
+
+							<div class="col-md-2">
+								<label>Qtd Pessoas Afetadas:</label>
+								<p:inputNumber />
+							</div>
+							
+							<div class="clearfix"></div>
+						</div>
+					</p:tab>
+				</p:wizard>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
+

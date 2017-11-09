@@ -1,50 +1,69 @@
 package base.controle;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.CriptografiaSenha;
 import util.ExibirMensagem;
 import util.Mensagem;
 import util.ValidacoesGerirUsuarios;
 import ac.controle.UsuarioSessaoMB;
-
 import base.modelo.Servidor;
-import dao.DAOGenerico;
+import base.service.ServidorService;
 
 @ViewScoped
-@ManagedBean
+@Named("alterarDadosAdministradorMB")
 public class AlterarDadosAdministradorMB {
 
 	private Servidor administrador;
-	private DAOGenerico dao;
-	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
-	private UsuarioSessaoMB usuarioSessao;
 	private String senha;
 	private String senha2;
+	
+	@Inject
+	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
 
-	public AlterarDadosAdministradorMB() {
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	@Inject
+	private ServidorService servidorService;
+
+	@PostConstruct
+	public void inicializar() {
 		administrador = new Servidor();
-		dao = new DAOGenerico();
-		validacoesGerirUsuarios = new ValidacoesGerirUsuarios();
-		usuarioSessao = new UsuarioSessaoMB();
 		senha = "";
 		senha2 = "";
 		preencherAdministrador();
 	}
-
 	public void alterarAdministrador() {
+		
+		System.out.println("senha sss =" +senha);
+		System.out.println("senha sss 2 =" +senha2);
+		
 		try {
+			
+			Servidor s =  (Servidor) usuarioSessao.recuperarServidor();
+			System.out.println("servidor buscado a senha == "+s.getSenha());
+			System.out.println("senha digitada = " +senha);
+			
+			
+			
 			if ((validacoesGerirUsuarios.buscarUsuarios(administrador))
 					&& (validacoesGerirUsuarios.buscarUsuarioAlterar(administrador))) {
 				ExibirMensagem.exibirMensagem(Mensagem.USUARIO);
 			} else {
+				
 				if (senha != "") {
 					administrador.setSenha(senha);
 					administrador.setSenha(CriptografiaSenha.criptografar(administrador.getSenha()));
 				}
+				
+				System.out.println("senha nova que o adm digitou "+administrador.getSenha());
 
-				dao.alterar(administrador);
+				servidorService.inserirAlterar(administrador);
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherAdministrador();
 			}
@@ -54,20 +73,15 @@ public class AlterarDadosAdministradorMB {
 			e.printStackTrace();
 		}
 	}
-
 	public void preencherAdministrador() {
 		try {
-			usuarioSessao = new UsuarioSessaoMB();
 			administrador = (Servidor) usuarioSessao.recuperarServidor();
+		
 		} catch (Exception e) {
 			System.err.println("preencherAdministrador");
 			e.printStackTrace();
 		}
 	}
-
-
-	
-
 	public Servidor getAdministrador() {
 		return administrador;
 	}

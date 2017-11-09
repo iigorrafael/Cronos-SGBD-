@@ -1,11 +1,14 @@
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.AEADBadTagException;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 
@@ -16,56 +19,134 @@ import ac.modelo.Certificado;
 import ac.modelo.GrupoTurma;
 import ac.modelo.Movimentacao;
 import ac.modelo.ProfessorCurso;
-import base.modelo.Aluno;
 import base.modelo.Curso;
-import base.modelo.Turma;
-import dao.DAOGenerico;
-import dao.DAOMovimentacaoAluno;
+import base.modelo.Matriz;
+import base.modelo.Turma; 
+import dao.GenericDAO;
+import dao.MovimentacaoAlunoDAO;
 
-public class RecuperarRelacoesProfessor {
-	private UsuarioSessaoMB usuarioSessao;
+public class RecuperarRelacoesProfessor implements Serializable{
+	
+	
+	private static final long serialVersionUID = 1L;
+
+
 	private List<ProfessorCurso> professorCursos;
 	private List<Turma> turmas;
+	private List<Matriz> matriz;
 	private List<Curso> cursos;
 	private List<GrupoTurma> grupoTurmas;
 	private List<AtividadeTurma> atividadeTurmas;
 	private List<Certificado> certificados;
-	private DAOGenerico dao;
 
-	public RecuperarRelacoesProfessor() {
-		usuarioSessao = new UsuarioSessaoMB();
-		professorCursos = new ArrayList<>();
+	@Inject
+	private GenericDAO<ProfessorCurso> daoProfessorCurso; 
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	@Inject
+	private MovimentacaoAlunoDAO movimentacaoAlunoDAO;
+	
+	@Inject
+	private GenericDAO<GrupoTurma> daoGrupoTurma; 
+	
+	@Inject
+	private GenericDAO<AtividadeTurma> daoAtividadeTurma; 
+	
+	@Inject
+	private GenericDAO<Turma> daoTurma; 
+	
+	@Inject
+	private GenericDAO<Matriz> daoMatriz; 
+	
+	@Inject
+	private GenericDAO<Curso> daoCurso; 
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado; 
+	
+	@Inject
+	private GenericDAO<AlunoTurma> daoAlunoTurma; 
+	
+	@Inject
+	private GenericDAO<Movimentacao> daoMovimentacao; 
+
+	@PostConstruct
+	public void recuperarRelacoesProfessor() {
+
 		turmas = new ArrayList<>();
+		matriz = new ArrayList<>();
 		cursos = new ArrayList<>();
 		grupoTurmas = new ArrayList<>();
 		certificados = new ArrayList<>();
 		atividadeTurmas = new ArrayList<>();
-		dao = new DAOGenerico();
+	
+
 	}
 
 	public List<Turma> recuperarTurmasProfessor() {
-		
 		try {
+			turmas = new ArrayList<>();
 			professorCursos = new ArrayList<>();
-			professorCursos = dao.listar(ProfessorCurso.class,
+			professorCursos = daoProfessorCurso.listar(ProfessorCurso.class,
 					" professor = " + usuarioSessao.recuperarProfessor().getId());
 			for (ProfessorCurso pc : professorCursos) {
-				turmas.addAll(dao.listar(Turma.class, " curso = " + pc.getCurso().getId()));
+				
+				
+				turmas.addAll(daoTurma.listar(Turma.class, " curso = " + pc.getCurso().getId()));
+				
 			}
-
+			
 		} catch (Exception e) {
 			System.err.println("Erro recuperarTurmasProfessor ");
 			e.printStackTrace();
 		}
 		return turmas;
 	}
+	
+	
+	
+	public List<Matriz> recuperarMatrizProfessor() {
+		try {
+			matriz = new ArrayList<>();
+		 
+			for (Turma pc : turmas) {
+				
+				if(correLista(pc) == true){
+					matriz.addAll(daoMatriz.listar(Matriz.class, " id = " + pc.getMatriz().getId()));	
+				}
+				 
+			}
+			
+		} catch (Exception e) {
+			System.err.println("Erro recuperarTurmasProfessor ");
+			e.printStackTrace();
+		}
+		return matriz;
+	}
+	
+	public boolean correLista(Turma turma){
+		
+		for(Matriz m : matriz){
+			if(m.getDescricao().equals(turma.getMatriz().getDescricao())){
+				return false;
+			}
+		}
+		return true;
+		
+	}
+	
+	
 
 	public List<GrupoTurma> recuperarGrupoTurmasProfessor() {
 	
 		try {
 			recuperarTurmasProfessor();
-			for (Turma t : turmas) {
-				grupoTurmas.addAll(dao.listar(GrupoTurma.class, " turma = " + t.getId()));
+			recuperarMatrizProfessor();
+			grupoTurmas = new ArrayList<>();
+			for(Matriz m : matriz){
+				grupoTurmas.addAll(daoGrupoTurma.listar(GrupoTurma.class, " matriz = " + m.getId()));
 			}
 		} catch (Exception e) {
 			System.err.println("Erro recuperarGrupoTurmasProfessor ");
@@ -77,9 +158,12 @@ public class RecuperarRelacoesProfessor {
 	public List<AtividadeTurma> recuperarAtividadeTurmasProfessor() {
 		try {
 			recuperarTurmasProfessor();
-			for (Turma t : turmas) {
-				atividadeTurmas.addAll(dao.listar(AtividadeTurma.class, " turma = " + t.getId()));
+			recuperarMatrizProfessor();
+	 
+			for(Matriz m : matriz){
+				atividadeTurmas.addAll(daoAtividadeTurma.listar(AtividadeTurma.class, " matriz = " + m.getId()));
 			}
+			
 		} catch (Exception e) {
 			System.err.println("Erro recuperarAtividadeTurmasProfessor ");
 			e.printStackTrace();
@@ -91,10 +175,11 @@ public class RecuperarRelacoesProfessor {
 		
 		try {
 			professorCursos = new ArrayList<>();
-			professorCursos = dao.listar(ProfessorCurso.class,
+			cursos = new ArrayList<>();
+			professorCursos = daoProfessorCurso.listar(ProfessorCurso.class,
 					" professor = " + usuarioSessao.recuperarProfessor().getId());
 			for (ProfessorCurso pc : professorCursos) {
-				cursos.addAll(dao.listar(Curso.class, " id = " + pc.getCurso().getId()));
+				cursos.addAll(daoCurso.listar(Curso.class, " id = " + pc.getCurso().getId()));
 			}
 
 		} catch (Exception e) {
@@ -108,9 +193,10 @@ public class RecuperarRelacoesProfessor {
 	
 		try {
 			recuperarTurmasProfessor();
+			certificados = new ArrayList<>();
 			for (Turma t : turmas) {
-				certificados.addAll(dao.listar(Certificado.class,
-						" situacao = " + situacao + " and atividadeTurma.turma = " + t.getId()));
+				certificados.addAll(daoCertificado.listar(Certificado.class,
+						" situacao = " + situacao + " and alunoTurma.turma = " + t.getId()));
 			}
 		} catch (Exception e) {
 			System.err.println("Erro recuperarCertificados ");
@@ -125,13 +211,13 @@ public class RecuperarRelacoesProfessor {
 		List<Movimentacao> alunosAtivos = new ArrayList<>();
 		List<AlunoTurma> alunosTurmas = new ArrayList<>();
 		List<Movimentacao> alunosAtivosProfessor = new ArrayList<>();
-		DAOMovimentacaoAluno daoMovimentacaoAluno = new DAOMovimentacaoAluno();
+	
 		List<AlunoTurma> alunosTurmasTurma = new ArrayList<>();
 		turmas = new ArrayList<>();
 		recuperarTurmasProfessor();
 		try {
-			alunosAtivos = daoMovimentacaoAluno.buscarAtivo();
-			alunosTurmas = daoMovimentacaoAluno.listarMaioresAlunoTurma();
+			alunosAtivos = movimentacaoAlunoDAO.buscarAtivo();
+			alunosTurmas = movimentacaoAlunoDAO.listarMaioresAlunoTurma();
 
 			for (int m = 0; m <= alunosTurmas.size() - 1; m++) {
 				for (int v = 0; v <= turmas.size() - 1; v++) {
@@ -163,16 +249,16 @@ public class RecuperarRelacoesProfessor {
 		
 		List<Movimentacao> alunosTrancados = new ArrayList<>();
 		List<AlunoTurma> alunosTurmas = new ArrayList<>();
-		DAOMovimentacaoAluno daoMovimentacaoAluno = new DAOMovimentacaoAluno();
+	//	DAOMovimentacaoAluno daoMovimentacaoAluno = new DAOMovimentacaoAluno();
 		List<AlunoTurma> alunosTurmasTurma = new ArrayList<>();
 		List<Movimentacao> alunosTrancadosProfessor = new ArrayList<>();
 		turmas = new ArrayList<>();
 		recuperarTurmasProfessor();
 
 		try {
-			alunosTrancados = daoMovimentacaoAluno.buscarTrancado();
+			alunosTrancados = movimentacaoAlunoDAO.buscarTrancado();
 
-			alunosTurmas = daoMovimentacaoAluno.listarMaioresAlunoTurma();
+			alunosTurmas = movimentacaoAlunoDAO.listarMaioresAlunoTurma();
 
 			for (int m = 0; m <= alunosTurmas.size() - 1; m++) {
 				for (int v = 0; v <= turmas.size() - 1; v++) {
@@ -203,7 +289,7 @@ public class RecuperarRelacoesProfessor {
 		recuperarAtividadeTurmasProfessor();
 		try {
 			for (Turma t : turmas) {
-				alunosTurmas.addAll(dao.listar(AlunoTurma.class, " turma = " + t.getId()));
+				alunosTurmas.addAll(daoAlunoTurma.listar(AlunoTurma.class, " turma = " + t.getId()));
 			}
 		} catch (Exception e) {
 			System.err.println("Erro recuperarTodosAlunosTurmasAtivas");
@@ -218,16 +304,16 @@ public class RecuperarRelacoesProfessor {
 	public List<Movimentacao> recuperarTodasMovimentacoesAtivas() {
 		List<Movimentacao> todosAlunos = new ArrayList<>();
 		List<AlunoTurma> alunosTurmas = new ArrayList<>();
-		DAOMovimentacaoAluno daoMovimentacaoAluno = new DAOMovimentacaoAluno();
+		
 		List<AlunoTurma> alunosTurmasTurma = new ArrayList<>();
 		List<Movimentacao> alunos = new ArrayList<>();
 		turmas = new ArrayList<>();
 		recuperarTurmasProfessor();
 
 		try {
-			todosAlunos = dao.listaComStatus(Movimentacao.class);
+			todosAlunos = daoMovimentacao.listaComStatus(Movimentacao.class);
 
-			alunosTurmas = dao.listaComStatus(AlunoTurma.class);
+			alunosTurmas = daoAlunoTurma.listaComStatus(AlunoTurma.class);
 
 			for (int m = 0; m <= alunosTurmas.size() - 1; m++) {
 				for (int v = 0; v <= turmas.size() - 1; v++) {

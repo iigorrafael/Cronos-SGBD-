@@ -1,26 +1,32 @@
 package br.com.cronos.converter;
 
+import java.io.Serializable;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
-import javax.faces.convert.FacesConverter;
-
-import dao.DAOGenerico;
+import javax.inject.Inject;
+import javax.inject.Named;
+import dao.GenericDAO;
 import base.modelo.Curso;
 import util.Mensagem;
 
-@FacesConverter("converterCurso")
-public class ConverterCurso implements Converter {
+@Named("converterCurso")
+public class ConverterCurso implements Converter{
+
+	@Inject
+	private GenericDAO<Curso> daoCurso;
 
 	@Override
 	public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
+		
 		if (value != null && value.trim().length() > 0) {
 			try {
-				DAOGenerico dao = new DAOGenerico();
-				Curso curso = (Curso) dao.buscarPorId(Curso.class, Long.parseLong(value));
-				return curso;
+				
+			 return daoCurso.buscarPorId(Curso.class, Long.parseLong(value));
+			 
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new ConverterException(
@@ -29,15 +35,14 @@ public class ConverterCurso implements Converter {
 		} else {
 			return null;
 		}
-	}
+		}
+	
 
 	@Override
-	public String getAsString(FacesContext fc, UIComponent uic, Object object) {
-		if (object != null) {
-			Curso cur = (Curso) object;
-			return String.valueOf(cur.getId());
-		} else {
-			return null;
-		}
+	public String getAsString(FacesContext context, UIComponent component, Object value) {
+		if (!(value instanceof Curso)) return null;
+		    return  String.valueOf(((Curso) value).getId());
+		
+		
 	}
 }

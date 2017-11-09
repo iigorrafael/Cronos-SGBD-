@@ -32,10 +32,19 @@ public class Turma implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false, name = "data_inicio_turma")
 	private Date dataInicioTurma;
+	
+	@NotNull(message = "O campo abreviação não pode ser nulo")
+	@Column(nullable = false)
+	private String abreviacaoTurma;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false, name = "data_cadastro")
 	private Date dataCadastro;
+	
+	@NotNull(message = "O campo matriz não pode ser nulo")
+	@JoinColumn(name = "id_matriz", nullable = false)
+	@ManyToOne
+	private Matriz matriz;
 
 	@Column(nullable = false)
 	private Boolean status;
@@ -63,6 +72,20 @@ public class Turma implements Serializable {
 
 	public void setDataInicioTurma(Date dataInicioTurma) {
 		this.dataInicioTurma = dataInicioTurma;
+	}
+	
+	
+
+	public Matriz getMatriz() {
+		return matriz;
+	}
+
+	public void setMatriz(Matriz matriz) {
+		this.matriz = matriz;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Date getDataCadastro() {
@@ -92,6 +115,14 @@ public class Turma implements Serializable {
 	@Override
 	public String toString() {
 		return descricao + ", " + curso.getNome();
+	}
+
+	public String getAbreviacaoTurma() {
+		return abreviacaoTurma;
+	}
+
+	public void setAbreviacaoTurma(String abreviacaoTurma) {
+		this.abreviacaoTurma = abreviacaoTurma;
 	}
 
 }

@@ -1,7 +1,12 @@
 package ac.controle;
 
+import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.CriptografiaSenha;
 import util.ExibirMensagem;
@@ -9,24 +14,36 @@ import util.Mensagem;
 import util.ValidacoesGerirUsuarios;
 
 import base.modelo.Servidor;
-import dao.DAOGenerico;
+import base.service.ServidorService;
+
 
 @SessionScoped
-@ManagedBean
-public class AlterarDadosProfessorMB {
+@Named("alterarDadosProfessorMB")
+public class AlterarDadosProfessorMB implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private Servidor professor;
-	private DAOGenerico dao;
-	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
-	private UsuarioSessaoMB usuarioSessao;
+	
 	private String senha;
 	private String senha2;
+	
+	@Inject
+	private ServidorService servidorService;
+	
+	@Inject
+	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
 
-	public AlterarDadosProfessorMB() {
+	@PostConstruct
+	public void inicializar() {
 		professor = new Servidor();
-		dao = new DAOGenerico();
-		validacoesGerirUsuarios = new ValidacoesGerirUsuarios();
-		usuarioSessao = new UsuarioSessaoMB();
+	
 		senha = "";
 		senha2 = "";
 		preencherProfessor();
@@ -42,7 +59,7 @@ public class AlterarDadosProfessorMB {
 					professor.setSenha(senha);
 					professor.setSenha(CriptografiaSenha.criptografar(professor.getSenha()));
 				}
-				dao.alterar(professor);
+				servidorService.inserirAlterar(professor);
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherProfessor();
 			}

@@ -3,11 +3,12 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:body>
-	<ui:composition template="../../resources/template/template-aluno.xhtml">
+	<ui:composition
+		template="../../resources/template/template-aluno.xhtml">
 		<ui:define name="mensagem">
 			<ui:include src="../../componentes/mensagem.xhtml" />
 		</ui:define>
-		<ui:define name="conteudo">
+		<ui:define name="conteudo"> 
 			<ui:include src="../paginas/certificado-aluno/certificados.xhtml" />
 		</ui:define>
 		<ui:define name="modal-confirmacao">

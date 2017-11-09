@@ -1,7 +1,13 @@
 package teste;
 
-import java.util.Date;
+import java.io.Serializable;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 
@@ -9,40 +15,46 @@ import ac.modelo.AlunoTurma;
 import ac.modelo.AtividadeTurma;
 import ac.modelo.Certificado;
 import base.modelo.Aluno;
-import dao.ConexaoBanco;
-import dao.DAOGenerico;
-import sgpb.modelo.Evento;
+import base.modelo.Curso; 
+import dao.GenericDAO;
 
-public class Teste {
-	private static EntityManager entityManager;
+
+//@SessionScoped
+//@Named("Teste")
+public class Teste{
+
+//	
+//	@Inject
+//	private GenericDAO<Curso> dao;
+//	
+//	private Curso curso;
+//	
+//	@PostConstruct
+//	public void iniciar(){
+//		 curso = new Curso();	
+//	}
+
 	
 	public static void main(String args []){ 
-    Evento evento = new Evento();
-//    Date dataEvento = 24/05/2018;
-	entityManager =  ConexaoBanco.getConexao().getEm();
-	evento.setNome("Porra");
-	evento.setDetalhes("detalhes");
-//	evento.setTipo("Tipo");
-//	evento.setArea("area");
-//	evento.setData(dataEvento);
-	
-	
-	
-//	AlunoTurma a = new AlunoTurma();
-//	Certificado c = new Certificado();
-	
-//	AtividadeTurma a = new AtividadeTurma();
-	
+//		EntityManager entityManager;
+//			
+//		entityManager =  ConexaoBanco.getConexao().getEm();
 		
-//	DAOGenerico dao = new DAOGenerico();
-//	
-//	Aluno aluno = (Aluno) dao.buscarPorId(Aluno.class, 1L);
-//	
-//	AlunoTurma turma = (AlunoTurma) dao.buscarCondicao(AlunoTurma.class, "id_pessoa" ,1L);
-//	System.out.println(turma.getRa());
-	
-	
-	
+
+//		Teste t = new Teste();
+//		t.busca();
+//     
 	}
 	
+//	public void busca(){
+//		
+//		
+//		try{
+//		curso =  dao.buscarPorId(Curso.class, 3L);
+//	     System.out.println("curso "+curso.getNome());
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//	}
 }

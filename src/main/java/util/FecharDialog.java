@@ -3,6 +3,18 @@ package util;
 import org.primefaces.context.RequestContext;
 
 public class FecharDialog {
+	
+	public static void fecharDialogEvento() {
+		RequestContext.getCurrentInstance().execute("PF('dlgEventos').hide();");
+	}
+	
+	public static void fecharDialogAtividades() {
+		RequestContext.getCurrentInstance().execute("PF('dlgAtividades').hide();");
+	}
+	
+	public static void fecharDialogEmail() {
+		RequestContext.getCurrentInstance().execute("PF('dlgEmail').hide();");
+	}
 
 	public static void fecharDialogCursoFechamento() {
 		RequestContext.getCurrentInstance().execute("PF('dlgCursoFechar').hide();");
@@ -12,8 +24,64 @@ public class FecharDialog {
 		RequestContext.getCurrentInstance().execute("PF('dlgCurso').hide();");
 	}
 	
-	public static void fecharDialogEvento() {
-		RequestContext.getCurrentInstance().execute("PF('dlgEventos').hide();");
+	public static void fecharDialogAdiciona() {
+		RequestContext.getCurrentInstance().execute("PF('dlgAdicionar').hide();");
+	}
+	
+	public static void fecharDialogAdicionaProtocolo() {
+		RequestContext.getCurrentInstance().execute("PF('dlgAluno').hide();");
+	}
+	public static void abrirDialogFinaliza() {
+		RequestContext.getCurrentInstance().execute("PF('dlgParecerFinalizar').show();");
+	}
+	public static void fechaDialogFinaliza() {
+		RequestContext.getCurrentInstance().execute("PF('dlgParecerFinalizar').hide();");
+	}
+	
+	public static void fecharDialogProtocoloAluno() {
+		RequestContext.getCurrentInstance().execute("PF('dlgProtocolo').hide();");
+	}
+	
+	public static void fecharDialogAdicionaProtocoloServidor() {
+		RequestContext.getCurrentInstance().execute("PF('dlgServidor').hide();");
+	}
+	
+	public static void fecharDialogPessoaExterno() {
+		RequestContext.getCurrentInstance().execute("PF('dlgExterno').hide();");
+	}
+	public static void fecharDialogParecer() {
+		RequestContext.getCurrentInstance().execute("PF('dlgParecer').hide();");
+	}
+	public static void fecharDialogDarCiencia() {
+		RequestContext.getCurrentInstance().execute("PF('dlgCiencia').hide();");
+	}
+	public static void fecharDialogReencaminha() {
+		RequestContext.getCurrentInstance().execute("PF('dlgReencaminhar').hide();");
+	}
+	public static void fecharDialogMovimentacaoProtocolo() {
+		RequestContext.getCurrentInstance().execute("PF('dlgMovimentacao').hide();");
+	}
+	public static void fecharDialogComunica() {
+		RequestContext.getCurrentInstance().execute("PF('dlgComunicar').hide();");
+	}
+	public static void fecharDialogParecerFinal() {
+		RequestContext.getCurrentInstance().execute("PF('dlgParecerFinalizar').hide();");
+	}
+	
+	public static void fecharDialogCpf() {
+		RequestContext.getCurrentInstance().execute("PF('dlgCpf').hide();");
+	}
+	
+	public static void abrirDialogPessoaExterna() {
+		RequestContext.getCurrentInstance().execute("PF('dlgExterno').show();");
+	}
+	
+	public static void abrirDialogPessoaExternaCpf() {
+		RequestContext.getCurrentInstance().execute("PF('dlgCpf').show();");
+	}
+	
+	public static void fecharDialogRemove() {
+		RequestContext.getCurrentInstance().execute("PF('dlgExcluir').hide();");
 	}
 
 	public static void fecharDialogTurma() {
@@ -26,6 +94,20 @@ public class FecharDialog {
 
 	public static void fecharDialogAtividade() {
 		RequestContext.getCurrentInstance().execute("PF('dlgAtividade').hide();");
+	}
+	
+	public static void fecharDialogSetor() {
+		RequestContext.getCurrentInstance().execute("PF('dlgSetor').hide();");
+	}
+	
+	public static void fecharDialogRequerimento() {
+		RequestContext.getCurrentInstance().execute("PF('dlgRequerimento').hide();");
+	}
+	public static void fecharDialogRequerimentoExcluir() {
+		RequestContext.getCurrentInstance().execute("PF('dlgRemoveRequerimento').hide();");
+	}
+	public static void fecharDialogRequerimentoEditar() {
+		RequestContext.getCurrentInstance().execute("PF('dlgEditarRequerimento').hide();");
 	}
 
 	public static void fecharDialogGrupoTurma() {
@@ -42,6 +124,9 @@ public class FecharDialog {
 	
 	public static void fecharDialogTipoServidor() {
 		RequestContext.getCurrentInstance().execute("PF('dlgTipoServidor').hide();");
+	}
+	public static void fecharDialogMatriz() {
+		RequestContext.getCurrentInstance().execute("PF('dlgMatriz').hide();");
 	}
 
 	public static void fecharDialogServidor() {
@@ -78,6 +163,9 @@ public class FecharDialog {
 	public static void fecharDialogEditarAluno() {
 		RequestContext.getCurrentInstance().execute("PF('dlgAlunoEditarDados').hide();");
 	}
+	public static void fecharDialogDATAAluno() {
+		RequestContext.getCurrentInstance().execute("PF('dlgAlunoEditarData').hide();");
+	}
 	
 	public static void abrirDialogSalvarAluno() {
 		RequestContext.getCurrentInstance().execute("PF('dlgAlunoCurso').show();");
@@ -113,6 +201,9 @@ public class FecharDialog {
 
 	public static void fecharDialogCertificado() {
 		RequestContext.getCurrentInstance().execute("PF('dlgCertificado').hide();");
+	}
+	public static void fecharDialogCertificadoEdit() {
+		RequestContext.getCurrentInstance().execute("PF('dlgCertificadoEditar').hide();");
 	}
 
 	public static void fecharDialogCertificadoAutenticarSecretaria() {

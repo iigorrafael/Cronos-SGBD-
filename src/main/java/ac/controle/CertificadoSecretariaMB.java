@@ -1,33 +1,57 @@
 package ac.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.ExibirMensagem;
 import util.FecharDialog;
 import util.Mensagem;
+import ac.modelo.AlunoTurma;
 import ac.modelo.Certificado;
-
 import base.modelo.Servidor;
-import dao.DAOGenerico;
+import base.service.CertificadoService; 
+import dao.GenericDAO;
 
-@SessionScoped
-@ManagedBean
-public class CertificadoSecretariaMB {
+@ViewScoped
+@Named("certificadoSecretariaMB")
+public class CertificadoSecretariaMB implements Serializable{
+	
+	
+	/* 
+	 *
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private Certificado certificado;
-	private DAOGenerico dao;
-	private UsuarioSessaoMB usuarioSessao;
+
 	private List<Certificado> certificadosPendentes;
 	private List<Certificado> certificadosInvalidos;
 	private List<Certificado> certificadosAutenticados;
 
-	public CertificadoSecretariaMB() {
+	@Inject
+	private CertificadoService certificadoService;
+	
+	@Inject
+	private GenericDAO<Certificado> daoCertificado; 	
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	
+	@PostConstruct
+	public void inicializar() {
 		certificado = new Certificado();
-		dao = new DAOGenerico();
-		usuarioSessao = new UsuarioSessaoMB();
+	
 		certificadosPendentes = new ArrayList<>();
 		certificadosInvalidos = new ArrayList<>();
 		certificadosAutenticados = new ArrayList<>();
@@ -45,7 +69,7 @@ public class CertificadoSecretariaMB {
 			certificado.setAutenticadoSecretaria(
 					secretariaRecuperarSesao.getNome() + ", " + secretariaRecuperarSesao.getUsuario());
 
-			dao.alterar(certificado);
+			certificadoService.inserirAlterar(certificado);
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			FecharDialog.fecharDialogCertificadoAutenticarSecretaria();
 			preencherListaPendentes();
@@ -63,7 +87,7 @@ public class CertificadoSecretariaMB {
 			Servidor secretariaRecuperarSesao = (Servidor) usuarioSessao.recuperarSecretaria();
 			certificado.setAutenticadoSecretaria(
 					secretariaRecuperarSesao.getNome() + ", " + secretariaRecuperarSesao.getUsuario());
-			dao.alterar(certificado);
+			certificadoService.inserirAlterar(certificado);
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			FecharDialog.fecharDialogCertificadoInvalidarSecretaria();
 			preencherListaPendentes();
@@ -81,7 +105,7 @@ public class CertificadoSecretariaMB {
 			Servidor secretariaRecuperarSesao = (Servidor) usuarioSessao.recuperarSecretaria();
 			certificado.setAutenticadoSecretaria(
 					secretariaRecuperarSesao.getNome() + ", " + secretariaRecuperarSesao.getUsuario());
-			dao.alterar(certificado);
+			certificadoService.inserirAlterar(certificado);
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			FecharDialog.fecharDialogCertificadoPenderSecretaria();
 			preencherListaPendentes();
@@ -99,15 +123,15 @@ public class CertificadoSecretariaMB {
 
 	private void preencherListaPendentes() {
 	
-		certificadosPendentes = dao.listar(Certificado.class, " situacao = 0 ");
+		certificadosPendentes = daoCertificado.listar(Certificado.class, " situacao = 0 ");
 	}
 
 	private void preencherListaAutenticados() {
-		certificadosAutenticados = dao.listar(Certificado.class, " situacao = 1 ");
+		certificadosAutenticados = daoCertificado.listar(Certificado.class, " situacao = 1 ");
 	}
 
 	private void preencherListaInvalidos() {
-		certificadosInvalidos = dao.listar(Certificado.class, " situacao = 2 ");
+		certificadosInvalidos = daoCertificado.listar(Certificado.class, " situacao = 2 ");
 	}
 
 	public Certificado getCertificado() {

@@ -1,27 +1,42 @@
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ac.modelo.Certificado;
-import base.modelo.Aluno;
-import dao.DAOFiltros;
-import dao.DAOGenerico;
+import javax.inject.Inject;
 
-public class ValidaTopoAtividade {
-	private DAOFiltros daoFiltros;
+import ac.modelo.Certificado;
+import base.modelo.Aluno; 
+import dao.FiltrosDAO;
+
+public class ValidaTopoAtividade implements Serializable {
+	
+	
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
+	
 	private List<Certificado> certificados;
 	private Double somaCertificado;
+	
+	@Inject
+	private FiltrosDAO daoFiltros;
 
 	public ValidaTopoAtividade() {
-		daoFiltros = new DAOFiltros();
+		
 		certificados = new ArrayList<>();
 		somaCertificado = 0.0;
 	}
 
 	public Boolean calcularTotalAtividade(Certificado certificado) {
 		try {
-			daoFiltros = new DAOFiltros();
+			
 			certificados = new ArrayList<>();
 			
 			certificados = daoFiltros.certificadosAlunosComAtividade(certificado.getAlunoTurma().getId(), 3,

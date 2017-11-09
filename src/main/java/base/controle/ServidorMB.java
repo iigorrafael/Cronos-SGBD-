@@ -1,10 +1,16 @@
 package base.controle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 
 import util.CriptografiaSenha;
 import util.ExibirMensagem;
@@ -12,25 +18,35 @@ import util.FecharDialog;
 import util.Mensagem;
 import util.ValidacoesGerirUsuarios;
 import ac.controle.UsuarioSessaoMB;
+
 import ac.modelo.Permissao;
 import ac.modelo.Pessoa;
 import ac.modelo.ProfessorCurso;
+
 import base.modelo.Curso;
 import base.modelo.Servidor;
 import base.modelo.Tipo;
-import dao.DAOGenerico;
-import dao.DAOUsuario;
+import base.service.PermissaoService;
+import base.service.ProfessorCursoService;
+import base.service.ServidorService; 
+import dao.GenericDAO;
+import dao.UsuarioDAO;
 
-@ManagedBean
+
 
 @SessionScoped
-public class ServidorMB {
+@Named("servidorMB")
+public class ServidorMB implements Serializable{
 
-	private DAOGenerico dao;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//private DAOGenerico dao;
 	private List<Tipo> listTipoSelecionado;
 	private List<Tipo> tipoSalvar;
 	private Tipo permissaoAdicionada;
-	private UsuarioSessaoMB usuarioSessao;
+	
 	private List<Curso> listCursoSelecionado;
 	private List<Curso> listCursoCompletar;
 	private Curso cursoAdicionado;
@@ -47,18 +63,55 @@ public class ServidorMB {
 	private Tipo permissaoParaRemove;
 	private List<Permissao> permissaoRemoveSelecionada;
 	private List<ProfessorCurso> professorCursoSelecionado;
-	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
-	private DAOUsuario daoUsuarios;
+	
+
 	private boolean controleRadio = true;
 	int flag = 0;
 	private boolean controleSenha;
 	private boolean controleAddTipo = true;
 	private boolean controleAddCurso = true;
+	
+	@Inject
+	private UsuarioDAO daoUsuarios;
+	
+	@Inject
+	private ServidorService servidorService;
+	
+	@Inject
+	private PermissaoService permissaoService;
+	
+	@Inject
+	private ProfessorCursoService professorCursoService;
+	
+	@Inject
+	private GenericDAO<Tipo> daoTipo;
+	
+	@Inject
+	private GenericDAO<Permissao> daoPermissao;
+	
+	@Inject
+	private GenericDAO<ProfessorCurso> daoProfessorCurso;
+	
+    @Inject
+    private GenericDAO<Pessoa> daoPessoa;
+   
+    @Inject
+    private GenericDAO<Servidor> daoServidor;
 
-	public ServidorMB() {
+	@Inject
+	private GenericDAO<Curso> daoCurso;
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	@Inject
+	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
+
+	@PostConstruct
+	public void inicializar() {
 
 		professorCursoSelecionado = new ArrayList<>();
-		dao = new DAOGenerico();
+		
 		listTipoSelecionado = new ArrayList<>();
 		tipoSalvar = new ArrayList<>();
 		servidor = new Servidor();
@@ -66,11 +119,11 @@ public class ServidorMB {
 		professorCurso = new ProfessorCurso();
 		listServidor = new ArrayList<>();
 		professorCursoRemove = new ArrayList<>();
-		validacoesGerirUsuarios = new ValidacoesGerirUsuarios();
-		usuarioSessao = new UsuarioSessaoMB();
+	
+	
 		permissaoRemove = new ArrayList<>();
 		permissaoRemoveSelecionada = new ArrayList<>();
-		daoUsuarios = new DAOUsuario();
+		
 		listCursoSelecionado = new ArrayList<>();
 		listCursoSalvar = new ArrayList<>();
 		permissaoAdicionada = new Tipo();
@@ -84,10 +137,10 @@ public class ServidorMB {
 	public void preencherListaServidor(Servidor servid) {
 		this.servidor = new Servidor();
 		this.servidor = servid;
-		controleSenha = false; 
+		controleSenha = false;
 		controleAddTipo = true;
 		controleRadio = true;
-
+		// rem
 		tipoSalvar.clear();
 		for (Permissao p : daoUsuarios.buscarPermissaoServidor(" status = true and servidor = " + servidor.getId())) {
 			tipoSalvar.add(p.getTipo());
@@ -101,56 +154,76 @@ public class ServidorMB {
 				for (ProfessorCurso c : daoUsuarios
 						.buscarCursosProfessor(" status = true and professor = " + servidor.getId())) {
 					listCursoSelecionado.add(c.getCurso());
+
 				}
 			} else {
+
 				controleAddCurso = true;
 				controle = true;
 				listCursoSelecionado = new ArrayList<>();
 			}
-			
-			if(t.getDescricao().equalsIgnoreCase("secretaria")){
+
+			if (t.getDescricao().equalsIgnoreCase("secretaria")) {
 				controleRadio = false;
 			}
 		}
 
 	}
-	
-	
-	public void controle(){
+
+	public void controle() {
 		controleAddTipo = false;
-		
+
 	}
-	public void cancelar(){
+
+	public void cancelar() {
 		controleAddTipo = true;
 		FecharDialog.fecharDialogServidor();
 	}
 
 	public void adicionaPermissao() {
-		
-		
-		permissaoAdicionada = (Tipo) dao.buscarPorId(Tipo.class, permissao.getTipo().getId());
 
-		if (tipoSalvar.size() == 0) {
-			tipoSalvar.add(permissaoAdicionada);
+		permissaoAdicionada = daoTipo.buscarPorId(Tipo.class, permissao.getTipo().getId());
+		if(servidor.getId() == null){
 			
-			controlar();
-			controleChefe();
-		} else {
+			if(validarRelaciomanetoPermissao(permissaoAdicionada)){
+				tipoSalvar.add(permissaoAdicionada);
 
+				controlar();
+				controleChefe();
+			}else{
+			   ExibirMensagem.exibirMensagem(Mensagem.PERMISSAOADICIONADA);
+			}
+			
+		}else{
+			
 			if (validarRelaciomanetoPermissao(permissaoAdicionada)) {
 				tipoSalvar.add(permissaoAdicionada);
+				
+					permissao.setDataInclusao(new Date());
+					permissao.setServidor(servidor);
+					permissao.setStatus(true);
+					permissao.setTipo(permissaoAdicionada);
+					
+						permissaoService.inserirAlterar(permissao);
+				        ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+					permissao = new Permissao();
+				
+				
 			} else {
 				ExibirMensagem.exibirMensagem(Mensagem.PERMISSAOADICIONADA);
 			}
 		
-		controlar();
-		controleChefe();
+
+
+			controlar();
+			controleChefe();
+		
 		}
 	}
 
 	public void adicionaProfessorCurso() {
-		
-		cursoAdicionado = (Curso) dao.buscarPorId(Curso.class, professorCurso.getCurso().getId());
+
+		cursoAdicionado = daoCurso.buscarPorId(Curso.class, professorCurso.getCurso().getId());
 
 		if (listCursoSelecionado.size() == 0) {
 			listCursoSelecionado.add(cursoAdicionado);
@@ -187,57 +260,50 @@ public class ServidorMB {
 	}
 
 	public void removerPermissao(Tipo tipo) {
+		
 		if (servidor.getId() == null) {
-			permissaoAdicionada = (Tipo) dao.buscarPorId(Tipo.class, tipo.getId());
-			tipoSalvar.remove(permissaoAdicionada);
-			controlar();
+		
+			if(tipo.getDescricao().equalsIgnoreCase("professor")){
+				if(listCursoSelecionado.size()>0){
+					ExibirMensagem.exibirMensagem(Mensagem.REMOVERCURSO);
+				}else{
+					tipoSalvar.remove(tipo);
+					controlar();
+				}
+			}else{
+			tipoSalvar.remove(tipo);
 			controleChefe();
+			}
 			
 		} else {
-			
-		
-			permissaoParaRemove = (Tipo) dao.buscarPorId(Tipo.class, tipo.getId());
-			permissaoRemove = dao.listar(Permissao.class,
-					" servidor = " + servidor.getId() + " and tipo = " + permissaoParaRemove.getId());
-
-			if (permissaoRemove.size() > 0) {
-
-				for (Permissao p : permissaoRemove) {
-					p.setStatus(false);
-					dao.alterar(p);
+		 
+			if(tipo.getDescricao().equalsIgnoreCase("professor")){
+				if(listCursoSelecionado.size() >0){
+					ExibirMensagem.exibirMensagem(Mensagem.REMOVERCURSO);
+				}else{
+					remover(tipo);
 				}
-
-				int flag = 1;
-				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
-				preencherListaServidor(servidor);
-
-			} else {
-				
-				
-				tipoSalvar.remove(permissaoParaRemove);
+			}else{
+				  remover(tipo);
 			}
-
-		}
-
+			
 	}
 
-	public void removerCurso(Curso curso) {
+	}
+	
+	
+	public void remover(Tipo tipo){
+		permissaoRemove = daoPermissao.listar(Permissao.class,
+				" servidor = " + servidor.getId() + " and tipo = " + tipo.getId());
 
-		if (servidor.getId() == null) {
-			cursoAdicionado = (Curso) dao.buscarPorId(Curso.class, curso.getId());
-			listCursoSelecionado.remove(cursoAdicionado);
-		} else {
+		if (permissaoRemove.size() > 0) {
 
-			List<ProfessorCurso> cursoRemov = new ArrayList<>();
+			for (Permissao p : permissaoRemove) {
 
-			cursoRemov = dao.listar(ProfessorCurso.class,
-					" professor = " + servidor.getId() + " and status = true and curso = " + curso.getId());
-
-			for (ProfessorCurso p : cursoRemov) {
 				p.setStatus(false);
-				dao.alterar(p);
-			}
+				permissaoService.inserirAlterar(p);
 
+			}
 			int flag = 1;
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 			preencherListaServidor(servidor);
@@ -245,8 +311,74 @@ public class ServidorMB {
 		}
 	}
 
+	public void removerCurso(Curso curso) {
+
+		if (servidor.getId() == null) {
+			listCursoSelecionado.remove(curso);
+		} else {
+
+			List<Permissao> permiss = new ArrayList<>();
+			permiss = daoPermissao.listar(Permissao.class,
+					" servidor = " + servidor.getId() + " and tipo.descricao = 'professor'");
+
+			if (permiss.size() == 0) {
+
+//				Curso cursoRem = new Curso();
+//				cursoRem =  daoCurso.buscarPorId(Curso.class, curso.getId());
+
+				listCursoSelecionado.remove(curso);
+
+			} else {
+
+				List<ProfessorCurso> cursoRemov = new ArrayList<>();
+
+				cursoRemov = daoProfessorCurso.listar(ProfessorCurso.class,
+						" professor = " + servidor.getId() + " and status = true and curso = " + curso.getId());
+
+				for (ProfessorCurso p : cursoRemov) {
+					p.setStatus(false);
+					professorCursoService.inserirAlterar(p);
+				}
+
+				List<ProfessorCurso> cursoTodos = new ArrayList<>();
+
+				cursoTodos = daoProfessorCurso.listar(ProfessorCurso.class,
+						" professor = " + servidor.getId() + " and status = true ");
+
+				if (cursoTodos.size() == 0) {
+
+					for (Tipo t : tipoSalvar) {
+
+						if (t.getDescricao().equalsIgnoreCase("professor")) {
+
+							List<Permissao> permissaoRemov = new ArrayList<>();
+							permissaoRemov = daoPermissao.listar(Permissao.class,
+									" servidor = " + servidor.getId() + " and tipo = " + t.getId());
+
+							if (permissaoRemov.size() > 0) {
+
+								for (Permissao p : permissaoRemov) {
+									p.setStatus(false);
+									permissaoService.inserirAlterar(p);
+								}
+							}
+
+						}
+
+					}
+
+				}
+				int flag = 1;
+				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+				preencherListaServidor(servidor);
+
+			}
+
+		}
+	}
+
 	public List<Tipo> completaPermissao(String str) {
-		listTipoSelecionado = dao.listaComStatus(Tipo.class);
+		listTipoSelecionado = daoTipo.listaComStatus(Tipo.class);
 		List<Tipo> listTipos = new ArrayList<>();
 		for (Tipo cur : listTipoSelecionado) {
 			if (cur.getDescricao().toLowerCase().startsWith(str)) {
@@ -257,7 +389,7 @@ public class ServidorMB {
 	}
 
 	public List<Curso> completaCurso(String str) {
-		listCursoCompletar = dao.listaComStatus(Curso.class);
+		listCursoCompletar = daoCurso.listaComStatus(Curso.class);
 		List<Curso> listTipos = new ArrayList<>();
 		for (Curso cur : listCursoCompletar) {
 			if (cur.getNome().toLowerCase().startsWith(str)) {
@@ -270,16 +402,13 @@ public class ServidorMB {
 	public void controlar() {
 
 		for (Tipo l : tipoSalvar) {
-			
-		
 
 			if (l.getDescricao().equals("professor") || l.getDescricao().equals("professores")) {
 				controle = false;
 				controleAddCurso = false;
 
-				
 				break;
-				
+
 			} else {
 
 				controle = true;
@@ -304,13 +433,14 @@ public class ServidorMB {
 	}
 
 	public void removerCurso(Servidor servidor) {
+
 		this.servidor = servidor;
 		List<Permissao> permissao = new ArrayList<>();
-		permissao = dao.listar(Permissao.class,
+		permissao = daoPermissao.listar(Permissao.class,
 				" servidor = " + servidor.getId() + " and status = true and tipo.descricao = 'professor'");
 
 		if (permissao.size() > 0) {
-			professorCursoRemove = dao.listar(ProfessorCurso.class,
+			professorCursoRemove = daoProfessorCurso.listar(ProfessorCurso.class,
 					" professor = " + servidor.getId() + " and status = true");
 
 		} else {
@@ -322,7 +452,7 @@ public class ServidorMB {
 
 	public void buscarPermissao() {
 		List<Permissao> permissao = new ArrayList<>();
-		permissao = dao.listar(Permissao.class, " servidor = " + servidor.getId());
+		permissao = daoPermissao.listar(Permissao.class, " servidor = " + servidor.getId());
 
 		for (Permissao pp : permissao) {
 
@@ -337,7 +467,7 @@ public class ServidorMB {
 	public void inativarCursoProfessorTodos() {
 		for (ProfessorCurso p : professorCursoSelecionado) {
 			p.setStatus(false);
-			dao.alterar(p);
+		    professorCursoService.inserirAlterar(p);
 
 			carregaLista();
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
@@ -353,7 +483,7 @@ public class ServidorMB {
 
 			for (ProfessorCurso p : professorCursoSelecionado) {
 				p.setStatus(false);
-				dao.alterar(p);
+				professorCursoService.inserirAlterar(p);
 			}
 			carregaLista();
 
@@ -361,36 +491,34 @@ public class ServidorMB {
 			FecharDialog.fecharDialogServidorCruso();
 		}
 	}
-	
+
 	public void salvarSenha() {
 		try {
-			
-				servidor.setSenha(CriptografiaSenha.criptografar(servidor.getSenha()));
-				dao.alterar(servidor);
 
-				FecharDialog.fecharDialogEditarSenhaServidor();
-				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
-				carregaLista();
-			
+			servidor.setSenha(CriptografiaSenha.criptografar(servidor.getSenha()));
+			servidorService.inserirAlterar(servidor);
+
+			FecharDialog.fecharDialogEditarSenhaServidor();
+			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+			carregaLista();
 
 		} catch (Exception e) {
 			ExibirMensagem.exibirMensagem(Mensagem.ERRO);
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-public Boolean verificaProfessor(){
-	for (Tipo t : tipoSalvar) {
-		if (t.getDescricao().equalsIgnoreCase("professor")) {	
-					if(listCursoSelecionado.size() == 0){
-						return false;
-					}			
+
+	public Boolean verificaProfessor() {
+		for (Tipo t : tipoSalvar) {
+			if (t.getDescricao().equalsIgnoreCase("professor")) {
+				if (listCursoSelecionado.size() == 0) {
+					return false;
+				}
+			}
 		}
+		return true;
 	}
-	return true;
-}
+
 	public void salvar() {
 
 		if (flag == 1) {
@@ -401,19 +529,72 @@ public Boolean verificaProfessor(){
 			flag = 0;
 		} else {
 			try {
-				
-					
-			if(verificaProfessor() == false){
-				ExibirMensagem.exibirMensagem(Mensagem.SELECIONEPROFESSOR);
-			}else{
 
-				if (servidor.getId() == null) {
+				if (verificaProfessor() == false) {
+					ExibirMensagem.exibirMensagem(Mensagem.SELECIONEPROFESSOR);
+				} else {
 
-					if (tipoSalvar.size() > 0) {
+					if (servidor.getId() == null) {
 
-						if (validacoesGerirUsuarios.buscarUsuarios(servidor)) {
+						if (tipoSalvar.size() > 0) {
+
+							if (validacoesGerirUsuarios.buscarUsuarios(servidor)) {
+								ExibirMensagem.exibirMensagem(Mensagem.USUARIO);
+							} else if (validacoesGerirUsuarios.buscarSiape(servidor)) {
+								ExibirMensagem.exibirMensagem(Mensagem.SIAPE);
+							} else {
+								if (servidor.getSenha().isEmpty()) {
+									servidor.setSenha("123");
+								}
+
+								if (servidor.getChefe() == null) {
+									servidor.setChefe(false);
+								}
+								servidor.setDataCadastro(new Date());
+								servidor.setStatus(true);
+								servidor.setSenha(CriptografiaSenha.criptografar(servidor.getSenha()));
+								servidorService.inserirAlterar(servidor);
+								for (Tipo t : tipoSalvar) {
+									permissao.setDataInclusao(new Date());
+									permissao.setServidor(servidor);
+									permissao.setStatus(true);
+									permissao.setTipo(t);
+									permissaoService.inserirAlterar(permissao);
+
+									permissao = new Permissao();
+								}
+								for (Tipo t : tipoSalvar) {
+									if (t.getDescricao().equals("professor")) {
+
+										for (Curso c : listCursoSelecionado) {
+
+											professorCurso.setStatus(true);
+											professorCurso.setCurso(c);
+											professorCurso.setProfessor(servidor);
+											professorCursoService.inserirAlterar(professorCurso);
+
+											professorCurso = new ProfessorCurso();
+										}
+									}
+								}
+								controleAddCurso = true;
+								criarNovoObjeto();
+								carregaLista();
+								ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
+								FecharDialog.fecharDialogServidor();
+
+							}
+						} else {
+
+							ExibirMensagem.exibirMensagem(Mensagem.ERROPERMISSAO);
+						}
+
+					} else {
+						if ((validacoesGerirUsuarios.buscarUsuarios(servidor))
+								&& (validacoesGerirUsuarios.buscarUsuarioAlterar(servidor))) {
 							ExibirMensagem.exibirMensagem(Mensagem.USUARIO);
-						} else if (validacoesGerirUsuarios.buscarSiape(servidor)) {
+						} else if ((validacoesGerirUsuarios.buscarSiape(servidor))
+								&& (validacoesGerirUsuarios.buscarSiapeAlterar(servidor))) {
 							ExibirMensagem.exibirMensagem(Mensagem.SIAPE);
 						} else {
 							if (servidor.getSenha().isEmpty()) {
@@ -423,30 +604,21 @@ public Boolean verificaProfessor(){
 							if (servidor.getChefe() == null) {
 								servidor.setChefe(false);
 							}
-							servidor.setDataCadastro(new Date());
-							servidor.setStatus(true);
-							servidor.setSenha(CriptografiaSenha.criptografar(servidor.getSenha()));
-							dao.inserir(servidor);
+						     servidorService.inserirAlterar(servidor);
+						
+						     
+						     
+						     
 							for (Tipo t : tipoSalvar) {
-								permissao.setDataInclusao(new Date());
-								permissao.setServidor(servidor);
-								permissao.setStatus(true);
-								permissao.setTipo(t);
-								dao.inserir(permissao);
+								if (t.getDescricao().equalsIgnoreCase("professor")) {
 
-								permissao = new Permissao();
-							}
-							for (Tipo t : tipoSalvar) {
-								if (t.getDescricao().equals("professor")) {
-									
-									
 									for (Curso c : listCursoSelecionado) {
-										
 										professorCurso.setStatus(true);
 										professorCurso.setCurso(c);
 										professorCurso.setProfessor(servidor);
-										dao.inserir(professorCurso);
-
+										if (validarRelacionamentoCursoProfessor(professorCurso)) {
+											professorCursoService.inserirAlterar(professorCurso);
+										}
 										professorCurso = new ProfessorCurso();
 									}
 								}
@@ -456,63 +628,9 @@ public Boolean verificaProfessor(){
 							carregaLista();
 							ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 							FecharDialog.fecharDialogServidor();
-
 						}
-					} else {
-
-						ExibirMensagem.exibirMensagem(Mensagem.ERROPERMISSAO);
-					}
-
-				} else {
-					if ((validacoesGerirUsuarios.buscarUsuarios(servidor))
-							&& (validacoesGerirUsuarios.buscarUsuarioAlterar(servidor))) {
-						ExibirMensagem.exibirMensagem(Mensagem.USUARIO);
-					} else if ((validacoesGerirUsuarios.buscarSiape(servidor))
-							&& (validacoesGerirUsuarios.buscarSiapeAlterar(servidor))) {
-						ExibirMensagem.exibirMensagem(Mensagem.SIAPE);
-					} else {
-						if (servidor.getSenha().isEmpty()) {
-							servidor.setSenha("123");
-						}
-
-						if (servidor.getChefe() == null) {
-							servidor.setChefe(false);
-						}
-						dao.alterar(servidor);
-						for (Tipo t : tipoSalvar) {
-							permissao.setDataInclusao(new Date());
-							permissao.setServidor(servidor);
-							permissao.setStatus(true);
-							permissao.setTipo(t);
-							if (validarRelacionamentoPermissao(permissao)) {
-								dao.inserir(permissao);
-							}
-							permissao = new Permissao();
-						}
-						for (Tipo t : tipoSalvar) {
-							if (t.getDescricao().equalsIgnoreCase("professor")) {
-								
-								
-								
-								for (Curso c : listCursoSelecionado) {
-									professorCurso.setStatus(true);
-									professorCurso.setCurso(c);
-									professorCurso.setProfessor(servidor);
-									if (validarRelacionamentoCursoProfessor(professorCurso)) {
-										dao.inserir(professorCurso);
-									}
-									professorCurso = new ProfessorCurso();
-								}
-							}
-						}
-						controleAddCurso = true;
-						criarNovoObjeto();
-						carregaLista();
-						ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
-						FecharDialog.fecharDialogServidor();
 					}
 				}
-			}
 			} catch (Exception e) {
 				System.out.println("erro" + e);
 			}
@@ -523,7 +641,7 @@ public Boolean verificaProfessor(){
 
 		Pessoa pessoa = new Pessoa();
 
-		pessoa = (Pessoa) dao.listar(Pessoa.class, " usuario = " + servidor.getUsuario());
+		pessoa = (Pessoa) daoPessoa.listar(Pessoa.class, " usuario = " + servidor.getUsuario());
 
 		if (pessoa.getUsuario().equals(servidor.getUsuario())) {
 			return true;
@@ -537,7 +655,7 @@ public Boolean verificaProfessor(){
 
 		try {
 
-			listPermissaoServidor = dao.listar(Permissao.class,
+			listPermissaoServidor = daoPermissao.listar(Permissao.class,
 					" tipo = " + permissao.getTipo().getId() + " and servidor = " + permissao.getServidor().getId());
 
 		} catch (Exception e) {
@@ -554,7 +672,7 @@ public Boolean verificaProfessor(){
 
 		try {
 
-			listServidorCurso = dao.listar(ProfessorCurso.class, " professor = " + servidorCurso.getProfessor().getId()
+			listServidorCurso = daoProfessorCurso.listar(ProfessorCurso.class, " professor = " + servidorCurso.getProfessor().getId()
 					+ " and curso = " + servidorCurso.getCurso().getId());
 
 		} catch (Exception e) {
@@ -570,7 +688,7 @@ public Boolean verificaProfessor(){
 
 		try {
 			servidor.setStatus(false);
-			dao.alterar(servidor);
+			servidorService.inserirAlterar(servidor);
 			carregaLista();
 			ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 		} catch (Exception e) {
@@ -580,13 +698,13 @@ public Boolean verificaProfessor(){
 	}
 
 	public void carregaLista() {
-		listServidor = dao.listaComStatus(Servidor.class);
+		listServidor = daoServidor.listaComStatus(Servidor.class);
 	}
 
 	public void carregaPermissao() {
 
-		listTipoSelecionado = dao.listaComStatus(Tipo.class);
-		listCursoSalvar = dao.listaComStatus(Curso.class);
+		listTipoSelecionado = daoTipo.listaComStatus(Tipo.class);
+		listCursoSalvar = daoCurso.listaComStatus(Curso.class);
 	}
 
 	public void criarNovoObjeto() {
@@ -596,12 +714,10 @@ public Boolean verificaProfessor(){
 		permissao = new Permissao();
 		listCursoSelecionado = new ArrayList<>();
 		tipoSalvar = new ArrayList<>();
-		
+
 		controleSenha = true;
 		controle = true;
 		controleAddCurso = true;
-		
-
 
 	}
 
@@ -654,7 +770,7 @@ public Boolean verificaProfessor(){
 	}
 
 	public List<Curso> getListCursoSalvar() {
-		listCursoSalvar = dao.listaComStatus(Curso.class);
+		listCursoSalvar = daoCurso.listaComStatus(Curso.class);
 		return listCursoSalvar;
 	}
 
@@ -671,7 +787,7 @@ public Boolean verificaProfessor(){
 	}
 
 	public List<Servidor> getListServidor() {
-		listServidor = dao.listaComStatus(Servidor.class);
+		listServidor = daoServidor.listaComStatus(Servidor.class);
 
 		return listServidor;
 	}
@@ -679,13 +795,13 @@ public Boolean verificaProfessor(){
 	public boolean verificaCurso(Servidor servidor) {
 
 		List<Permissao> listPermissao = new ArrayList<>();
-		listPermissao = dao.listar(Permissao.class,
+		listPermissao = daoPermissao.listar(Permissao.class,
 				" servidor = " + servidor.getId() + " and tipo.descricao = 'professor'");
 		if (listPermissao.size() > 0) {
-		
+
 			return true;
 		} else {
-	
+
 			return false;
 		}
 	}
@@ -830,5 +946,4 @@ public Boolean verificaProfessor(){
 		this.controleAddCurso = controleAddCurso;
 	}
 
-	
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:body>
+	<ui:composition template="../../resources/template/template-base.xhtml">
+		<ui:define name="tituloPagina">
+		 - COPE
+		</ui:define>
+
+		<ui:define name="menu">
+			<ui:include src="/cope/template/menuProfessor.xhtml"/>
+		</ui:define>
+
+		<ui:define name="titulo">
+			<i class="fa fa-hourglass-half" aria-hidden="true" /> Seja bem-vindo
+		</ui:define>
+
+		<ui:define name="conteudo">
+		</ui:define>
+		<!-- 		<ui:define name="modal-confirmacao"> -->
+		<!-- 			<ui:include src="../../componentes/dialog-confirmacao.xhtml" /> -->
+		<!-- 		</ui:define> -->
+	</ui:composition>
+</h:body>
+</html>
+

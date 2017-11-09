@@ -1,7 +1,12 @@
 package ac.controle;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import util.CriptografiaSenha;
 import util.ExibirMensagem;
@@ -9,30 +14,40 @@ import util.Mensagem;
 import util.ValidacoesGerirUsuarios;
 
 import base.modelo.Servidor;
-import dao.DAOGenerico;
+import base.service.ServidorService;
 
 @SessionScoped
-@ManagedBean
-public class AlterarDadosSecretariaMB {
+@Named("alterarDadosSecretariaMB")
+public class AlterarDadosSecretariaMB implements Serializable{
+
+	
+	private static final long serialVersionUID = 1L;
 
 	private Servidor secretaria;
-	private DAOGenerico dao;
-	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
-	private UsuarioSessaoMB usuarioSessao;
+
 	private String senha;
 	private String senha2;
 
-	public AlterarDadosSecretariaMB() {
+	@Inject
+	private ServidorService servidorService;
+	
+	@Inject
+	private ValidacoesGerirUsuarios validacoesGerirUsuarios;
+	
+	@Inject
+	private UsuarioSessaoMB usuarioSessao;
+	
+	@PostConstruct
+	public void inicializar() {
 		secretaria = new Servidor();
-		dao = new DAOGenerico();
-		validacoesGerirUsuarios = new ValidacoesGerirUsuarios();
-		usuarioSessao = new UsuarioSessaoMB();
+
 		senha = "";
 		senha2 = "";
 		preencherSecretaria();
 	}
 
 	public void alterarSecretaria() {
+		
 		try {
 			if ((validacoesGerirUsuarios.buscarUsuarios(secretaria))
 					&& (validacoesGerirUsuarios.buscarUsuarioAlterar(secretaria))) {
@@ -42,7 +57,7 @@ public class AlterarDadosSecretariaMB {
 					secretaria.setSenha(senha);
 					secretaria.setSenha(CriptografiaSenha.criptografar(secretaria.getSenha()));
 				}
-				dao.alterar(secretaria);
+				servidorService.inserirAlterar(secretaria);
 				ExibirMensagem.exibirMensagem(Mensagem.SUCESSO);
 				preencherSecretaria();
 

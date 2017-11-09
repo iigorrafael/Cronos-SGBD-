@@ -8,6 +8,16 @@
 		<converter-id>converterAtividadeTurma</converter-id>
 		<converter-class>br.com.cronos.converter.ConverterAtividadeTurma</converter-class>
 	</converter>
+	
+	<converter>
+		<converter-id>converterAtividades</converter-id>
+		<converter-class>br.com.cronos.converter.ConverterAtividades</converter-class>
+	</converter>
+	
+		<converter>
+		<converter-id>converterEvento</converter-id>
+		<converter-class>br.com.cronos.converter.ConverterEvento</converter-class>
+	</converter>
 
 	<converter>
 		<converter-id>converterCurso</converter-id>

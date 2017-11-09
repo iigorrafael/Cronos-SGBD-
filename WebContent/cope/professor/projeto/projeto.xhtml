@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<h:body>
+	<ui:composition template="../../../resources/template/template-base.xhtml">
+		<ui:define name="tituloPagina">
+		 - COPE
+		</ui:define>
+
+		<ui:define name="menu">
+			<ui:include src="../../template/menuProfessor.xhtml" />
+		</ui:define>
+
+		<ui:define name="titulo">
+			Projetos de Pesquisa Extensão e Inovação
+		</ui:define>
+
+		<ui:define name="conteudo">
+			<!-- BOTÃO CADASTRAR -->
+			<div class="row container-fluid">
+				<div class="col-md-12">
+					<ol class="breadcrumb">
+						<h:form>
+							<p:commandButton value="Cadastrar" action="/cope/professor/projeto/projetoPesquisaCadastrar.jsf?faces-redirect=true" />
+						</h:form>
+					</ol>
+				</div>
+			</div>
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
+
